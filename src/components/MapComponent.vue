@@ -1,0 +1,51 @@
+<template>
+  <l-map 
+    id="map" 
+    :zoom="zoom" 
+    :center="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [0, 0]">
+    <l-tile-layer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        layer-type="base"
+        name="OpenStreetMap"
+    ></l-tile-layer>
+    <l-marker 
+      key="phone"
+      :lat-lng="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [0, 0]">
+    </l-marker>
+  </l-map>
+</template>
+
+<script lang="ts">
+import { Vue, Options } from 'vue-property-decorator';
+//import L from 'leaflet';
+import {
+    LMap, LTileLayer, LMarker
+    // @ts-ignore
+} from "@vue-leaflet/vue-leaflet";
+import type { DataFrame, DataObject } from '@openhps/core';
+
+@Options({
+  components: {
+    LMap,
+    LTileLayer,
+    LMarker
+  }
+})
+export default class MapComponent extends Vue {
+  zoom?: number = 20;
+
+  update(): void {
+    
+  }
+
+}
+</script>
+
+<style scoped lang="scss">
+@import 'leaflet/dist/leaflet.css';
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+</style>

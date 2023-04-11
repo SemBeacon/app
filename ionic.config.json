@@ -1,0 +1,7 @@
+{
+  "name": "SemBeacon",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
