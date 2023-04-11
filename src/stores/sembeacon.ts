@@ -29,7 +29,7 @@ export const useSemBeaconStore = defineStore('sembeacon', {
     }),
     getters: {
         findByUUID(): BLESemBeacon {
-            return {};
+            return new BLESemBeacon();
         }
     },
     actions: {

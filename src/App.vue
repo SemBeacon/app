@@ -4,8 +4,11 @@
       <ion-menu content-id="main-content" type="overlay">
         <ion-content>
           <ion-list id="inbox-list">
-            <ion-list-header>SemBeacon</ion-list-header>
-            <ion-note>Ionic Capacitor</ion-note>
+            <ion-list-header>
+              <img alt="SemBeacon Logo" src="/assets/logo/logo.svg">
+            </ion-list-header>
+
+            <ion-note>Companion App</ion-note>
 
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
@@ -13,12 +16,12 @@
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
+
           </ion-list>
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
     </ion-split-pane>
-    <permission-modal :callback="create"></permission-modal>
   </ion-app>
 </template>
 
@@ -44,7 +47,6 @@ import {
   bluetooth,
   wifi
 } from 'ionicons/icons';
-
 
 @Options({
   components: {
@@ -87,7 +89,7 @@ export default class App extends Vue {
   
   create(): Promise<void> {
     return new Promise((resolve, reject) => {
-      
+      resolve();
     });
   }
 }

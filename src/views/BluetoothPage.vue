@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
-        <ion-title>SemBeacon</ion-title>
+        <ion-title>Beacon Scanner</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -31,31 +31,14 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel } from '@ionic/vue';
-import type { DataFrame, SourceNode } from '@openhps/core';
-import { BLESourceNode } from '@openhps/capacitor-bluetooth';
-import { BLEObject, RelativeRSSI } from '@openhps/rf';
-
 
 @Options({
   components: {
     IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel
   }
 })
-export default class WLANPage extends Vue {
+export default class BluetoothPage extends Vue {
   items: Map<string, any> = new Map();
-
-  mounted(): void {
-    // this.setCallback((frame) => {
-    //   const source = frame.source;
-    //   const objects = frame.getObjects(BLEObject);
-    //   objects.forEach(object => {
-    //     this.items.set(object.uid, {
-    //       ...object,
-    //       rssi: (source.getRelativePosition(object.uid) as RelativeRSSI).rssi
-    //     });
-    //   });
-    // }, BLESourceNode);
-  }
 }
 </script>
 
