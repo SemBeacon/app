@@ -4,7 +4,7 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '',
-    component: () => import ('../views/BluetoothPage.vue')
+    component: () => import ('../views/ScanPage.vue')
   }
 ];
 
