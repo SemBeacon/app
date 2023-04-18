@@ -3,7 +3,7 @@
     <ion-split-pane content-id="main-content">
       <ion-menu content-id="main-content" type="overlay">
         <ion-content>
-          <ion-list id="inbox-list">
+          <ion-list id="menu-list">
             <ion-list-header>
               <img alt="SemBeacon Logo" src="/assets/logo/logo.svg">
             </ion-list-header>
@@ -20,12 +20,14 @@
           </ion-list>
         </ion-content>
       </ion-menu>
+      
       <ion-router-outlet id="main-content"></ion-router-outlet>
     </ion-split-pane>
   </ion-app>
 </template>
 
 <script lang="ts">
+import 'reflect-metadata';
 import { Vue, Options } from 'vue-property-decorator';
 import {
   IonApp,
@@ -47,6 +49,7 @@ import {
   bluetooth,
   wifi
 } from 'ionicons/icons';
+import { useBeaconStore } from './stores/beacon';
 
 @Options({
   components: {
@@ -65,6 +68,7 @@ import {
   }
 })
 export default class App extends Vue {
+  beaconStore = useBeaconStore();
   selectedIndex = ref(0);
   appPages = [
     {
@@ -87,9 +91,13 @@ export default class App extends Vue {
     },
   ];
   
-  create(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      resolve();
+  mounted(): Promise<void> {
+    return new Promise((resolve) => {
+      this.beaconStore.initialize()
+        .then(resolve)
+        .catch(err => {
+          console.error(err);
+        });
     });
   }
 }
@@ -119,16 +127,12 @@ export default class App extends Vue {
 #container p {
   font-size: 16px;
   line-height: 22px;
-  color: #8c8c8c;
+  color: #d4d4d4;
   margin: 0;
 }
 
 #container a {
   text-decoration: none;
-}
-
-ion-menu ion-content {
-  --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 
 ion-menu.md ion-content {
@@ -151,11 +155,11 @@ ion-menu.md ion-note {
   padding-left: 10px;
 }
 
-ion-menu.md ion-list#inbox-list {
+ion-menu.md ion-list#menu-list {
   border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
 }
 
-ion-menu.md ion-list#inbox-list ion-list-header {
+ion-menu.md ion-list#menu-list ion-list-header {
   font-size: 22px;
   font-weight: 600;
 
@@ -245,5 +249,9 @@ ion-note {
 
 ion-item.selected {
   --color: var(--ion-color-primary);
+}
+
+ion-menu ion-list-header img {
+  width: 80%;
 }
 </style>

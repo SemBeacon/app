@@ -2,16 +2,23 @@
   <l-map 
     id="map" 
     :zoom="zoom" 
-    :center="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [0, 0]">
+    :center="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [50.85, 4.3]"
+    :options="{ attributionControl: false }"
+  >
     <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
-        name="OpenStreetMap"
     ></l-tile-layer>
     <l-marker 
       key="phone"
-      :lat-lng="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [0, 0]">
+      :lat-lng="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [50.85, 4.3]">
     </l-marker>
+    <beacon-marker-component
+      v-for="beacon in beacons"
+      :beacon="beacon"
+      :key="beacon.uid"
+    >
+    </beacon-marker-component>
   </l-map>
 </template>
 
@@ -22,21 +29,26 @@ import {
     LMap, LTileLayer, LMarker
     // @ts-ignore
 } from "@vue-leaflet/vue-leaflet";
-import type { DataFrame, DataObject } from '@openhps/core';
+import { BLEBeaconObject } from '@openhps/rf';
+import { BLESemBeacon } from '../models/BLESemBeacon';
+import { GeographicalPosition } from '@openhps/core';
+import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
 
 @Options({
   components: {
     LMap,
     LTileLayer,
-    LMarker
+    LMarker,
+    BeaconMarkerComponent
   }
 })
 export default class MapComponent extends Vue {
   zoom?: number = 20;
-
-  update(): void {
-    
-  }
+  beacons: BLEBeaconObject[] = [
+    new BLESemBeacon().setPosition(new GeographicalPosition(
+     4.3, 50.85
+    ))
+  ];
 
 }
 </script>
