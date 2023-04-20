@@ -8,7 +8,13 @@
             :icon-anchor="[13, 39]"
             :icon-url="markerIcon" >
         </l-icon>
-        <l-tooltip>Hello!</l-tooltip>
+        <l-tooltip
+            :options="{
+                offset: [0, -10]   
+            }"
+        >
+            Hello!
+        </l-tooltip>
     </l-marker>
 </template>
 

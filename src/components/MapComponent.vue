@@ -3,10 +3,9 @@
     ref="map"
     id="map" 
     :zoom="zoom" 
-    :center="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [50.85, 4.3]"
+    :center="location ? location : [0, 0]"
     :options="{ attributionControl: false }"
     :maxZoom="20"
-    @ready="onMapReady"
   >
     <l-tile-layer
         :url="`https://api.mapbox.com/styles/v1/${id}/tiles/{z}/{x}/{y}?access_token=${accessToken}`"
@@ -15,10 +14,14 @@
         :options="{ maxNativeZoom: 18 }"
     >
     </l-tile-layer>
-    <!-- <l-marker 
+    
+    <l-marker 
       key="phone"
-      :lat-lng="isReady && phone.position ? [phone.position.latitude, phone.position.longitude] : [50.85, 4.3]">
-    </l-marker> -->
+      v-if="location"
+      :lat-lng="location"
+    >
+    </l-marker>
+
     <beacon-marker-component
       v-for="beacon in beacons"
       :beacon="beacon"
@@ -38,7 +41,9 @@ import {
 import { BLEAltBeacon, BLEBeaconObject } from '@openhps/rf';
 import { GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useGeolocationStore } from '../stores/geolocation';
+import { useBeaconStore } from '../stores/beacon';
 
 @Options({
   components: {
@@ -49,19 +54,31 @@ import { ref } from 'vue';
   }
 })
 export default class MapComponent extends Vue {
+  geolocationStore = useGeolocationStore();
+  beaconStore = useBeaconStore();
+
   id = "mapbox/streets-v11";
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
   map: any = ref("map");
-  
-  zoom?: number = 20;
+  zoom?: number = 18;
   beacons: BLEBeaconObject[] = [
     new BLEAltBeacon().setPosition(new GeographicalPosition(
      4.3, 50.85
     ))
   ];
+  location = computed(() => {
+    const location: GeographicalPosition = this.geolocationStore.location;
+    return location ? [location.latitude, location.longitude] : undefined;
+  });
 
-  onMapReady() {
-    // Test
+  mounted() {
+    this.geolocationStore.initialize().then(() => {
+      return this.geolocationStore.sourceNode.start();
+    });
+  }
+
+  unmounted() {
+    this.geolocationStore.sourceNode.stop();
   }
 }
 </script>

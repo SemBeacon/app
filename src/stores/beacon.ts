@@ -53,9 +53,14 @@ export const useBeaconStore = defineStore('beacon', {
         addBeacon(beacon: BLEBeaconObject): Promise<void> {
             return new Promise((resolve) => {
                 if (beacon instanceof BLESemBeacon) {
-                    // Add SemBeacon namespace structure
-                } else if (beacon instanceof BLEAltBeacon) {
                     console.log(beacon)
+                    // Add SemBeacon namespace structure
+                    const namespace = this.namespaces[beacon.namespaceId.toString()] ?? {
+                        beacons: {},
+                        model: undefined
+                    };
+                    this.namespaces[beacon.namespaceId.toString()] = namespace;
+                    namespace.beacons[beacon.instanceId.toString()] = beacon;
                 }
                 // Add beacon to output
                 this.beacons.set(beacon.uid, beacon);

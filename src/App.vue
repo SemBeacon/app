@@ -47,7 +47,6 @@ import { ref } from 'vue';
 import {
   map,
   bluetooth,
-  wifi
 } from 'ionicons/icons';
 import { useBeaconStore } from './stores/beacon';
 
@@ -78,17 +77,11 @@ export default class App extends Vue {
       mdIcon: map,
     },
     {
-      title: 'Bluetooth LE',
-      url: '/ble',
+      title: 'Beacons',
+      url: '/scan',
       iosIcon: bluetooth,
       mdIcon: bluetooth,
-    },
-    {
-      title: 'WLAN',
-      url: '/wlan',
-      iosIcon: wifi,
-      mdIcon: wifi,
-    },
+    }
   ];
   
   mounted(): Promise<void> {
