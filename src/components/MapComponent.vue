@@ -60,7 +60,7 @@ export default class MapComponent extends Vue {
   mounted() {
     const url = `http://a.tiles.mapbox.com/v4/mapbox.${this.id}/{x}/{y}/{z}.mvt?access_token=${this.accessToken}`;
     const tileLayer = vectorTileLayer(url, {});
-    console.log((this.$refs.leafletRef as any))
+    console.log((this.$refs as any))
     tileLayer.addTo((this.$refs.map as any).leafletObject)
   }
 }
