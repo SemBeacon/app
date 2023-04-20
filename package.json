@@ -40,7 +40,6 @@
     "core-js": "^3.30.1",
     "ionicons": "^7.1.0",
     "leaflet": "^1.9.3",
-    "leaflet-vector-tile-layer": "^0.14.1",
     "pinia": "^2.0.34",
     "reflect-metadata": "^0.1.13",
     "sass": "^1.62.0",
