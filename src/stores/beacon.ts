@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, Model, ModelBuilder } from '@openhps/core';
+import { CallbackNode, CallbackSinkNode, DataFrame, Model, ModelBuilder } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLESemBeacon } from '@/models/BLESemBeacon';
 import { 
@@ -9,7 +9,6 @@ import {
     BLEiBeacon,
     BLEEddystoneUID,
     BLEEddystoneURL,
-    BLEObject
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 
@@ -53,7 +52,6 @@ export const useBeaconStore = defineStore('beacon', {
         addBeacon(beacon: BLEBeaconObject): Promise<void> {
             return new Promise((resolve) => {
                 if (beacon instanceof BLESemBeacon) {
-                    console.log(beacon)
                     // Add SemBeacon namespace structure
                     const namespace = this.namespaces[beacon.namespaceId.toString()] ?? {
                         beacons: {},
@@ -73,6 +71,7 @@ export const useBeaconStore = defineStore('beacon', {
                     //.withLogger(console.log)
                     .addService(new SemBeaconService())
                     .from(this.source as BLESourceNode)
+                    .via(new CallbackNode(console.log))
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,
                         types: [
@@ -85,7 +84,7 @@ export const useBeaconStore = defineStore('beacon', {
                     }))
                     .to(new CallbackSinkNode((frame: DataFrame) => {
                         // Add beacons
-                        frame.getObjects(BLEObject)
+                        frame.getObjects(BLEBeaconObject as any)
                             .forEach(beacon => {
                                 this.addBeacon(beacon);
                             });

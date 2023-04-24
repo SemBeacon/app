@@ -6,7 +6,11 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
 
-        <ion-title>Beacon Scanner</ion-title>
+        <ion-title>Beacon</ion-title>
+
+        <ion-buttons slot="end">
+          
+        </ion-buttons>
       </ion-toolbar>
 
       <ion-toolbar color="primary">

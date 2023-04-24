@@ -48,9 +48,11 @@ export default class BeaconItemComponent extends Vue {
     } else if (this.beacon instanceof BLEiBeacon) {
       return "/assets/beacons/ibeacon.svg";
     } else if (this.beacon instanceof BLEAltBeacon) {
-      return undefined;
+      return "/assets/beacons/altbeacon.svg";
+    } else if (this.beacon instanceof BLEEddystone) {
+      return "/assets/beacons/eddystone.svg";
     } else {
-      return undefined;
+      return "/assets/beacons/bluetooth.svg";
     }
   }
 }
