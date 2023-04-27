@@ -14,7 +14,7 @@
     "start:android": "ionic capacitor run android",
     "start:ios": "ionic capacitor run ios -l --external",
     "start:electron": "ionic capacitor open @capacitor-community/electron",
-    "generate:resources": "capacitor-resources -p android,ios"
+    "resources": "capacitor-resources -p android,ios -I"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": ">=2.2.3",
@@ -37,6 +37,7 @@
     "@openhps/geospatial": "^0.1.17",
     "@openhps/rdf": "^0.3.2",
     "@openhps/rf": "^0.1.29",
+    "@openhps/solid": "^0.1.8",
     "@vue-leaflet/vue-leaflet": "^0.9.0",
     "@vueuse/core": "^10.1.0",
     "axios": "^1.3.6",
@@ -69,6 +70,7 @@
     "@vue/test-utils": "^2.3.2",
     "@vue/vue3-jest": "^29.2.3",
     "babel-jest": "^29.5.0",
+    "capacitor-resources": "^2.0.5",
     "cordova-res": "^0.15.4",
     "cypress": "^12.10.0",
     "eslint": "^8.39.0",
