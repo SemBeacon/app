@@ -9,6 +9,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/scan',
     component: () => import ('../views/ScanPage.vue')
+  },
+  {
+    path: '/login',
+    component: () => import ('../views/LoginPage.vue')
   }
 ];
 

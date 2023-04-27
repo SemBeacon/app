@@ -4,7 +4,7 @@ module.exports = {
             '@openhps/core': ['OpenHPS', 'core'],
             '@openhps/rf': ['OpenHPS', 'rf'],
             '@openhps/rdf': ['OpenHPS', 'rdf'],
-            '@openhps/solid': ['OpenHPS', 'solid']
+            '@openhps/solid/browser': ['OpenHPS', 'solid']
         }
     },
     devServer: {

@@ -49,6 +49,7 @@ import {
   bluetooth,
 } from 'ionicons/icons';
 import { useBeaconStore } from './stores/beacon';
+import { useUserStore } from './stores/user';
 
 @Options({
   components: {
@@ -68,6 +69,8 @@ import { useBeaconStore } from './stores/beacon';
 })
 export default class App extends Vue {
   beaconStore = useBeaconStore();
+  userStore = useUserStore();
+
   selectedIndex = ref(0);
   appPages = [
     {
@@ -86,8 +89,8 @@ export default class App extends Vue {
   
   mounted(): Promise<void> {
     return new Promise((resolve) => {
-      this.beaconStore.initialize()
-        .then(resolve)
+      Promise.all([this.userStore.initialize(), this.beaconStore.initialize()])
+        .then(() => resolve())
         .catch(err => {
           console.error(err);
         });
