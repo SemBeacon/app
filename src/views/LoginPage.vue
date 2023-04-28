@@ -1,42 +1,41 @@
 <template>
-    <ion-page>
-      <ion-header :translucent="true">
-        <ion-toolbar color="primary">
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>Login to Solid Provider</ion-title>
-        </ion-toolbar>
-      </ion-header>
-  
-      <ion-content :fullscreen="true">
-        <div id="container">
-          <ion-list>
-            <ion-item>
-              <ion-select 
-                @ionChange="selectedIssuer = $event.detail.value"
-                aria-label="provider" 
-                placeholder="Select your Issuer"
+  <ion-page>
+    <ion-header :translucent="true">
+      <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Login to Solid Provider</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
+      <div id="container">
+        <ion-list>
+          <ion-item>
+            <ion-select 
+              @ionChange="selectedIssuer = $event.detail.value"
+              aria-label="provider" 
+              placeholder="Select your Issuer"
+            >
+              <ion-select-option 
+                v-for="issuer in knownIssuers" 
+                :value="issuer"
+                :key="issuer"
               >
-                <ion-select-option 
-                  v-for="issuer in knownIssuers" 
-                  :value="issuer"
-                  :key="issuer"
-                >
-                {{ issuer }}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-item>
-              <ion-button
-                @click="login">Login</ion-button>
-            </ion-item>
-          </ion-list>
-        </div>
-      </ion-content>
-    </ion-page>
-  </template>
-  
+              {{ issuer }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-button
+              @click="login">Login</ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ion-content>
+  </ion-page>
+</template>
   
   <script lang="ts">
   import { Vue, Options } from 'vue-property-decorator';
@@ -91,7 +90,6 @@
     }
 
     login(): void {
-      console.log(this.selectedIssuer)
       this.userStore.authenticate(this.selectedIssuer);
     }
   }
