@@ -4733,10 +4733,10 @@
   dependencies:
     ml-levenberg-marquardt "^4.1.2"
 
-"@openhps/solid@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@openhps/solid/-/solid-0.1.9.tgz#1f3ff96d5c977d4b56eb864a25198b6245e3d79a"
-  integrity sha512-vxbjyQj8PCLg4m6o4udRrVMumXx1XoVLkamYdL0/qlSLBTkUwlsrNhgBKGb/jot9BU+265ldY35045Hf+8C99w==
+"@openhps/solid@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@openhps/solid/-/solid-0.1.10.tgz#ef97681e6ed73cf9984400962bc2f09ee9e7046e"
+  integrity sha512-VPptSI/pCObhl16Pa0ku6lRt1QAhv+dmOjpoDxMj8LC7ghp1cjGQYunz1/zUT6nzzkum/9BZQdL0GI11n2fyOA==
   dependencies:
     "@comunica/actor-init-query" "^2.6.9"
     "@comunica/query-sparql-link-traversal-solid" "0.1.1"

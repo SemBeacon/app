@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
+import { Browser } from '@capacitor/browser';
 
 const CLIENT_NAME = "SEMBEACON_APP";
 
@@ -28,7 +29,13 @@ export const useUserStore = defineStore('user', {
                     dataServiceDriver: new LocalStorageDriver<string, string>(String as any, {
                         namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
                     }),
-                    restorePreviousSession: true
+                    restorePreviousSession: true,
+                    handleRedirect: (redirectUrl: string) => {
+                        // Use @capacitor/browser
+                        Browser.open({
+                            url: redirectUrl
+                        });
+                    }
                 });
                 service.emit('build');
                 service.on('login', (session: SolidSession) => {

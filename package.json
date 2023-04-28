@@ -39,7 +39,7 @@
     "@openhps/localstorage": "^1.0.1",
     "@openhps/rdf": "^0.3.2",
     "@openhps/rf": "^0.1.29",
-    "@openhps/solid": "^0.1.9",
+    "@openhps/solid": "^0.1.10",
     "@vue-leaflet/vue-leaflet": "^0.9.0",
     "@vueuse/core": "^10.1.0",
     "axios": "^1.4.0",
