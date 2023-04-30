@@ -30,7 +30,7 @@ const app = createApp(App)
   .use(IonicVue)
   .use(createPinia())
   .use(router);
-  
+
 router.isReady().then(() => {
   addIcons({ ...icons });
   app.mount('#app');

@@ -14,7 +14,9 @@
     "start:android": "ionic capacitor run android",
     "start:ios": "ionic capacitor run ios -l --external",
     "start:electron": "ionic capacitor open @capacitor-community/electron",
-    "resources": "capacitor-resources -p android,ios -I"
+    "resources": "capacitor-resources -p android,ios -I",   
+    "ionic:build": "vue-cli-service build",
+    "ionic:serve": "vue-cli-service serve"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": ">=2.2.3",

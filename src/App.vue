@@ -47,9 +47,12 @@ import { ref } from 'vue';
 import {
   map,
   bluetooth,
+  logIn
 } from 'ionicons/icons';
 import { useBeaconStore } from './stores/beacon';
 import { useUserStore } from './stores/user';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 
 @Options({
   components: {
@@ -84,11 +87,32 @@ export default class App extends Vue {
       url: '/scan',
       iosIcon: bluetooth,
       mdIcon: bluetooth,
+    },
+    {
+      title: 'Solid Login',
+      url: '/Login',
+      iosIcon: logIn,
+      mdIcon: logIn,
     }
   ];
   
+  beforeCreate(): void {
+    StatusBar.setStyle({ style: Style.Dark })
+  }
+
   mounted(): Promise<void> {
     return new Promise((resolve) => {
+      CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
+        this.zone.run(() => {
+          const domain = 'sembeacon.org/app';
+          const pathArray = event.url.split(domain);
+          const appPath = pathArray.pop();
+          if (appPath) {
+            this.router.navigateByUrl(appPath);
+          }
+        });
+      });
+
       Promise.all([this.userStore.initialize(), this.beaconStore.initialize()])
         .then(() => resolve())
         .catch(err => {

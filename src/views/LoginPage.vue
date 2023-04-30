@@ -16,6 +16,7 @@
             <ion-select 
               @ionChange="selectedIssuer = $event.detail.value"
               aria-label="provider" 
+              interface="popover"
               placeholder="Select your Issuer"
             >
               <ion-select-option 

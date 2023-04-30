@@ -3,7 +3,7 @@ import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
 
-const CLIENT_NAME = "SEMBEACON_APP";
+const CLIENT_NAME = "SemBeacon Application";
 
 export interface UserState {
     service: SolidClientService;
@@ -24,11 +24,13 @@ export const useUserStore = defineStore('user', {
     actions: {
         initialize(): Promise<void> {
             return new Promise((resolve) => {
+                const redirectUrl = window.location.origin + "/login";
                 const service = new SolidClientService({
                     clientName: CLIENT_NAME,
                     dataServiceDriver: new LocalStorageDriver<string, string>(String as any, {
                         namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
                     }),
+                    redirectUrl,
                     restorePreviousSession: true,
                     handleRedirect: (redirectUrl: string) => {
                         // Use @capacitor/browser
