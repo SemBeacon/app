@@ -3,6 +3,7 @@ import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
 import { User } from '@/models/User';
+import { rdfs, RDFSerializer, Thing } from '@openhps/rdf';
 
 const CLIENT_NAME = "SemBeacon Application";
 
@@ -59,12 +60,28 @@ export const useUserStore = defineStore('user', {
                 service.login(issuer).then(() => resolve()).catch(reject);
             });
         },
-        fetchProfile(): Promise<void> {
+        fetchProfile(): Promise<User> {
             return new Promise((resolve, reject) => {
                 const service: SolidClientService = this.service;
                 service.getThing(this.session, this.session.info.webId).then(card => {
-                    console.log(card);
-                    resolve();
+                    const user = RDFSerializer.deserialize(card as unknown as Thing, User);
+                    if (!user.firstName && card.predicates[rdfs.seeAlso]) {
+                        // Get extended profile
+                        const extendedProfile = card.predicates[rdfs.seeAlso].namedNodes[0];
+                        return service.getThing(this.session, extendedProfile);
+                    } else {
+                        this.user = user;
+                        resolve(this.user);
+                    }
+                }).then(profile => {
+                    console.log(profile);
+                    if (profile) {
+                        this.user =  RDFSerializer.deserialize(profile as unknown as Thing, User);
+                        console.log(this.user)
+                        resolve(this.user);
+                    } else {
+                        reject(new Error(`User profile is not accessible!`));
+                    }
                 }).catch(reject);
             });
         },

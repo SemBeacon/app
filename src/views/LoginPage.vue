@@ -99,7 +99,7 @@
     mounted(): void {
       if (this.userStore.isLoggedIn) {
         // Redirect
-        console.log("Logged in ");
+        console.log("Logged in");
         this.$router.replace("/profile");
       }
     }
