@@ -4701,7 +4701,7 @@
 
 "@openhps/geospatial@^0.1.17":
   version "0.1.17"
-  resolved "https://registry.npmjs.org/@openhps/geospatial/-/geospatial-0.1.17.tgz"
+  resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.17.tgz#03ca375882ea15300041f04e62679f2cb64a2357"
   integrity sha512-8dxcK1QDOnwnqkOjSHN89ScSG1whqsLnBqSYgAmZg4sKre/u9K80ERWygV+GaMaq8BtNe60JFs2ziIE0apKo/A==
   dependencies:
     robust-point-in-polygon "^1.0.3"

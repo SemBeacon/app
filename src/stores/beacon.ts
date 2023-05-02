@@ -44,6 +44,9 @@ export const useBeaconStore = defineStore('beacon', {
         findByUUID(): BLESemBeacon {
             return new BLESemBeacon();
         },
+        findByNamespace(namespace): BLESemBeacon[] {
+            return this.namespaces[namespace as any].beacons as BLESemBeacon[];
+        },
         isScanning(): boolean {
             return (this.source as BLESourceNode).isRunning();
         }

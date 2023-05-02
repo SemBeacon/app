@@ -2,16 +2,19 @@ import { defineStore } from 'pinia';
 import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
+import { User } from '@/models/User';
 
 const CLIENT_NAME = "SemBeacon Application";
 
 export interface UserState {
     service: SolidClientService;
+    user: User;
 }
   
 export const useUserStore = defineStore('user', {
     state: (): UserState => ({
         service: undefined,
+        user: undefined
     }),
     getters: {
         session(): SolidSession {
@@ -63,6 +66,12 @@ export const useUserStore = defineStore('user', {
                     console.log(card);
                     resolve();
                 }).catch(reject);
+            });
+        },
+        query(statement: string): Promise<any> {
+            return new Promise((resolve, reject) => {
+                const service: SolidClientService = this.service;
+
             });
         }
     }

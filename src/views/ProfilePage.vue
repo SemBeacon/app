@@ -1,9 +1,9 @@
 <template>
     <ion-page>
       <ion-header :translucent="true">
-        <ion-toolbar>
+        <ion-toolbar color="primary">
           <ion-buttons slot="start">
-            <ion-menu-button color="primary"></ion-menu-button>
+            <ion-menu-button color="light"></ion-menu-button>
           </ion-buttons>
           <ion-title>Profile</ion-title>
         </ion-toolbar>
@@ -32,7 +32,8 @@
     IonItem, 
     IonLabel,
   } from '@ionic/vue';
-  
+  import { useUserStore } from '@/stores/user';
+
   @Options({
     components: {
       IonButtons, 
@@ -48,7 +49,11 @@
     }
   })
   export default class ProfilePage extends Vue {
-  
+    userStore = useUserStore();
+    
+    mounted(): void {
+        
+    }
   }
   </script>
   

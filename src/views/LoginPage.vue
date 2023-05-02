@@ -13,6 +13,7 @@
       <div id="container">
         <ion-list>
           <ion-item>
+            <ion-label position="stacked" color="primary">Solid Issuer</ion-label>
             <ion-select 
               @ionChange="selectedIssuer = $event.detail.value"
               aria-label="provider" 
@@ -28,11 +29,19 @@
               </ion-select-option>
             </ion-select>
           </ion-item>
-          <ion-item>
-            <ion-button
-              @click="login">Login</ion-button>
-          </ion-item>
         </ion-list>
+
+        <ion-row responsive-sm>
+          <ion-col>
+            <ion-button 
+              @click="login()" 
+              color="primary" 
+              expand="block"
+            >
+              Login
+            </ion-button>
+          </ion-col>
+        </ion-row>
       </div>
     </ion-content>
   </ion-page>
@@ -53,7 +62,9 @@
     IonLabel,
     IonSelect,
     IonSelectOption,
-    IonButton
+    IonButton,
+    IonRow,
+    IonCol
   } from '@ionic/vue';
   import { useUserStore } from '@/stores/user';
 
@@ -71,7 +82,9 @@
       IonLabel,
       IonSelect,
       IonSelectOption,
-      IonButton
+      IonButton,
+      IonRow,
+      IonCol
     }
   })
   export default class LoginPage extends Vue {
@@ -87,6 +100,7 @@
       if (this.userStore.isLoggedIn) {
         // Redirect
         console.log("Logged in ");
+        this.$router.replace("/profile");
       }
     }
 

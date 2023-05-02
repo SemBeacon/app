@@ -103,3 +103,7 @@ export class BLESemBeacon extends BLEBeaconObject {
         return this.getServiceByUUID(BLEUUID.fromString('AAFE'));
     }
 }
+
+export enum BLESemBeaconFlags {
+    
+}

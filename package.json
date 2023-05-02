@@ -2,6 +2,7 @@
   "name": "@sembeacon/app",
   "version": "1.0.0",
   "description": "SemBeacon Application",
+  "license": "Apache-2.0",
   "private": false,
   "scripts": {
     "postinstall": "shx rm ./public/js/vendor/openhps/* && shx cp -rf node_modules/@openhps/*/dist/web/*.* ./public/js/vendor/openhps/",
@@ -14,7 +15,7 @@
     "start:android": "ionic capacitor run android",
     "start:ios": "ionic capacitor run ios -l --external",
     "start:electron": "ionic capacitor open @capacitor-community/electron",
-    "resources": "capacitor-resources -p android,ios -I",   
+    "resources": "capacitor-resources -p android,ios -I",
     "ionic:build": "vue-cli-service build",
     "ionic:serve": "vue-cli-service serve"
   },
