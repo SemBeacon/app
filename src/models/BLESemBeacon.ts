@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { SerializableMember, SerializableObject } from "@openhps/core";
 import { IriString, UrlString, xsd } from "@openhps/rdf";
 import { BLEBeaconObject, BLEEddystoneURL, BLEService, BLEUUID, BufferUtils } from "@openhps/rf";
@@ -36,24 +37,32 @@ export class BLESemBeacon extends BLEBeaconObject {
     @SerializableMember()
     resourceUri: UrlString;
 
+    @SerializableMember({
+        rdf: {
+            predicate: "http://purl.org/sembeacon/shortUri"
+        }
+    })
+    shortUri: UrlString;
+
     isValid(): boolean {
         return this.resourceUri !== undefined && this.instanceId !== undefined && this.namespaceId !== undefined;
     }
 
     parseManufacturerData(_: number, manufacturerData: Uint8Array): this {
+        super.parseManufacturerData(_, manufacturerData);
         const view = new DataView(manufacturerData.buffer, 0);
         if (
             !(
                 manufacturerData.byteLength === 26 &&
-                BufferUtils.arrayBuffersAreEqual(manufacturerData.buffer.slice(2, 4), Uint8Array.from([0xac, 0xbe]).buffer)
+                BufferUtils.arrayBuffersAreEqual(manufacturerData.buffer.slice(0, 2), Uint8Array.from([0xbe, 0xac]).buffer)
             )
         ) {
             return this;
         }
-        this.namespaceId = BLEUUID.fromBuffer(manufacturerData.subarray(4, 20));
-        this.instanceId = BLEUUID.fromBuffer(manufacturerData.subarray(20, 24));
-        this.txPower = view.getInt8(24);
-        //this.msb = view.getInt8(25);
+        this.namespaceId = BLEUUID.fromBuffer(manufacturerData.subarray(2, 18));
+        this.instanceId = BLEUUID.fromBuffer(manufacturerData.subarray(18, 22));
+        this.txPower = view.getInt8(22);
+        //this.msb = view.getInt8(23);
 
         if (this.uid === undefined) {
             this.uid = BufferUtils.toHexString(

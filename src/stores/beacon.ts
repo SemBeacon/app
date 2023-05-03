@@ -11,6 +11,7 @@ import {
     BLEEddystoneURL,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
+import { LocalStorageDriver } from '@openhps/localstorage';
 
 export interface BeaconScan {
     results: number;
@@ -54,6 +55,7 @@ export const useBeaconStore = defineStore('beacon', {
     actions: {
         addBeacon(beacon: BLEBeaconObject): Promise<void> {
             return new Promise((resolve) => {
+                const service = this.model.findDataService(SemBeaconService);
                 if (beacon instanceof BLESemBeacon) {
                     // Add SemBeacon namespace structure
                     const namespace = this.namespaces[beacon.namespaceId.toString()] ?? {
@@ -62,6 +64,7 @@ export const useBeaconStore = defineStore('beacon', {
                     };
                     this.namespaces[beacon.namespaceId.toString()] = namespace;
                     namespace.beacons[beacon.instanceId.toString()] = beacon;
+                    service.insertObject(beacon);
                 }
                 // Add beacon to output
                 this.beacons.set(beacon.uid, beacon);
@@ -72,9 +75,8 @@ export const useBeaconStore = defineStore('beacon', {
             return new Promise((resolve, reject) => {
                 ModelBuilder.create()
                     //.withLogger(console.log)
-                    .addService(new SemBeaconService())
+                    .addService(new SemBeaconService(new LocalStorageDriver(BLESemBeacon)))
                     .from(this.source as BLESourceNode)
-                    .via(new CallbackNode(console.log))
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,
                         types: [
@@ -87,9 +89,11 @@ export const useBeaconStore = defineStore('beacon', {
                     }))
                     .to(new CallbackSinkNode((frame: DataFrame) => {
                         // Add beacons
-                        frame.getObjects(BLEBeaconObject as any)
+                        frame.getObjects()
                             .forEach(beacon => {
-                                this.addBeacon(beacon);
+                                if (beacon instanceof BLEBeaconObject) {
+                                    this.addBeacon(beacon);
+                                }
                             });
                     }))
                     .build().then((model: Model) => {

@@ -20,6 +20,8 @@ import { IonItem, IonLabel, IonThumbnail } from '@ionic/vue';
 import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
 
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
 @Options({
   components: {
     IonItem, IonLabel, IonThumbnail
@@ -34,7 +36,7 @@ export default class BeaconItemComponent extends Vue {
     } else if (this.beacon instanceof BLEiBeacon) {
       return "iBeacon";
     } else if (this.beacon instanceof BLEAltBeacon) {
-      return undefined;
+      return "AltBeacon";
     } else if (this.beacon instanceof BLEEddystone) {
       return "Eddystone";
     } else {
@@ -43,17 +45,8 @@ export default class BeaconItemComponent extends Vue {
   }
 
   get beaconIcon(): string {
-    if (this.beacon instanceof BLESemBeacon) {
-      return "/assets/beacons/sembeacon.svg";
-    } else if (this.beacon instanceof BLEiBeacon) {
-      return "/assets/beacons/ibeacon.svg";
-    } else if (this.beacon instanceof BLEAltBeacon) {
-      return "/assets/beacons/altbeacon.svg";
-    } else if (this.beacon instanceof BLEEddystone) {
-      return "/assets/beacons/eddystone.svg";
-    } else {
-      return "/assets/beacons/bluetooth.svg";
-    }
+    const beaconType = this.beaconType;
+    return `/assets/beacons/${beaconType.toLowerCase()}${prefersDark.matches ? "_alpha" : ""}.svg`;
   }
 }
 </script>

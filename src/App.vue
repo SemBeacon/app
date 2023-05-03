@@ -5,7 +5,12 @@
         <ion-content>
           <ion-list id="menu-list">
             <ion-list-header>
-              <img alt="SemBeacon Logo" src="/assets/logo/logo.svg">
+              <picture>
+                <source 
+                  srcset="/assets/logo/logo_alpha.svg" 
+                  media="(prefers-color-scheme: dark)">
+                <img alt="SemBeacon Logo" src="/assets/logo/logo.svg">
+              </picture>
             </ion-list-header>
 
             <ion-note>Companion App</ion-note>
@@ -51,7 +56,7 @@ import {
 } from 'ionicons/icons';
 import { useBeaconStore } from './stores/beacon';
 import { useUserStore } from './stores/user';
-import { StatusBar, Style } from '@capacitor/status-bar';
+import { Animation, StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 
 @Options({
@@ -97,7 +102,12 @@ export default class App extends Vue {
   ];
   
   beforeCreate(): void {
-    StatusBar.setStyle({ style: Style.Dark })
+    StatusBar.setBackgroundColor({
+      color: '#363795'
+    });
+    StatusBar.show({
+      animation: Animation.None
+    });
   }
 
   mounted(): Promise<void> {
@@ -216,6 +226,10 @@ ion-menu.md ion-item ion-icon {
 
 ion-menu.md ion-item ion-label {
   font-weight: 500;
+}
+
+ion-menu ion-list {
+  background: none;
 }
 
 ion-menu.ios ion-content {
