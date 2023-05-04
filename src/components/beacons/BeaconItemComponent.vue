@@ -1,5 +1,5 @@
 <template>
-  <ion-item>
+  <ion-item button @click="$router.push(`/beacon/${beacon.uid}`)" detail="true">
     <ion-thumbnail v-if="beaconIcon" slot="start">
       <img :alt="beacon.displayName" :src="beaconIcon" />
     </ion-thumbnail>
@@ -12,7 +12,6 @@
     </ion-label>
   </ion-item>
 </template>
-
 
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';

@@ -23,7 +23,7 @@
     </l-marker>
 
     <beacon-marker-component
-      v-for="beacon in beacons"
+      v-for="beacon in beacons.values()"
       :beacon="beacon"
       :key="beacon.uid"
     >
@@ -38,7 +38,6 @@ import {
     LMap, LMarker, LTileLayer
     // @ts-ignore
 } from "@vue-leaflet/vue-leaflet";
-import { BLEAltBeacon, BLEBeaconObject } from '@openhps/rf';
 import { GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
 import { ref, computed } from 'vue';
@@ -61,11 +60,7 @@ export default class MapComponent extends Vue {
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
   map: any = ref("map");
   zoom?: number = 18;
-  beacons: BLEBeaconObject[] = [
-    new BLEAltBeacon().setPosition(new GeographicalPosition(
-     4.3, 50.85
-    ))
-  ];
+  beacons = computed(() => this.beaconStore.beacons);
   location = computed(() => {
     const location: GeographicalPosition = this.geolocationStore.location;
     return location ? [location.latitude, location.longitude] : undefined;

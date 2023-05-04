@@ -1,15 +1,18 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
-import { DataObjectService, Service } from "@openhps/core";
+import { DataObjectService } from "@openhps/core";
 import { RDFSerializer, UrlString } from "@openhps/rdf";
 import axios, { AxiosResponse } from 'axios';
 
 export class SemBeaconService extends DataObjectService<BLESemBeacon> {
     
-    insertObject(object: BLESemBeacon): Promise<BLESemBeacon> {
+    insert(uid: string, object: BLESemBeacon): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
-            this.fetchData(object).then(obj => {
-                return super.insertObject(obj);
-            }).then(resolve).catch(reject);
+            ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object))
+                .then((object: BLESemBeacon) => {
+                    return this.fetchData(object);
+                }).then(obj => {
+                    return super.insert(uid, obj);
+                }).then(resolve).catch(reject);
         });
     }
 
@@ -25,7 +28,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     "Authorization": `Bearer ${accessToken}`
                 }
             }).then(response => {
-                beacon.shortUri = response.data.link as UrlString;
+                beacon.shortResourceURI = response.data.link as UrlString;
                 resolve(beacon);
             }).catch(reject);
         });
@@ -33,7 +36,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
     
     protected fetchData(beacon: BLESemBeacon): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.get(beacon.resourceUri, {
+            axios.get(beacon.shortResourceURI, {
                 headers: {
                     Accept: "text/turtle"
                 },
@@ -43,7 +46,11 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                 if (deserialized instanceof BLESemBeacon) {
                     // SemBeacon
                     console.log(deserialized);
-                    const resourceUri = "";
+                    const resourceUri = result.request.res.responseUrl;
+                    if (resourceUri !== beacon.resourceUri) {
+                        beacon.shortResourceURI = beacon.resourceUri;
+                        beacon.resourceUri = resourceUri;
+                    }
                 }
                 resolve(beacon);
             }).catch(reject);

@@ -9,6 +9,7 @@ import {
     BLEiBeacon,
     BLEEddystoneUID,
     BLEEddystoneURL,
+    RelativeRSSI,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
@@ -22,11 +23,16 @@ export interface SemBeaconNamespace {
     model: Model;
 }
 
+export interface Beacon {
+    rssi: number;
+    lastSeen: number;
+}
+
 export interface BeaconState {
     namespaces: Record<string, SemBeaconNamespace>;
     source: BLESourceNode;
     model: Model | undefined;
-    beacons: Map<string, BLEBeaconObject>;
+    beacons: Map<string, BLEBeaconObject & Beacon>;
 }
   
 export const useBeaconStore = defineStore('beacon', {
@@ -42,18 +48,18 @@ export const useBeaconStore = defineStore('beacon', {
         sourceNode(): BLESourceNode {
             return this.source;
         },
-        findByUUID(): BLESemBeacon {
-            return new BLESemBeacon();
-        },
-        findByNamespace(namespace): BLESemBeacon[] {
-            return this.namespaces[namespace as any].beacons as BLESemBeacon[];
-        },
         isScanning(): boolean {
             return (this.source as BLESourceNode).isRunning();
         }
     },
     actions: {
-        addBeacon(beacon: BLEBeaconObject): Promise<void> {
+        findByUID(uid: string): BLESemBeacon & Beacon {
+            return this.beacons.get(uid);
+        },
+        findByNamespace(namespace: string): BLESemBeacon[] {
+            return this.namespaces[namespace as any].beacons as BLESemBeacon[];
+        },
+        addBeacon(beacon: BLEBeaconObject & Beacon): Promise<void> {
             return new Promise((resolve) => {
                 const service = this.model.findDataService(SemBeaconService);
                 if (beacon instanceof BLESemBeacon) {
@@ -90,8 +96,14 @@ export const useBeaconStore = defineStore('beacon', {
                     .to(new CallbackSinkNode((frame: DataFrame) => {
                         // Add beacons
                         frame.getObjects()
-                            .forEach(beacon => {
+                            .forEach((beacon: BLEBeaconObject & Beacon) => {
                                 if (beacon instanceof BLEBeaconObject) {
+                                    console.log(frame)
+                                    const relativeRSSI: RelativeRSSI = frame.source.getRelativePosition(beacon.uid) as RelativeRSSI;
+                                    beacon.lastSeen = Date.now();
+                                    if (relativeRSSI) {
+                                        beacon.rssi = relativeRSSI.rssi;
+                                    }
                                     this.addBeacon(beacon);
                                 }
                             });

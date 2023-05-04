@@ -1,9 +1,9 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-toolbar>
+      <ion-toolbar color="primary">
         <ion-buttons slot="start">
-          <ion-menu-button color="primary"></ion-menu-button>
+          <ion-menu-button></ion-menu-button>
         </ion-buttons>
         <ion-title>Beacon</ion-title>
       </ion-toolbar>
@@ -32,6 +32,9 @@ import {
   IonItem, 
   IonLabel,
 } from '@ionic/vue';
+import { useRoute } from 'vue-router';
+import { BLEBeaconObject } from '@openhps/rf';
+import { useBeaconStore } from '../stores/beacon';
 
 @Options({
   components: {
@@ -48,7 +51,14 @@ import {
   }
 })
 export default class BeaconPage extends Vue {
+  route = useRoute();
+  beaconStore = useBeaconStore();
+  beacon: BLEBeaconObject;
 
+  mounted(): void {
+    const beaconUID = this.route.params.uid as string;
+    this.beacon = this.beaconStore.findByUID(beaconUID);
+  }
 }
 </script>
 

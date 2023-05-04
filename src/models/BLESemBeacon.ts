@@ -3,6 +3,16 @@ import { SerializableMember, SerializableObject } from "@openhps/core";
 import { IriString, UrlString, xsd } from "@openhps/rdf";
 import { BLEBeaconObject, BLEEddystoneURL, BLEService, BLEUUID, BufferUtils } from "@openhps/rf";
 
+export const SEMBEACON_FLAG_HAS_POSITION		= (0x01 << 0);
+export const SEMBEACON_FLAG_PRIVATE			    = (0x01 << 1);
+export const SEMBEACON_FLAG_MOVING 			    = (0x01 << 2);
+export const SEMBEACON_FLAG_HAS_SYSTEM		    = (0x01 << 3);
+export const SEMBEACON_FLAG_HAS_TELEMETRY	    = (0x01 << 4);
+export const SEMBEACON_FLAG_RESERVED_1		    = (0x01 << 5);
+export const SEMBEACON_FLAG_RESERVED_2		    = (0x01 << 6);
+export const SEMBEACON_FLAG_RESERVED_3		    = (0x01 << 7);
+export const SEMBEACON_FLAG_UNDEFINED		    = (0x00);
+
 @SerializableObject({
     rdf: {
         type: "http://purl.org/sembeacon/SemBeacon"
@@ -39,10 +49,10 @@ export class BLESemBeacon extends BLEBeaconObject {
 
     @SerializableMember({
         rdf: {
-            predicate: "http://purl.org/sembeacon/shortUri"
+            predicate: "http://purl.org/sembeacon/shortResourceURI"
         }
     })
-    shortUri: UrlString;
+    shortResourceURI: UrlString;
 
     isValid(): boolean {
         return this.resourceUri !== undefined && this.instanceId !== undefined && this.namespaceId !== undefined;
@@ -62,7 +72,7 @@ export class BLESemBeacon extends BLEBeaconObject {
         this.namespaceId = BLEUUID.fromBuffer(manufacturerData.subarray(2, 18));
         this.instanceId = BLEUUID.fromBuffer(manufacturerData.subarray(18, 22));
         this.txPower = view.getInt8(22);
-        //this.msb = view.getInt8(23);
+        this.flags = view.getInt8(23);
 
         if (this.uid === undefined) {
             this.uid = BufferUtils.toHexString(
@@ -100,7 +110,7 @@ export class BLESemBeacon extends BLEBeaconObject {
                     ? BLESemBeacon.SUFFIXES[view.getUint8(i)]
                     : String.fromCharCode(view.getUint8(i));
         }
-        this.resourceUri = url as IriString;
+        this.shortResourceURI = url as IriString;
         return this;
     }
 
@@ -111,8 +121,4 @@ export class BLESemBeacon extends BLEBeaconObject {
     protected get service(): BLEService {
         return this.getServiceByUUID(BLEUUID.fromString('AAFE'));
     }
-}
-
-export enum BLESemBeaconFlags {
-    
 }

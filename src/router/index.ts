@@ -17,7 +17,11 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/profile',
     component: () => import ('../views/ProfilePage.vue')
-  }
+  },
+  {
+    path: '/beacon/:uid',
+    component: () => import ('../views/BeaconPage.vue')
+  },
 ];
 
 const router = createRouter({
