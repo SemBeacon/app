@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', {
                         namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
                     }),
                     redirectUrl,
-                    restorePreviousSession: true,
+                    restorePreviousSession: false,
                     handleRedirect: (redirectUrl: string) => {
                         // Use @capacitor/browser
                         Browser.open({
