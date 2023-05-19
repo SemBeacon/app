@@ -27,8 +27,7 @@ import {
     LTooltip,
     // @ts-ignore
 } from "@vue-leaflet/vue-leaflet";
-import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
-import { BLESemBeacon } from '../../models/BLESemBeacon';
+import { BLEBeaconObject } from '@openhps/rf';
 
 @Options({
   components: {
@@ -45,17 +44,7 @@ export default class CustomMarkerComponent extends Vue {
     }
 
     get markerIcon(): string {
-        if (this.beacon instanceof BLESemBeacon) {
-            return "/assets/beacons/sembeacon_marker.svg";
-        } else if (this.beacon instanceof BLEiBeacon) {
-            return "/assets/beacons/ibeacon_marker.svg";
-        } else if (this.beacon instanceof BLEEddystone) {
-            return "/assets/beacons/eddystone_marker.svg";
-        } else if (this.beacon instanceof BLEAltBeacon) {
-            return "/assets/beacons/altbeacon_marker.svg";
-        } else {
-            return "/assets/beacons/bluetooth_marker.svg";
-        }
+        return "";
     }
 }
 </script>
