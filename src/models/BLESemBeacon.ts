@@ -55,7 +55,7 @@ export class BLESemBeacon extends BLEBeaconObject {
     shortResourceURI: UrlString;
 
     isValid(): boolean {
-        return this.resourceUri !== undefined && this.instanceId !== undefined && this.namespaceId !== undefined;
+        return (this.resourceUri !== undefined || this.shortResourceURI !== undefined) && this.instanceId !== undefined && this.namespaceId !== undefined;
     }
 
     parseManufacturerData(_: number, manufacturerData: Uint8Array): this {
@@ -91,12 +91,15 @@ export class BLESemBeacon extends BLEBeaconObject {
             return this;
         }
 
-        if (!BufferUtils.arrayBuffersAreEqual(uuid.toBuffer().buffer, uuid.toBuffer().buffer)) {
+        if (!this.service) {
             return this;
         }
 
         const urlData = new Uint8Array(serviceData.slice(2, serviceData.byteLength));
         const view = new DataView(urlData.buffer, 0);
+        if (view.byteLength === 0) {
+            return this;
+        }
 
         const prefix = view.getUint8(0);
         if (prefix > BLESemBeacon.PREFIXES.length) {
@@ -112,10 +115,6 @@ export class BLESemBeacon extends BLEBeaconObject {
         }
         this.shortResourceURI = url as IriString;
         return this;
-    }
-
-    protected get legacyService(): BLEService {
-        return this.getServiceByUUID(BLEUUID.fromString('AAFE'));
     }
 
     protected get service(): BLEService {

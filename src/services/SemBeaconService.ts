@@ -1,10 +1,16 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
-import { DataObjectService } from "@openhps/core";
+import { DataObjectService, DataServiceDriver, DataServiceOptions } from "@openhps/core";
 import { RDFSerializer, UrlString } from "@openhps/rdf";
 import axios, { AxiosResponse } from 'axios';
 
 export class SemBeaconService extends DataObjectService<BLESemBeacon> {
+    protected options: SemBeaconServiceOptions;
     
+    constructor(driver?: DataServiceDriver<string, BLESemBeacon>, options?: SemBeaconServiceOptions) {
+        super(driver);
+        this.options = options;
+    }
+
     insert(uid: string, object: BLESemBeacon): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
             ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object))
@@ -36,7 +42,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
     
     protected fetchData(beacon: BLESemBeacon): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.get(beacon.shortResourceURI, {
+            axios.get((this.options.cors ? `https://crossorigin.me/` : "") + beacon.shortResourceURI, {
                 headers: {
                     Accept: "text/turtle"
                 },
@@ -57,4 +63,8 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
         });
     }
 
+}
+
+export interface SemBeaconServiceOptions extends DataServiceOptions {
+    cors?: boolean;
 }
