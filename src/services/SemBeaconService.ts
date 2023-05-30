@@ -5,10 +5,11 @@ import axios, { AxiosResponse } from 'axios';
 
 export class SemBeaconService extends DataObjectService<BLESemBeacon> {
     protected options: SemBeaconServiceOptions;
-    
+    protected queue: Set<string> = new Set();
+
     constructor(driver?: DataServiceDriver<string, BLESemBeacon>, options?: SemBeaconServiceOptions) {
         super(driver);
-        this.options = options;
+        this.options = options ?? { cors: true };
     }
 
     insert(uid: string, object: BLESemBeacon): Promise<BLESemBeacon> {
@@ -42,24 +43,30 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
     
     protected fetchData(beacon: BLESemBeacon): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.get((this.options.cors ? `https://crossorigin.me/` : "") + beacon.shortResourceURI, {
-                headers: {
-                    Accept: "text/turtle"
-                },
-                withCredentials: false,
+            if (this.queue.has(beacon.uid)) {
+                return resolve(beacon);
+            }
+            this.queue.add(beacon.uid);
+            
+            // Get final url
+            axios.get("https://proxy.linkeddatafragments.org/" + (beacon.resourceUri ?? beacon.shortResourceURI), {
+                    headers: {
+                        Accept: "text/turtle"
+                    },
+                    withCredentials: false,
             }).then((result: AxiosResponse) => {
-                const deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
+                const resourceUri = result.request.responseURL;
+                const deserialized = RDFSerializer.deserializeFromString(resourceUri, result.data);
                 if (deserialized instanceof BLESemBeacon) {
                     // SemBeacon
-                    console.log(deserialized);
-                    const resourceUri = result.request.res.responseUrl;
                     if (resourceUri !== beacon.resourceUri) {
-                        beacon.shortResourceURI = beacon.resourceUri;
                         beacon.resourceUri = resourceUri;
                     }
                 }
                 resolve(beacon);
-            }).catch(reject);
+            }).catch(reject).finally(() => {
+                this.queue.delete(beacon.uid);
+            });
         });
     }
 
