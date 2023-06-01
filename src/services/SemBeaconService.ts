@@ -1,6 +1,7 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
 import { DataObjectService, DataServiceDriver, DataServiceOptions } from "@openhps/core";
-import { RDFSerializer, UrlString } from "@openhps/rdf";
+import { Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
+import { L } from "@openhps/rdf/dist/types/vocab/unit";
 import axios, { AxiosResponse } from 'axios';
 
 export class SemBeaconService extends DataObjectService<BLESemBeacon> {
@@ -55,15 +56,48 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     },
                     withCredentials: false,
             }).then((result: AxiosResponse) => {
-                const resourceUri = result.request.responseURL;
+                let resourceUri = result.request.responseURL;
+                if (result.headers['x-final-url']) {
+                    resourceUri = result.headers['x-final-url'];
+                }
                 const deserialized = RDFSerializer.deserializeFromString(resourceUri, result.data);
                 if (deserialized instanceof BLESemBeacon) {
                     // SemBeacon
                     if (resourceUri !== beacon.resourceUri) {
                         beacon.resourceUri = resourceUri;
                     }
+                    resolve(beacon);
+                } else {
+                    // Query to find the SemBeacon
+                    const parser = new Parser();
+                    const quads: Quad[] = parser.parse(result.data);
+                    const store = new Store(quads);
+                    const driver = new SPARQLDataDriver(BLESemBeacon, {
+                        sources: [store]
+                    });
+                    const query = `
+                        PREFIX sembeacon: <http://purl.org/sembeacon/>
+                        SELECT ?beacon {
+                            { 
+                                ?beacon sembeacon:namespaceId "${beacon.namespaceId.toString()}"^^xsd:hexBinary 
+                            } 
+                            UNION
+                            { 
+                                ?beacon sembeacon:namespace ?namespace .
+                                ?namespace sembeacon:namespaceId "${beacon.namespaceId.toString()}"^^xsd:hexBinary .
+                            } .
+                            ?beacon sembeacon:instanceId "${beacon.instanceId.toString()}"^^xsd:hexBinary .
+                        }`;
+                    console.log(query);
+                    driver.queryBindings(query).then((bindings) => {
+                            console.log(bindings);
+                            if (bindings.length > 0) {
+                                const beaconURI = bindings[0].get("beacon");
+                                console.log(beaconURI);   
+                            }
+                            resolve(beacon);
+                        }).catch(reject);
                 }
-                resolve(beacon);
             }).catch(reject).finally(() => {
                 this.queue.delete(beacon.uid);
             });

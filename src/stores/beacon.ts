@@ -98,7 +98,6 @@ export const useBeaconStore = defineStore('beacon', {
                         frame.getObjects()
                             .forEach((beacon: BLEBeaconObject & Beacon) => {
                                 if (beacon instanceof BLEBeaconObject) {
-                                    console.log(frame)
                                     const relativeRSSI: RelativeRSSI = frame.source.getRelativePosition(beacon.uid) as RelativeRSSI;
                                     beacon.lastSeen = Date.now();
                                     if (relativeRSSI) {
