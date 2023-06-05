@@ -31,7 +31,7 @@ describe('BLESemBeacon', () => {
         it('should serialize to RDF', () => {
             const object = new BLESemBeacon(undefined);
             object.namespaceId = BLEUUID.fromString("AAFE");
-            object.instanceId = BLEUUID.fromString("AAFE");
+            object.instanceId = "1234";
             object.resourceUri = "http://test.com";
             const serialized = RDFSerializer.serialize(object);
             console.log(serialized)

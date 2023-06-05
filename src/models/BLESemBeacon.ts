@@ -42,7 +42,7 @@ export class BLESemBeacon extends BLEBeaconObject {
             datatype: xsd.hexBinary
         }
     })
-    instanceId: BLEUUID;
+    instanceId: string;
 
     @SerializableMember()
     resourceUri: UrlString;
@@ -70,7 +70,7 @@ export class BLESemBeacon extends BLEBeaconObject {
             return this;
         }
         this.namespaceId = BLEUUID.fromBuffer(manufacturerData.subarray(2, 18));
-        this.instanceId = BLEUUID.fromBuffer(manufacturerData.subarray(18, 22));
+        this.instanceId = BufferUtils.toHexString(manufacturerData.subarray(18, 22));
         this.txPower = view.getInt8(22);
         this.flags = view.getInt8(23);
 
@@ -78,7 +78,7 @@ export class BLESemBeacon extends BLEBeaconObject {
             this.uid = BufferUtils.toHexString(
                 BufferUtils.concatBuffer(
                     this.namespaceId.toBuffer(),
-                    this.instanceId.toBuffer()
+                    BufferUtils.fromHexString(this.instanceId)
                 ),
             );
         }

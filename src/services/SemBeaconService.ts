@@ -1,7 +1,6 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
 import { DataObjectService, DataServiceDriver, DataServiceOptions } from "@openhps/core";
-import { Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
-import { L } from "@openhps/rdf/dist/types/vocab/unit";
+import { IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
 import axios, { AxiosResponse } from 'axios';
 
 export class SemBeaconService extends DataObjectService<BLESemBeacon> {
@@ -60,12 +59,13 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                 if (result.headers['x-final-url']) {
                     resourceUri = result.headers['x-final-url'];
                 }
-                const deserialized = RDFSerializer.deserializeFromString(resourceUri, result.data);
+                let deserialized: BLESemBeacon = RDFSerializer.deserializeFromString(resourceUri, result.data);
                 if (deserialized instanceof BLESemBeacon) {
                     // SemBeacon
                     if (resourceUri !== beacon.resourceUri) {
                         beacon.resourceUri = resourceUri;
                     }
+                    beacon = this._mergeBeacon(beacon, deserialized);
                     resolve(beacon);
                 } else {
                     // Query to find the SemBeacon
@@ -75,26 +75,29 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     const driver = new SPARQLDataDriver(BLESemBeacon, {
                         sources: [store]
                     });
+                    const namespaceIdSantized = beacon.namespaceId.toString().replaceAll("-", "");
+                    const instanceIdSanitzed = beacon.instanceId.toString().replaceAll("-", "");
                     const query = `
                         PREFIX sembeacon: <http://purl.org/sembeacon/>
                         SELECT ?beacon {
                             { 
-                                ?beacon sembeacon:namespaceId "${beacon.namespaceId.toString()}"^^xsd:hexBinary 
+                                ?beacon sembeacon:namespaceId "${namespaceIdSantized}"^^xsd:hexBinary 
                             } 
                             UNION
                             { 
                                 ?beacon sembeacon:namespace ?namespace .
-                                ?namespace sembeacon:namespaceId "${beacon.namespaceId.toString()}"^^xsd:hexBinary .
+                                ?namespace sembeacon:namespaceId "${namespaceIdSantized}"^^xsd:hexBinary .
                             } .
-                            ?beacon sembeacon:instanceId "${beacon.instanceId.toString()}"^^xsd:hexBinary .
+                            ?beacon sembeacon:instanceId "${instanceIdSanitzed}"^^xsd:hexBinary .
                         }`;
-                    console.log(query);
                     driver.queryBindings(query).then((bindings) => {
-                            console.log(bindings);
                             if (bindings.length > 0) {
-                                const beaconURI = bindings[0].get("beacon");
-                                console.log(beaconURI);   
+                                const beaconURI = (bindings[0].get("beacon") as NamedNode).id;
+                                beacon.resourceUri = beaconURI as IriString;
+                                deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
+                                beacon = this._mergeBeacon(beacon, deserialized);
                             }
+                            console.log(beacon)
                             resolve(beacon);
                         }).catch(reject);
                 }
@@ -102,6 +105,17 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                 this.queue.delete(beacon.uid);
             });
         });
+    }
+
+    private _mergeBeacon(beacon: BLESemBeacon, online: BLESemBeacon): BLESemBeacon {
+        online.rawAdvertisement = beacon.rawAdvertisement;
+        beacon.services.forEach(service => {
+            online.addService(service);
+        });
+        online.txPower = beacon.txPower;
+        online.relativePositions = beacon.relativePositions;
+        online.manufacturerData = beacon.manufacturerData;
+        return online;
     }
 
 }
