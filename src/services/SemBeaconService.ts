@@ -1,6 +1,7 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
 import { DataObjectService, DataServiceDriver, DataServiceOptions, TimeService } from "@openhps/core";
 import { IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
+import { BLEUUID } from "@openhps/rf";
 import axios, { AxiosResponse } from 'axios';
 
 export class SemBeaconService extends DataObjectService<BLESemBeacon> {
@@ -14,9 +15,15 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
 
     insert(uid: string, object: BLESemBeacon): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
-            ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object))
-                .then((object: BLESemBeacon) => {
-                    return this.fetchData(object);
+            Promise.all([
+                    ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
+                    this.findByUID(object.uid)
+                ]).then((objects: BLESemBeacon[]) => {
+                    if (objects[1] !== undefined && TimeService.now() - 30000 > objects[1].modifiedTimestamp) {
+                        return this.fetchData(objects[0]);
+                    } else {
+                        return Promise.resolve(this._mergeBeacon(objects[0], objects[1]))
+                    }
                 }).then((fetchedObject: BLESemBeacon) => {
                     if (!fetchedObject.resourceData) {
                         return Promise.resolve(undefined);
@@ -26,9 +33,34 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
         });
     }
 
-    protected fetchAllBeacons(store: Store): Promise<void> {
+    protected fetchAllBeacons(namespaceId: BLEUUID, store: Store): Promise<void> {
         return new Promise((resolve, reject) => {
-            resolve();
+            const driver = new SPARQLDataDriver(BLESemBeacon, {
+                sources: [store]
+            });
+            const namespaceIdSantized = namespaceId.toString().replaceAll("-", "");
+            const query = `
+                PREFIX sembeacon: <http://purl.org/sembeacon/>
+                PREFIX poso: <http://purl.org/poso/>
+
+                SELECT ?beacon {
+                    ?beacon a poso:BluetoothBeacon .
+                    { 
+                        ?beacon sembeacon:namespaceId "${namespaceIdSantized}"^^xsd:hexBinary 
+                    } 
+                    UNION
+                    { 
+                        ?beacon sembeacon:namespace ?namespace .
+                        ?namespace sembeacon:namespaceId "${namespaceIdSantized}"^^xsd:hexBinary .
+                    } .
+                }`;
+            driver.queryBindings(query).then(bindings => {
+                bindings.forEach(binding => {
+                    const beaconURI = (binding.get("beacon") as NamedNode).id;
+                    console.log(beaconURI);
+                });
+                resolve();
+            }).catch(reject);
         });
     }
 
@@ -57,13 +89,12 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
             }
             this.queue.add(beacon.uid);
             
-            // Get final url
             axios.get("https://proxy.linkeddatafragments.org/" + (beacon.resourceUri ?? beacon.shortResourceURI), {
                     headers: {
                         Accept: "text/turtle"
                     },
                     withCredentials: false,
-            }).then((result: AxiosResponse) => {
+            }).then(async (result: AxiosResponse) => {
                 let resourceUri = result.request.responseURL;
                 if (result.headers['x-final-url']) {
                     resourceUri = result.headers['x-final-url'];
@@ -79,7 +110,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     }
                     beacon = this._mergeBeacon(beacon, deserialized);
                     beacon.resourceData = store;
-                    resolve(beacon);
+                    return Promise.resolve({store, beacon});
                 } else {
                     // Query to find the SemBeacon
                     const driver = new SPARQLDataDriver(BLESemBeacon, {
@@ -100,18 +131,19 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                             } .
                             ?beacon sembeacon:instanceId "${instanceIdSanitzed}"^^xsd:hexBinary .
                         }`;
-                    driver.queryBindings(query).then((bindings) => {
-                            if (bindings.length > 0) {
-                                const beaconURI = (bindings[0].get("beacon") as NamedNode).id;
-                                beacon.resourceUri = beaconURI as IriString;
-                                deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
-                                beacon = this._mergeBeacon(beacon, deserialized);
-                                beacon.resourceData = store;
-                            }
-                            resolve(beacon);
-                        }).catch(reject);
+                    const bindings = await driver.queryBindings(query);
+                    if (bindings.length > 0) {
+                        const beaconURI = (bindings[0].get("beacon") as NamedNode).id;
+                        beacon.resourceUri = beaconURI as IriString;
+                        deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
+                        beacon = this._mergeBeacon(beacon, deserialized);
+                        beacon.resourceData = store;
+                    }
+                    return Promise.resolve({store, beacon});
                 }
-            }).catch(reject).finally(() => {
+            }).then((value: { store: Store, beacon: BLESemBeacon }) => {
+                return this.fetchAllBeacons(value.beacon.namespaceId, value.store);
+            }).then(() => resolve(beacon)).catch(reject).finally(() => {
                 this.queue.delete(beacon.uid);
             });
         });

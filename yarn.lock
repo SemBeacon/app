@@ -6551,10 +6551,10 @@
   resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.6.tgz#dc997d1065791cd744a27afa7396414dfe2fdbb0"
   integrity sha512-yo8QaqPwDIVgSCjwIjDKq6R6mpukIqCMAjpSvkIT7ASPNIGeXbgGXp6pyMqFszfAMyLZ9Z2iLyDL0DnL/4ACPg==
 
-"@openhps/core@^0.4.20":
-  version "0.4.20"
-  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.4.20.tgz#42184aeb9dcc20bdb2e17a47314f04cd85323ceb"
-  integrity sha512-hOTuNLf6IoyITffsUZr44T+D2tavZ5GpD314zuKLG/4cRlaDGclimgnloRnsEJtgiMYmfLjOvKeXQj8T1Kj66Q==
+"@openhps/core@^0.4.22":
+  version "0.4.22"
+  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.4.22.tgz#63a12e3dbbbceb4313b1e12b7ed35ee0c492e640"
+  integrity sha512-we1i5c6IF8lNfuMt1WfHSEOAVZBYjLKP0/qP4mClBXH/ti1ihiRk4ZTQQf0MCggXLk9jAlyyYN6kbZi8qaeG5A==
   dependencies:
     lodash.clonedeep "^4.5.0"
     reflect-metadata ">=0.1.13"
@@ -6562,10 +6562,10 @@
     typedjson "^1.8.0"
     uuid "^9.0.0"
 
-"@openhps/geospatial@^0.1.19":
-  version "0.1.19"
-  resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.19.tgz#7766c85abf3971728557d044df253928a28f27ad"
-  integrity sha512-rzWw2Fqc1Logx+7c/58XZjLiN/yvhGvdGXxDHaX3Kpkd9rc8Nhz1Lgcnv7GbxOLIh3icCEaWV4jPknbHUi8tKg==
+"@openhps/geospatial@^0.1.20":
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.20.tgz#d568dfb3df5dc0d794e7bb558e578e3583b2140c"
+  integrity sha512-N2OcKFW0dCAdUdHtyieawbFzMo8kRgEc3oAo6LloHKKzaRu9qEB396NrzfSwz32OJh+nBfyal7tEzCBven3L0w==
   dependencies:
     robust-point-in-polygon "^1.0.3"
     robust-predicates "^3.0.2"
@@ -6579,10 +6579,10 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.3.4.tgz#2948a952743d5ac5fd6e84de7ce11c5b4df590f3"
-  integrity sha512-KfUlV/rFPxHtrlRdKBmOwsvDBHZhikQ5Ulug8bx1g5ombMiTZ3Cs81IcIEo25pBE/aF05D/pZiGvpMXKnUDJOA==
+"@openhps/rdf@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.3.5.tgz#2d4ce5030a95b38ac327857004619cd5100fe7c9"
+  integrity sha512-Mab7qzfeojnFQ3QLF1d9semBxiqXzsixqyQfgU7urqaGSplnWLLrHeEgMhhPOlmDpKuJeItm/9SnSb+fRiUhqw==
   dependencies:
     "@comunica/query-sparql" "^2.7.1"
     "@types/n3" "^1.10.4"

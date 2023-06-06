@@ -63,7 +63,7 @@ export class BLESemBeacon extends BLEBeaconObject {
         index: true,
         numberType: NumberType.LONG,
     })
-    modifiedTimestamp: number;
+    modifiedTimestamp = -1;
 
     isValid(): boolean {
         return (this.resourceUri !== undefined || this.shortResourceURI !== undefined) && this.instanceId !== undefined && this.namespaceId !== undefined;
