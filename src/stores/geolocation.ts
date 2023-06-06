@@ -6,7 +6,9 @@ export const useGeolocationStore = defineStore('geolocation', {
     state: () => ({
         position: undefined,
         model: undefined,
-        source: new GeolocationSourceNode()
+        source: new GeolocationSourceNode({
+            interval: 5000
+        })
     }),
     getters: {
         sourceNode(): GeolocationSourceNode {

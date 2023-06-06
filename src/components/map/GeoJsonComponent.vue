@@ -1,5 +1,5 @@
 <template>
-    <l-geo-json :geojson="geojson">
+    <l-geo-json :geojson="geojson" :v-if="geojson">
         
     </l-geo-json>
 </template>
@@ -18,7 +18,11 @@ import {
   }
 })
 export default class GeoJsonComponent extends Vue {
-    @Prop() geosjon: any;
+    @Prop() geojson: any;
+
+    mounted() {
+      console.log("geojson", this.geojson);
+    }
 }
 </script>
 

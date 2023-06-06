@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { SerializableMember, SerializableObject } from "@openhps/core";
-import { IriString, UrlString, xsd } from "@openhps/rdf";
+import { NumberType, SerializableMember, SerializableObject } from "@openhps/core";
+import { IriString, Store, UrlString, xsd } from "@openhps/rdf";
 import { BLEBeaconObject, BLEEddystoneURL, BLEService, BLEUUID, BufferUtils } from "@openhps/rf";
 
 export const SEMBEACON_FLAG_HAS_POSITION		= (0x01 << 0);
@@ -53,6 +53,17 @@ export class BLESemBeacon extends BLEBeaconObject {
         }
     })
     shortResourceURI: UrlString;
+
+    resourceData: Store;
+
+    /**
+     * Modified timestamp
+     */
+    @SerializableMember({
+        index: true,
+        numberType: NumberType.LONG,
+    })
+    modifiedTimestamp: number;
 
     isValid(): boolean {
         return (this.resourceUri !== undefined || this.shortResourceURI !== undefined) && this.instanceId !== undefined && this.namespaceId !== undefined;

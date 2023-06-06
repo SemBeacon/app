@@ -28,6 +28,13 @@
       :key="beacon.uid"
     >
     </beacon-marker-component>
+
+    <geo-json-component
+      v-for="environment in environments.values()"
+      :geojson="environment.toGeoJSON()"
+      :key="environment.uid"
+    >
+    </geo-json-component>
   </l-map>
 </template>
 
@@ -40,21 +47,25 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import { GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
+import GeoJsonComponent from './map/GeoJsonComponent.vue';
 import { ref, computed } from 'vue';
 import { useGeolocationStore } from '../stores/geolocation';
 import { useBeaconStore } from '../stores/beacon';
+import { useEnvironmentStore } from '../stores/environment';
 
 @Options({
   components: {
     LMap,
     LMarker,
     LTileLayer,
-    BeaconMarkerComponent
+    BeaconMarkerComponent,
+    GeoJsonComponent
   }
 })
 export default class MapComponent extends Vue {
   geolocationStore = useGeolocationStore();
   beaconStore = useBeaconStore();
+  environmentStore = useEnvironmentStore();
 
   id = "mapbox/streets-v11";
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
@@ -65,6 +76,7 @@ export default class MapComponent extends Vue {
     const location: GeographicalPosition = this.geolocationStore.location;
     return location ? [location.latitude, location.longitude] : undefined;
   });
+  environments = computed(() => this.environmentStore.environments);
 
   mounted() {
     this.geolocationStore.initialize().then(() => {

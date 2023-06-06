@@ -1,5 +1,5 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
-import { DataObjectService, DataServiceDriver, DataServiceOptions } from "@openhps/core";
+import { DataObjectService, DataServiceDriver, DataServiceOptions, TimeService } from "@openhps/core";
 import { IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
 import axios, { AxiosResponse } from 'axios';
 
@@ -17,9 +17,18 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
             ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object))
                 .then((object: BLESemBeacon) => {
                     return this.fetchData(object);
-                }).then(obj => {
-                    return super.insert(uid, obj);
+                }).then((fetchedObject: BLESemBeacon) => {
+                    if (!fetchedObject.resourceData) {
+                        return Promise.resolve(undefined);
+                    }
+                    return super.insert(uid, fetchedObject);
                 }).then(resolve).catch(reject);
+        });
+    }
+
+    protected fetchAllBeacons(store: Store): Promise<void> {
+        return new Promise((resolve, reject) => {
+            resolve();
         });
     }
 
@@ -41,7 +50,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
         });
     }
     
-    protected fetchData(beacon: BLESemBeacon): Promise<any> {
+    protected fetchData(beacon: BLESemBeacon): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
             if (this.queue.has(beacon.uid)) {
                 return resolve(beacon);
@@ -60,18 +69,19 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     resourceUri = result.headers['x-final-url'];
                 }
                 let deserialized: BLESemBeacon = RDFSerializer.deserializeFromString(resourceUri, result.data);
+                const parser = new Parser();
+                const quads: Quad[] = parser.parse(result.data);
+                const store = new Store(quads);
                 if (deserialized instanceof BLESemBeacon) {
                     // SemBeacon
                     if (resourceUri !== beacon.resourceUri) {
                         beacon.resourceUri = resourceUri;
                     }
                     beacon = this._mergeBeacon(beacon, deserialized);
+                    beacon.resourceData = store;
                     resolve(beacon);
                 } else {
                     // Query to find the SemBeacon
-                    const parser = new Parser();
-                    const quads: Quad[] = parser.parse(result.data);
-                    const store = new Store(quads);
                     const driver = new SPARQLDataDriver(BLESemBeacon, {
                         sources: [store]
                     });
@@ -96,8 +106,8 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                                 beacon.resourceUri = beaconURI as IriString;
                                 deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
                                 beacon = this._mergeBeacon(beacon, deserialized);
+                                beacon.resourceData = store;
                             }
-                            console.log(beacon)
                             resolve(beacon);
                         }).catch(reject);
                 }
@@ -115,6 +125,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
         online.txPower = beacon.txPower;
         online.relativePositions = beacon.relativePositions;
         online.manufacturerData = beacon.manufacturerData;
+        online.modifiedTimestamp = TimeService.now();
         return online;
     }
 

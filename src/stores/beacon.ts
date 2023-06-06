@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackNode, CallbackSinkNode, DataFrame, Model, ModelBuilder } from '@openhps/core';
+import { CallbackSinkNode, DataFrame, Model, ModelBuilder } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLESemBeacon } from '@/models/BLESemBeacon';
 import { 
@@ -13,6 +13,7 @@ import {
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
+import { useEnvironmentStore } from './environment';
 
 export interface BeaconScan {
     results: number;
@@ -34,7 +35,7 @@ export interface BeaconState {
     model: Model | undefined;
     beacons: Map<string, BLEBeaconObject & Beacon>;
 }
-  
+
 export const useBeaconStore = defineStore('beacon', {
     state: (): BeaconState => ({
         namespaces: {},
@@ -60,7 +61,8 @@ export const useBeaconStore = defineStore('beacon', {
             return this.namespaces[namespace as any].beacons as BLESemBeacon[];
         },
         addBeacon(beacon: BLEBeaconObject & Beacon): Promise<void> {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
+                const environmentStore = useEnvironmentStore();
                 const service = this.model.findDataService(SemBeaconService);
                 if (beacon instanceof BLESemBeacon) {
                     // Add SemBeacon namespace structure
@@ -69,12 +71,18 @@ export const useBeaconStore = defineStore('beacon', {
                         model: undefined
                     };
                     this.namespaces[beacon.namespaceId.toString()] = namespace;
-                    namespace.beacons[beacon.instanceId.toString()] = beacon;
-                    service.insertObject(beacon);
+                    service.insert(beacon.uid, beacon).then((beacon: BLESemBeacon) => {
+                        if (beacon && beacon.resourceData) {
+                            namespace.beacons[beacon.instanceId.toString()] = beacon;
+                            this.beacons.set(beacon.uid, beacon);
+                            environmentStore.fetchEnvironments(beacon.resourceData);
+                        }
+                        resolve();
+                    }).catch(reject);
+                } else {
+                    this.beacons.set(beacon.uid, beacon);
+                    resolve();
                 }
-                // Add beacon to output
-                this.beacons.set(beacon.uid, beacon);
-                resolve();
             });
         },
         initialize(): Promise<void> {
