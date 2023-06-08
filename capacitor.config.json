@@ -1,7 +1,0 @@
-{
-    "server": {
-        "iosScheme": "ionic",
-        "androidScheme": "http",
-        "hostname": "org.sembeacon"
-    }
-}

@@ -7,7 +7,7 @@ export const useGeolocationStore = defineStore('geolocation', {
         position: undefined,
         model: undefined,
         source: new GeolocationSourceNode({
-            interval: 5000
+            interval: 5000,
         })
     }),
     getters: {
@@ -24,6 +24,7 @@ export const useGeolocationStore = defineStore('geolocation', {
                 ModelBuilder.create()
                     .from(this.source)
                     .to(new CallbackSinkNode((frame: DataFrame) => {
+                        console.log("Updating geolocation position");
                         this.position = frame.source.position;
                     }))
                     .build().then((model: Model) => {
