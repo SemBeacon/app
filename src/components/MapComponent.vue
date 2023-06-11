@@ -23,7 +23,7 @@
     </l-marker>
 
     <beacon-marker-component
-      v-for="beacon in beacons.values()"
+      v-for="beacon in beacons"
       :beacon="beacon"
       :key="beacon.uid"
     >
@@ -74,7 +74,7 @@ export default class MapComponent extends Vue {
   beacons = computed(() => this.beaconStore.beacons);
   location = computed(() => {
     const location: GeographicalPosition = this.geolocationStore.location;
-    return location ? [location.latitude, location.longitude] : undefined;
+    return location && location.latitude ? [location.latitude, location.longitude] : undefined;
   });
   environments = computed(() => this.environmentStore.environments);
 

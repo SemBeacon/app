@@ -46,7 +46,11 @@ export default class BeaconMarkerComponent extends Vue {
             return undefined;
         }
         const array = this.beacon.position.toVector3().toArray();
-        return [array[1], array[0]];
+        if (array && array[1]) {
+            return [array[1], array[0]];
+        } else {
+            return undefined;
+        }
     }
 
     get markerIcon(): string {

@@ -1,25 +1,43 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
 import { DataObjectService, DataServiceDriver, DataServiceOptions, TimeService } from "@openhps/core";
-import { IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
-import { BLEUUID } from "@openhps/rf";
+import { DataFactory, IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
+import { BLEBeaconObject } from "@openhps/rf";
 import axios, { AxiosResponse } from 'axios';
 
-export class SemBeaconService extends DataObjectService<BLESemBeacon> {
+export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     protected options: SemBeaconServiceOptions;
     protected queue: Set<string> = new Set();
 
-    constructor(driver?: DataServiceDriver<string, BLESemBeacon>, options?: SemBeaconServiceOptions) {
+    constructor(driver?: DataServiceDriver<string, BLEBeaconObject>, options?: SemBeaconServiceOptions) {
         super(driver);
         this.options = options ?? { cors: true };
     }
 
-    insert(uid: string, object: BLESemBeacon): Promise<BLESemBeacon> {
+    protected _findByUID(uid: string): Promise<BLESemBeacon> {
+        return new Promise((resolve) => {
+            this.findByUID(uid)
+                .then(beacon => resolve(beacon as BLESemBeacon))
+                .catch(() => {
+                    resolve(undefined);
+                });
+        });
+    }
+
+    protected insertRapid(uid: string, object: BLEBeaconObject): Promise<BLEBeaconObject> {
+        return super.insert(uid, object);
+    }
+
+    insert(uid: string, object: BLEBeaconObject): Promise<BLEBeaconObject> {
         return new Promise((resolve, reject) => {
-            Promise.all([
+            if (object instanceof BLESemBeacon) {
+                Promise.all([
                     ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
-                    this.findByUID(object.uid)
+                    this._findByUID(object.uid)
                 ]).then((objects: BLESemBeacon[]) => {
-                    if (objects[1] !== undefined && TimeService.now() - 30000 > objects[1].modifiedTimestamp) {
+                    if ((objects[1] === undefined || TimeService.now() - 30000 > objects[1].modifiedTimestamp) && 
+                        (objects[0].resourceUri !== undefined || objects[0].shortResourceURI !== undefined) &&
+                        !this.queue.has(objects[0].uid)
+                    ) {
                         return this.fetchData(objects[0]);
                     } else {
                         return Promise.resolve(this._mergeBeacon(objects[0], objects[1]))
@@ -29,16 +47,25 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                         return Promise.resolve(undefined);
                     }
                     return super.insert(uid, fetchedObject);
-                }).then(resolve).catch(reject);
+                }).then(resolve).catch(err => {
+                    console.error(err);
+                    reject(err);
+                });
+            } else {
+                return super.insert(uid, object);
+            }
         });
     }
 
-    protected fetchAllBeacons(namespaceId: BLEUUID, store: Store): Promise<void> {
+    protected fetchAllBeacons(beacon: BLESemBeacon, store: Store): Promise<void> {
         return new Promise((resolve, reject) => {
+            if (beacon.namespaceId === undefined || store === undefined) {
+                return resolve();
+            }
             const driver = new SPARQLDataDriver(BLESemBeacon, {
                 sources: [store]
             });
-            const namespaceIdSantized = namespaceId.toString().replaceAll("-", "");
+            const namespaceIdSantized = beacon.namespaceId.toString().replaceAll("-", "");
             const query = `
                 PREFIX sembeacon: <http://purl.org/sembeacon/>
                 PREFIX poso: <http://purl.org/poso/>
@@ -55,11 +82,21 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     } .
                 }`;
             driver.queryBindings(query).then(bindings => {
+                const insertPromises: Promise<any>[] = [];
                 bindings.forEach(binding => {
                     const beaconURI = (binding.get("beacon") as NamedNode).id;
-                    console.log(beaconURI);
+                    const deserializedBeacon: BLEBeaconObject = RDFSerializer.deserializeFromStore(DataFactory.namedNode(beaconURI), store);
+                    if (deserializedBeacon instanceof BLESemBeacon) {
+                        deserializedBeacon.namespaceId = beacon.namespaceId;
+                        if (deserializedBeacon.instanceId === beacon.instanceId) {
+                            return;
+                        }
+                    }
+                    insertPromises.push(this.insertRapid(deserializedBeacon.uid, deserializedBeacon));  
                 });
-                resolve();
+                return Promise.all(insertPromises);
+            }).then(() => {
+                resolve()
             }).catch(reject);
         });
     }
@@ -142,7 +179,7 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
                     return Promise.resolve({store, beacon});
                 }
             }).then((value: { store: Store, beacon: BLESemBeacon }) => {
-                return this.fetchAllBeacons(value.beacon.namespaceId, value.store);
+                return this.fetchAllBeacons(beacon, value.store);
             }).then(() => resolve(beacon)).catch(reject).finally(() => {
                 this.queue.delete(beacon.uid);
             });
@@ -150,6 +187,9 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
     }
 
     private _mergeBeacon(beacon: BLESemBeacon, online: BLESemBeacon): BLESemBeacon {
+        if (online === undefined) {
+            return beacon;
+        }
         online.rawAdvertisement = beacon.rawAdvertisement;
         beacon.services.forEach(service => {
             online.addService(service);
@@ -158,6 +198,8 @@ export class SemBeaconService extends DataObjectService<BLESemBeacon> {
         online.relativePositions = beacon.relativePositions;
         online.manufacturerData = beacon.manufacturerData;
         online.modifiedTimestamp = TimeService.now();
+        online.namespaceId = beacon.namespaceId;
+        online.instanceId = beacon.instanceId;
         return online;
     }
 

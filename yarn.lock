@@ -1134,6 +1134,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-5.0.4.tgz#48b89f8a5822d6c16a966e4ebaa2b42656649662"
   integrity sha512-6gvkUTotpzHlfn5KoIglbIqdaEWV/crLtCYXebtFtRAPofCU8EWcljGeeISKBYPE99xqsk3M66vRUY4OzsAYyA==
 
+"@capacitor/toast@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@capacitor/toast/-/toast-5.0.4.tgz#92b0c7ba7937e6637c456dd85bba2affa1d915fe"
+  integrity sha512-qyhh5p13a59VuRXgCQMXv/AKHGgwG32orWqXeFiUNqzJXZIyqMu3MmK+ok2yQGrlXLbu5s3n0xMM2bCVkPpx+Q==
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
@@ -6562,10 +6567,10 @@
     typedjson "^1.8.0"
     uuid "^9.0.0"
 
-"@openhps/geospatial@^0.1.21":
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.21.tgz#62898e4582eec9cde6f62bd361dca91aec0c1893"
-  integrity sha512-6FRPfCMdPDKNKb/CJ/JJ+tWFMPb41VFvOVCUt8BflP4HAluFooCAQcsrwjBctQZQmeGny0zRPf5AYiF+g+KwTw==
+"@openhps/geospatial@^0.1.22":
+  version "0.1.22"
+  resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.22.tgz#218d83f04d760cdcd6d514843f22b6e93f124894"
+  integrity sha512-qUU2veK+/Ftmay0Vx1EMQ0DRAC4OFMaBBWDAlgvIpY8aa0idjuXuDmH6pB7xwn7hWuKxf1kZ6RbXJizC7JIVvA==
   dependencies:
     robust-point-in-polygon "^1.0.3"
     robust-predicates "^3.0.2"
@@ -9302,7 +9307,12 @@ core-js@^2.6.5:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
-core-js@^3.30.2, core-js@^3.4.1, core-js@^3.8.3:
+core-js@^3.31.0:
+  version "3.31.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.31.0.tgz#4471dd33e366c79d8c0977ed2d940821719db344"
+  integrity sha512-NIp2TQSGfR6ba5aalZD+ZQ1fSxGhDo/s1w0nx3RYzf2pnJxt7YynxFlFScP6eV7+GZsKO95NSjGxyJsU3DZgeQ==
+
+core-js@^3.4.1, core-js@^3.8.3:
   version "3.30.2"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.30.2.tgz#6528abfda65e5ad728143ea23f7a14f0dcf503fc"
   integrity sha512-uBJiDmwqsbJCWHAwjrx3cvjbMXP7xD72Dmsn5LOJpiRmE3WbBbN5rCqQ2Qh6Ek6/eOrjlWngEynBWo4VxerQhg==

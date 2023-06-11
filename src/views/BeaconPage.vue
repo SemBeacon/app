@@ -11,7 +11,7 @@
 
     <ion-content :fullscreen="true">
       <div id="container">
-
+        
       </div>
     </ion-content>
   </ion-page>
@@ -57,7 +57,9 @@ export default class BeaconPage extends Vue {
 
   mounted(): void {
     const beaconUID = this.route.params.uid as string;
-    this.beacon = this.beaconStore.findByUID(beaconUID);
+    this.beaconStore.findByUID(beaconUID).then(beacon => {
+      this.beacon = beacon;
+    });
   }
 }
 </script>

@@ -11,9 +11,10 @@
         <ion-buttons slot="end">
           
         </ion-buttons>
+        <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
       </ion-toolbar>
 
-      <ion-toolbar color="primary">
+      <!-- <ion-toolbar color="primary">
         <ion-segment value="scanning">
           <ion-segment-button value="scanning">
             <ion-label>Scanning</ion-label>
@@ -24,14 +25,14 @@
         </ion-segment>
 
         <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
-      </ion-toolbar>
+      </ion-toolbar> -->
     </ion-header>
 
     <ion-content :fullscreen="true">
       <div id="container">
-        <ion-list v-if="beacons.size > 0">
+        <ion-list v-if="beacons.length > 0">
           <beacon-item-component 
-            v-for="beacon in beacons.values()" 
+            v-for="beacon in beacons" 
             :key="beacon.uid"
             :beacon="beacon"
           >
@@ -52,6 +53,7 @@
 
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
+import { computed } from 'vue';
 import { 
   IonButtons, 
   IonContent, 
@@ -73,7 +75,6 @@ import {
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { useBeaconStore } from '../stores/beacon';
-import { computed } from 'vue';
 import { pause, search } from 'ionicons/icons';
 
 @Options({
@@ -104,8 +105,8 @@ import { pause, search } from 'ionicons/icons';
 })
 export default class ScanPage extends Vue {
   beaconStore = useBeaconStore();
-  beacons = computed(() => this.beaconStore.beacons);
   loading = false;
+  beacons = computed(() => this.beaconStore.beacons.filter(beacon => beacon.lastSeen !== undefined));
 
   toggleScan(): void {
     if (!this.loading) {
