@@ -98,9 +98,9 @@ export const useBeaconStore = defineStore('beacon', {
                             Toast.show({
                                 text: `Detected nearby SemBeacon!`,
                             })
-                        } else if (insertedBeacon) {
+                        } else if (beacon) {
                             // Detected SemBeacon but no instance id
-                            console.warn(`Detected nearby SemBeacon but could not fetch additional information!`, insertedBeacon);
+                            console.warn(`Detected nearby SemBeacon but could not fetch additional information!`, beacon);
                         }
                     });
                     resolve();
