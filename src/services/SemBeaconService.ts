@@ -7,16 +7,16 @@ import axios, { AxiosResponse } from 'axios';
 export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     protected options: SemBeaconServiceOptions;
     protected queue: Set<string> = new Set();
-
+    
     constructor(driver?: DataServiceDriver<string, BLEBeaconObject>, options?: SemBeaconServiceOptions) {
         super(driver);
         this.options = options ?? { cors: true };
     }
 
-    protected _findByUID(uid: string): Promise<BLESemBeacon> {
+    protected _findByUID(uid: string): Promise<BLEBeaconObject> {
         return new Promise((resolve) => {
             this.findByUID(uid)
-                .then(beacon => resolve(beacon as BLESemBeacon))
+                .then(beacon => resolve(beacon as BLEBeaconObject))
                 .catch(() => {
                     resolve(undefined);
                 });
@@ -24,6 +24,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     }
 
     protected insertRapid(uid: string, object: BLEBeaconObject): Promise<BLEBeaconObject> {
+        this.emitAsync('beacon', object);
         return super.insert(uid, object);
     }
 
@@ -32,7 +33,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
             if (object instanceof BLESemBeacon) {
                 Promise.all([
                     ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
-                    this._findByUID(object.uid)
+                    this._findByUID(object.uid) as Promise<BLESemBeacon>
                 ]).then((objects: BLESemBeacon[]) => {
                     if ((objects[1] === undefined || TimeService.now() - 30000 > objects[1].modifiedTimestamp) && 
                         (objects[0].resourceUri !== undefined || objects[0].shortResourceURI !== undefined) &&
@@ -44,15 +45,18 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     }
                 }).then((fetchedObject: BLESemBeacon) => {
                     if (!fetchedObject.resourceData) {
+                        this.emitAsync('beacon', fetchedObject);
                         return Promise.resolve(undefined);
                     }
+                    this.emitAsync('beacon', fetchedObject);
                     return super.insert(uid, fetchedObject);
-                }).then(resolve).catch(err => {
-                    console.error(err);
-                    reject(err);
-                });
+                }).then(resolve).catch(reject);
             } else {
-                return super.insert(uid, object);
+                this._findByUID(object.uid).then(beacon => {
+                    return super.insert(uid, this._mergeBeacon(object, beacon));
+                }).then(beacon => {
+                    this.emitAsync('beacon', beacon);
+                }).catch(reject);
             }
         });
     }
@@ -85,14 +89,17 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                 const insertPromises: Promise<any>[] = [];
                 bindings.forEach(binding => {
                     const beaconURI = (binding.get("beacon") as NamedNode).id;
-                    const deserializedBeacon: BLEBeaconObject = RDFSerializer.deserializeFromStore(DataFactory.namedNode(beaconURI), store);
-                    if (deserializedBeacon instanceof BLESemBeacon) {
-                        deserializedBeacon.namespaceId = beacon.namespaceId;
-                        if (deserializedBeacon.instanceId === beacon.instanceId) {
-                            return;
+                    const deserializedBeacon: BLEBeaconObject = RDFSerializer.deserializeFromStore(DataFactory.namedNode(beaconURI), store);            
+                    if (deserializedBeacon instanceof BLEBeaconObject) {
+                        if (deserializedBeacon instanceof BLESemBeacon) {
+                            deserializedBeacon.namespaceId = beacon.namespaceId;
+                            if (deserializedBeacon.instanceId === beacon.instanceId) {
+                                return;
+                            }
                         }
+                        deserializedBeacon.uid = deserializedBeacon.computeUID();
+                        insertPromises.push(this.insertRapid(deserializedBeacon.uid, deserializedBeacon));  
                     }
-                    insertPromises.push(this.insertRapid(deserializedBeacon.uid, deserializedBeacon));  
                 });
                 return Promise.all(insertPromises);
             }).then(() => {
@@ -125,7 +132,6 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                 return resolve(beacon);
             }
             this.queue.add(beacon.uid);
-            
             axios.get("https://proxy.linkeddatafragments.org/" + (beacon.resourceUri ?? beacon.shortResourceURI), {
                     headers: {
                         Accept: "text/turtle"
@@ -145,7 +151,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     if (resourceUri !== beacon.resourceUri) {
                         beacon.resourceUri = resourceUri;
                     }
-                    beacon = this._mergeBeacon(beacon, deserialized);
+                    beacon = this._mergeBeacon(beacon, deserialized) as BLESemBeacon;
                     beacon.resourceData = store;
                     return Promise.resolve({store, beacon});
                 } else {
@@ -173,7 +179,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                         const beaconURI = (bindings[0].get("beacon") as NamedNode).id;
                         beacon.resourceUri = beaconURI as IriString;
                         deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
-                        beacon = this._mergeBeacon(beacon, deserialized);
+                        beacon = this._mergeBeacon(beacon, deserialized) as BLESemBeacon;
                         beacon.resourceData = store;
                     }
                     return Promise.resolve({store, beacon});
@@ -186,7 +192,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         });
     }
 
-    private _mergeBeacon(beacon: BLESemBeacon, online: BLESemBeacon): BLESemBeacon {
+    private _mergeBeacon(beacon: BLEBeaconObject, online: BLEBeaconObject): BLEBeaconObject {
         if (online === undefined) {
             return beacon;
         }
@@ -197,9 +203,12 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         online.txPower = beacon.txPower;
         online.relativePositions = beacon.relativePositions;
         online.manufacturerData = beacon.manufacturerData;
-        online.modifiedTimestamp = TimeService.now();
-        online.namespaceId = beacon.namespaceId;
-        online.instanceId = beacon.instanceId;
+        if (online instanceof BLESemBeacon && beacon instanceof BLESemBeacon) {
+            online.modifiedTimestamp = TimeService.now();
+            online.namespaceId = beacon.namespaceId;
+            online.instanceId = beacon.instanceId;
+        }
+        online.uid = online.computeUID();
         return online;
     }
 

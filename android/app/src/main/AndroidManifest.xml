@@ -20,12 +20,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     android:host="secured.community"
                     android:scheme="https"/>
             </intent-filter>
-
         </activity>
 
         <provider
@@ -45,4 +46,8 @@
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Logging -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

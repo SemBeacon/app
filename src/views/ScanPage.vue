@@ -106,7 +106,7 @@ import { pause, search } from 'ionicons/icons';
 export default class ScanPage extends Vue {
   beaconStore = useBeaconStore();
   loading = false;
-  beacons = computed(() => this.beaconStore.beacons.filter(beacon => beacon.lastSeen !== undefined));
+  beacons = computed(() => Array.from(this.beaconStore.beacons.values()).filter(beacon => beacon.lastSeen !== undefined));
 
   toggleScan(): void {
     if (!this.loading) {

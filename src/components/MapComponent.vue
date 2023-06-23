@@ -5,13 +5,12 @@
     :zoom="zoom" 
     :center="location ? location : [0, 0]"
     :options="{ attributionControl: false }"
-    :maxZoom="20"
   >
     <l-tile-layer
         :url="`https://api.mapbox.com/styles/v1/${id}/tiles/{z}/{x}/{y}?access_token=${accessToken}`"
         :accessToken="accessToken"
         layer-type="base"
-        :options="{ maxNativeZoom: 18 }"
+        :options="{ maxNativeZoom: 18, maxZoom: 20, minZoom: 4 }"
     >
     </l-tile-layer>
     
@@ -23,15 +22,15 @@
     </l-marker>
 
     <beacon-marker-component
-      v-for="beacon in beacons"
-      :beacon="beacon"
+      v-for="beacon in beacons.values()"
+      v-bind:beacon="beacon"
       :key="beacon.uid"
     >
     </beacon-marker-component>
 
     <geo-json-component
       v-for="environment in environments.values()"
-      :geojson="environment.toGeoJSON()"
+      v-bind:space="environment"
       :key="environment.uid"
     >
     </geo-json-component>

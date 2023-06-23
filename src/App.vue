@@ -32,6 +32,8 @@
 </template>
 
 <script lang="ts">
+import '@openhps/rf';
+import '@openhps/geospatial';
 import 'reflect-metadata';
 import { Vue, Options } from 'vue-property-decorator';
 import {
@@ -52,12 +54,15 @@ import { ref } from 'vue';
 import {
   map,
   bluetooth,
-  logIn
 } from 'ionicons/icons';
+
 import { useBeaconStore } from './stores/beacon';
 import { useUserStore } from './stores/user';
-import { Animation, StatusBar, Style } from '@capacitor/status-bar';
+import { useLogger } from './stores/logger';
+
+import { Animation, StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
+import { RDFSerializer } from '@openhps/rdf';
 
 @Options({
   components: {
@@ -78,6 +83,7 @@ import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 export default class App extends Vue {
   beaconStore = useBeaconStore();
   userStore = useUserStore();
+  logger = useLogger();
 
   selectedIndex = ref(0);
   appPages = [
@@ -112,6 +118,10 @@ export default class App extends Vue {
 
   mounted(): Promise<void> {
     return new Promise((resolve) => {
+      RDFSerializer.initialize("rf");
+      RDFSerializer.initialize("geospatial");
+      this.logger.initialize();
+
       CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
         this.zone.run(() => {
           const domain = 'sembeacon.org/app';

@@ -3,18 +3,25 @@
         :key="beacon.uid"
         :lat-lng="latLng"
         :v-if="latLng !== undefined"
+        ref="marker"
     >
         <l-icon
             :icon-size="[40 * 0.88, 40]"
             :icon-anchor="[13, 39]"
-            :icon-url="markerIcon" >
+            :icon-url="markerIcon" 
+        >
         </l-icon>
         <l-tooltip
             :options="{
                 offset: [0, -10]   
             }"
         >
-            Hello!
+            <span class="key">{{ beacon.displayName }}</span><br>
+            <div v-if="beacon.lastSeen" :key="lastSeen()">
+                <span class="key">Last seen: </span><span class="value">{{ lastSeen() }}</span><br>
+                <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }}</span><br>
+                <span class="key">Distance: </span><span class="value">{{ beacon.distance }} m</span>
+            </div>
         </l-tooltip>
     </l-marker>
 </template>
@@ -30,6 +37,10 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
+import { isProxy, toRaw } from 'vue';
+import { Beacon, useBeaconStore } from '../../stores/beacon';
+import moment from 'moment';
+import { ref } from 'vue';
 
 @Options({
   components: {
@@ -39,7 +50,9 @@ import { BLESemBeacon } from '../../models/BLESemBeacon';
   }
 })
 export default class BeaconMarkerComponent extends Vue {
-    @Prop() beacon: BLEBeaconObject;
+    @Prop() beacon: BLEBeaconObject & Beacon;
+    marker: any = ref("marker");
+    beaconStore = useBeaconStore();
 
     get latLng(): number[] {
         if (!this.beacon.position) {
@@ -53,14 +66,50 @@ export default class BeaconMarkerComponent extends Vue {
         }
     }
 
+    mounted() {
+        this.marker.leafletObject.setOpacity(this.opacity());
+        setInterval(async () => {
+            console.log("Force updating", this.beacon.displayName, this.beacon.lastSeen, this.opacity());
+            this.marker.leafletObject.setOpacity(this.opacity());
+            this.$forceUpdate();
+        }, 2000);
+    }
+
+    opacity(): number {
+        if (this.beacon.lastSeen === undefined) {
+            return 0.5;
+        } else if (Date.now() - this.beacon.lastSeen > 30000) {
+            return 0.5;
+        } else if (Date.now() - this.beacon.lastSeen > 15000) {
+            return 0.75;
+        } else if (Date.now() - this.beacon.lastSeen > 5000) {
+            return 0.85;
+        } else {
+            console.log(this.beacon.displayName, Date.now() - this.beacon.lastSeen)
+            return 1;
+        }
+    }
+
+    lastSeen(): string {
+        if (this.beacon.lastSeen === undefined) {
+            return "";
+        }
+        return moment(this.beacon.lastSeen).fromNow();
+    }
+
     get markerIcon(): string {
-        if (this.beacon instanceof BLESemBeacon) {
+        let rawBeacon = this.beacon;
+        if (isProxy(rawBeacon)) {
+            rawBeacon = toRaw(rawBeacon);
+        }
+        
+        if (rawBeacon instanceof BLESemBeacon) {
             return "/assets/beacons/sembeacon_marker.svg";
-        } else if (this.beacon instanceof BLEiBeacon) {
+        } else if (rawBeacon instanceof BLEiBeacon) {
             return "/assets/beacons/ibeacon_marker.svg";
-        } else if (this.beacon instanceof BLEEddystone) {
+        } else if (rawBeacon instanceof BLEEddystone) {
             return "/assets/beacons/eddystone_marker.svg";
-        } else if (this.beacon instanceof BLEAltBeacon) {
+        } else if (rawBeacon instanceof BLEAltBeacon) {
             return "/assets/beacons/altbeacon_marker.svg";
         } else {
             return "/assets/beacons/bluetooth_marker.svg";
@@ -69,3 +118,8 @@ export default class BeaconMarkerComponent extends Vue {
 }
 </script>
 
+<style scoped>
+span.key {
+    font-weight: bold;
+}
+</style>

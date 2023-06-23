@@ -1,6 +1,9 @@
 <template>
-    <l-geo-json :geojson="geojson" :v-if="geojson">
-        
+    <l-geo-json 
+      :geojson="space.toGeoJSON(true)" 
+      :v-if="space"
+      :options="options"
+    >
     </l-geo-json>
 </template>
 
@@ -11,6 +14,9 @@ import {
     LGeoJson
     // @ts-ignore
 } from "@vue-leaflet/vue-leaflet";
+import { Building, Corridor, Floor, Room, SymbolicSpace, Zone } from '@openhps/geospatial';
+import { GeographicalPosition } from '@openhps/core';
+import { isProxy, toRaw } from 'vue';
 
 @Options({
   components: {
@@ -18,10 +24,41 @@ import {
   }
 })
 export default class GeoJsonComponent extends Vue {
-    @Prop() geojson: any;
+    @Prop() space: SymbolicSpace<GeographicalPosition>;
 
-    mounted() {
-      console.log("geojson", this.geojson);
+    get options() {
+      let rawSpace = this.space;
+      if (isProxy(rawSpace)) {
+          rawSpace = toRaw(rawSpace);
+      } 
+
+      if (rawSpace instanceof Building) {
+        return {
+          opacity: 0,
+          fillOpacity: 0
+        };
+      } else if (rawSpace instanceof Floor) {
+        return {
+          fillColor: "#44b3fc",
+          color: "#205273",
+          fillOpacity: 0.2
+        };
+      } else if (rawSpace instanceof Room || rawSpace instanceof Zone) {
+        return {
+          fillColor: "#42f54e",
+          color: "#1f7d26",
+          fillOpacity: 0.3,
+          opacity: 0.8
+        };
+      } else if (rawSpace instanceof Corridor) {
+        return {
+          fillColor: "#eb4444",
+          color: "#732020",
+          fillOpacity: 0.3,
+          opacity: 0.8
+        };
+      }
+      return {};
     }
 }
 </script>

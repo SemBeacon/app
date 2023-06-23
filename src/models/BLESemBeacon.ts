@@ -49,7 +49,8 @@ export class BLESemBeacon extends BLEBeaconObject {
 
     @SerializableMember({
         rdf: {
-            predicate: "http://purl.org/sembeacon/shortResourceURI"
+            predicate: "http://purl.org/sembeacon/shortResourceURI",
+            datatype: xsd.anyURI
         }
     })
     shortResourceURI: UrlString;
@@ -86,12 +87,7 @@ export class BLESemBeacon extends BLEBeaconObject {
         this.flags = view.getInt8(23);
 
         if (this.uid === undefined) {
-            this.uid = BufferUtils.toHexString(
-                BufferUtils.concatBuffer(
-                    this.namespaceId.toBuffer(),
-                    BufferUtils.fromHexString(this.instanceId)
-                ),
-            );
+            this.uid = this.computeUID();
         }
         return this;
     }
@@ -126,6 +122,15 @@ export class BLESemBeacon extends BLEBeaconObject {
         }
         this.shortResourceURI = url as IriString;
         return this;
+    }
+
+    computeUID(): string {
+        return BufferUtils.toHexString(
+            BufferUtils.concatBuffer(
+                this.namespaceId.toBuffer(),
+                BufferUtils.fromHexString(this.instanceId)
+            ),
+        );
     }
 
     protected get service(): BLEService {
