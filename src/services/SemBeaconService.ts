@@ -4,6 +4,9 @@ import { DataFactory, IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLD
 import { BLEBeaconObject } from "@openhps/rf";
 import axios, { AxiosResponse } from 'axios';
 
+/**
+ * SemBeacon data object service for persisting and retrieving SemBeacon data
+ */
 export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     protected options: SemBeaconServiceOptions;
     protected queue: Set<string> = new Set();
@@ -28,6 +31,13 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         return super.insert(uid, object);
     }
 
+    /**
+     * Insert a new BLE beacon object
+     *
+     * @param {string} uid Unique identifier 
+     * @param {BLEBeaconObject} object Beacon object 
+     * @returns {Promise<BLEBeaconObject>} Beacon promise
+     */
     insert(uid: string, object: BLEBeaconObject): Promise<BLEBeaconObject> {
         return new Promise((resolve, reject) => {
             if (object instanceof BLESemBeacon) {
