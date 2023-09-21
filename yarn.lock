@@ -9325,6 +9325,11 @@ copy-webpack-plugin@^9.0.1:
     schema-utils "^3.1.1"
     serialize-javascript "^6.0.0"
 
+cordova-plugin-bluetoothle@^6.7.4:
+  version "6.7.4"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-bluetoothle/-/cordova-plugin-bluetoothle-6.7.4.tgz#d93ce387f836d52b37d17859fe22ed705eb81762"
+  integrity sha512-LOmgF7HACRKuYMagAkTpcegQpypqRpP70gZrwoaT975riUhlyzqPj/TAvCQZg68eWlVyqqYLbkIYokRNPyf0sQ==
+
 cordova-res@^0.15.4:
   version "0.15.4"
   resolved "https://registry.yarnpkg.com/cordova-res/-/cordova-res-0.15.4.tgz#a40af66905dd3edf6347be468c0cb0267ca0c593"

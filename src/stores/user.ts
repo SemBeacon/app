@@ -87,12 +87,6 @@ export const useUserStore = defineStore('user', {
                     }
                 }).catch(reject);
             });
-        },
-        query(statement: string): Promise<any> {
-            return new Promise((resolve, reject) => {
-                const service: SolidClientService = this.service;
-
-            });
         }
     }
 });

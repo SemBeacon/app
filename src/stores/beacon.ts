@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, DataSerializer, MemoryDataService, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
+import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLESemBeacon } from '@/models/BLESemBeacon';
 import { 
@@ -110,7 +110,9 @@ export const useBeaconStore = defineStore('beacon', {
                 ModelBuilder.create()
                     .addService(new SemBeaconService(new LocalStorageDriver(BLESemBeacon, {
                         namespace: "sembeacon",
-                    })))
+                    }), {
+                        accessToken: "2cd7bc12126759042bfb3ebe1160aafda0bc65df"
+                    }))
                     .from(this.source as BLESourceNode)
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,

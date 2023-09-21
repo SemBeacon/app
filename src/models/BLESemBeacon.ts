@@ -13,6 +13,9 @@ export const SEMBEACON_FLAG_RESERVED_2		    = (0x01 << 6);
 export const SEMBEACON_FLAG_RESERVED_3		    = (0x01 << 7);
 export const SEMBEACON_FLAG_UNDEFINED		    = (0x00);
 
+/**
+ * SemBeacon BLE Object
+ */
 @SerializableObject({
     rdf: {
         type: "http://purl.org/sembeacon/SemBeacon"
@@ -65,6 +68,14 @@ export class BLESemBeacon extends BLEBeaconObject {
         numberType: NumberType.LONG,
     })
     modifiedTimestamp = -1;
+
+    /**
+     * Max age
+     */
+    @SerializableMember({
+        numberType: NumberType.LONG,
+    })
+    maxAge?: number;
 
     isValid(): boolean {
         return (this.resourceUri !== undefined || this.shortResourceURI !== undefined) && this.instanceId !== undefined && this.namespaceId !== undefined;

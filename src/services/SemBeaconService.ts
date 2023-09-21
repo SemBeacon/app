@@ -13,7 +13,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     
     constructor(driver?: DataServiceDriver<string, BLEBeaconObject>, options?: SemBeaconServiceOptions) {
         super(driver);
-        this.options = options ?? { cors: true };
+        this.options = options ?? { cors: true, accessToken: undefined };
     }
 
     protected _findByUID(uid: string): Promise<BLEBeaconObject> {
@@ -45,7 +45,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
                     this._findByUID(object.uid) as Promise<BLESemBeacon>
                 ]).then((objects: BLESemBeacon[]) => {
-                    if ((objects[1] === undefined || TimeService.now() - 30000 > objects[1].modifiedTimestamp) && 
+                    if ((objects[1] === undefined || TimeService.now() - objects[1].maxAge > objects[1].modifiedTimestamp) && 
                         (objects[0].resourceUri !== undefined || objects[0].shortResourceURI !== undefined) &&
                         !this.queue.has(objects[0].uid)
                     ) {
@@ -120,14 +120,13 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
 
     protected shortenURL(beacon: BLESemBeacon): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
-            const accessToken = "2cd7bc12126759042bfb3ebe1160aafda0bc65df";
             axios.post("https://api-ssl.bitly.com/v4/shorten", {
                 "group_guid": "4eb083935b1",
                 "domain": "bit.ly",
                 "long_url": beacon.resourceUri
             }, {
                 headers: {
-                    "Authorization": `Bearer ${accessToken}`
+                    "Authorization": `Bearer ${this.options.accessToken}`
                 }
             }).then(response => {
                 beacon.shortResourceURI = response.data.link as UrlString;
@@ -142,14 +141,16 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                 return resolve(beacon);
             }
             this.queue.add(beacon.uid);
-            axios.get("https://proxy.linkeddatafragments.org/" + (beacon.resourceUri ?? beacon.shortResourceURI), {
+            axios.get((this.options.cors ? "https://proxy.linkeddatafragments.org/" : "") + 
+                (beacon.resourceUri ?? beacon.shortResourceURI), {
                     headers: {
                         Accept: "text/turtle"
                     },
                     withCredentials: false,
             }).then(async (result: AxiosResponse) => {
+                const cacheTimeout = this._parseCacheControl(result);
                 let resourceUri = result.request.responseURL;
-                if (result.headers['x-final-url']) {
+                if (result.headers['x-final-url']) {                // Permanent URL fix
                     resourceUri = result.headers['x-final-url'];
                 }
                 let deserialized: BLESemBeacon = RDFSerializer.deserializeFromString(resourceUri, result.data);
@@ -163,6 +164,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     }
                     beacon = this._mergeBeacon(beacon, deserialized) as BLESemBeacon;
                     beacon.resourceData = store;
+                    beacon.maxAge = cacheTimeout;
                     return Promise.resolve({store, beacon});
                 } else {
                     // Query to find the SemBeacon
@@ -190,6 +192,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                         beacon.resourceUri = beaconURI as IriString;
                         deserialized = RDFSerializer.deserializeFromString(beacon.resourceUri, result.data);
                         beacon = this._mergeBeacon(beacon, deserialized) as BLESemBeacon;
+                        beacon.maxAge = cacheTimeout;
                         beacon.resourceData = store;
                     }
                     return Promise.resolve({store, beacon});
@@ -222,8 +225,41 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         return online;
     }
 
+    private _parseCacheControl(response: AxiosResponse): number {
+        const header = response.headers['Cache-Control'].toString();
+        if (!header) {
+            return 30000; // Default cache timeout
+        }
+        const directives = header
+            .toLowerCase()
+            .split(",")
+            .map(str =>
+            str
+                .trim()
+                .split("=")
+                .map(str => str.trim())
+            );
+        let timeout = 30000;
+        for (const [directive, value] of directives) {
+            switch (directive) {
+                case "max-age": {
+                    const maxAge = parseInt(value, 10);
+                    if (isNaN(maxAge)) continue;
+                    timeout = maxAge;
+                    break;
+                }
+                case "no-store":
+                case "no-cache":
+                    timeout = 0;
+                    break;
+            }
+        }            
+        return timeout;
+    }
+
 }
 
 export interface SemBeaconServiceOptions extends DataServiceOptions {
     cors?: boolean;
+    accessToken?: string;
 }
