@@ -108,11 +108,13 @@ export const useBeaconStore = defineStore('beacon', {
                 const logger = useLogger();
 
                 ModelBuilder.create()
-                    .addService(new SemBeaconService(new LocalStorageDriver(BLESemBeacon, {
-                        namespace: "sembeacon",
-                    }), {
-                        accessToken: "2cd7bc12126759042bfb3ebe1160aafda0bc65df"
-                    }))
+                    .addService(new SemBeaconService(
+                        new LocalStorageDriver(BLESemBeacon, {
+                            namespace: "sembeacon",
+                        }), 
+                        {
+                            accessToken: "2cd7bc12126759042bfb3ebe1160aafda0bc65df"
+                        }))
                     .from(this.source as BLESourceNode)
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,

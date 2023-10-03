@@ -54,6 +54,7 @@ import { ref } from 'vue';
 import {
   map,
   bluetooth,
+  logIn
 } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon';
@@ -99,12 +100,12 @@ export default class App extends Vue {
       iosIcon: bluetooth,
       mdIcon: bluetooth,
     },
-    // {
-    //   title: 'Solid Login',
-    //   url: '/Login',
-    //   iosIcon: logIn,
-    //   mdIcon: logIn,
-    // }
+    {
+      title: 'Solid Login',
+      url: '/Login',
+      iosIcon: logIn,
+      mdIcon: logIn,
+    }
   ];
   
   beforeCreate(): void {

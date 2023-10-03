@@ -1,6 +1,6 @@
 import { BLESemBeacon } from "@/models/BLESemBeacon";
 import { DataObjectService, DataServiceDriver, DataServiceOptions, TimeService } from "@openhps/core";
-import { DataFactory, IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
+import { DataFactory, DefaultEngine, IriString, NamedNode, Parser, Quad, RDFSerializer, SPARQLDataDriver, Store, UrlString } from "@openhps/rdf";
 import { BLEBeaconObject } from "@openhps/rf";
 import axios, { AxiosResponse } from 'axios';
 
@@ -77,7 +77,8 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                 return resolve();
             }
             const driver = new SPARQLDataDriver(BLESemBeacon, {
-                sources: [store]
+                sources: [store],
+                engine: DefaultEngine
             });
             const namespaceIdSantized = beacon.namespaceId.toString().replaceAll("-", "");
             const query = `
@@ -169,7 +170,8 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                 } else {
                     // Query to find the SemBeacon
                     const driver = new SPARQLDataDriver(BLESemBeacon, {
-                        sources: [store]
+                        sources: [store],
+                        engine: DefaultEngine
                     });
                     const namespaceIdSantized = beacon.namespaceId.toString().replaceAll("-", "");
                     const instanceIdSanitzed = beacon.instanceId.toString().replaceAll("-", "");

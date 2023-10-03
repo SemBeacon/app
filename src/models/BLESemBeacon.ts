@@ -3,6 +3,9 @@ import { NumberType, SerializableMember, SerializableObject } from "@openhps/cor
 import { IriString, Store, UrlString, xsd } from "@openhps/rdf";
 import { BLEBeaconObject, BLEEddystoneURL, BLEService, BLEUUID, BufferUtils } from "@openhps/rf";
 
+/**
+ * SemBeacon Flags
+ */
 export const SEMBEACON_FLAG_HAS_POSITION		= (0x01 << 0);
 export const SEMBEACON_FLAG_PRIVATE			    = (0x01 << 1);
 export const SEMBEACON_FLAG_MOVING 			    = (0x01 << 2);
@@ -144,6 +147,27 @@ export class BLESemBeacon extends BLEBeaconObject {
         );
     }
 
+    /**
+     * Check if a SemBeacon flag is set
+     *
+     * @param {number} flag Flag 
+     * @returns {boolean} Result
+     */
+    hasFlag(flag: number): boolean {
+        return Boolean(this.flags & flag);
+    }
+
+    /**
+     * Set a SemBeacon flag
+     *
+     * @param {number} flag Flag 
+     * @returns {this}
+     */
+    setFlag(flag: number): this {
+        this.flags = this.flags & flag;
+        return this;
+    }
+    
     protected get service(): BLEService {
         return this.getServiceByUUID(BLEUUID.fromString('AAFE'));
     }

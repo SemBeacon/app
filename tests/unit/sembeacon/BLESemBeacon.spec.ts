@@ -37,4 +37,11 @@ describe('BLESemBeacon', () => {
             console.log(serialized)
         });
     });
+
+    describe('flags', () => {
+        it('should set and get flags', () => {
+            const beacon = new BLESemBeacon();
+            
+        });
+    })
 })

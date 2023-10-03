@@ -1,4 +1,4 @@
-import { DataFactory, IriString, NamedNode, RDFSerializer, SPARQLDataDriver, Store } from '@openhps/rdf';
+import { DataFactory, DefaultEngine, IriString, NamedNode, RDFSerializer, SPARQLDataDriver, Store } from '@openhps/rdf';
 import { defineStore } from 'pinia';
 import { SymbolicSpace } from '@openhps/geospatial';
 
@@ -22,7 +22,8 @@ export const useEnvironmentStore = defineStore('environments', {
         fetchEnvironments(store: Store): Promise<void> {
             return new Promise((resolve, reject) => {
                 const driver = new SPARQLDataDriver(SymbolicSpace, {
-                    sources: [store]
+                    sources: [store],
+                    engine: DefaultEngine
                 });
                 const query = `
                     PREFIX sembeacon: <http://purl.org/sembeacon/>
