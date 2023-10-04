@@ -11,7 +11,23 @@
 
     <ion-content :fullscreen="true">
       <div id="container">
-        
+        <div v-if="beaconType === 'SemBeacon'">
+          <ion-list>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Namespace ID</ion-label>
+              <ion-label position="stacked">{{ beacon.namespace }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+        <div v-if="beaconType === 'iBeacon'">
+          
+        </div>
+        <div v-if="beaconType === 'AltBeacon'">
+          
+        </div>
+        <div v-if="beaconType === 'Eddystone'">
+          
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -35,6 +51,8 @@ import {
 import { useRoute } from 'vue-router';
 import { BLEBeaconObject } from '@openhps/rf';
 import { useBeaconStore } from '../stores/beacon';
+import { BLESemBeacon } from '../models/BLESemBeacon';
+import { BLEiBeacon, BLEEddystone, BLEAltBeacon } from '@openhps/rf';
 
 @Options({
   components: {
@@ -60,6 +78,20 @@ export default class BeaconPage extends Vue {
     this.beaconStore.findByUID(beaconUID).then(beacon => {
       this.beacon = beacon;
     });
+  }
+
+  get beaconType(): string {
+    if (this.beacon instanceof BLESemBeacon) {
+      return "SemBeacon";
+    } else if (this.beacon instanceof BLEiBeacon) {
+      return "iBeacon";
+    } else if (this.beacon instanceof BLEAltBeacon) {
+      return "AltBeacon";
+    } else if (this.beacon instanceof BLEEddystone) {
+      return "Eddystone";
+    } else {
+      return "Unknown";
+    }
   }
 }
 </script>

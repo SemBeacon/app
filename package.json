@@ -20,7 +20,7 @@
     "ionic:serve": "vue-cli-service serve"
   },
   "dependencies": {
-    "@capacitor-community/bluetooth-le": ">=3.0.1",
+    "@capacitor-community/bluetooth-le": ">=3.0.2",
     "@capacitor-community/electron": "^5.0.1",
     "@capacitor/android": "5.4.1",
     "@capacitor/app": "5.0.6",
@@ -42,7 +42,7 @@
     "@openhps/core": "^0.5.8",
     "@openhps/geospatial": "^0.1.27",
     "@openhps/localstorage": "^1.0.1",
-    "@openhps/rdf": "^0.4.12",
+    "@openhps/rdf": "^0.4.14",
     "@openhps/rf": "^0.1.40",
     "@openhps/solid": "^0.1.12",
     "@vue-leaflet/vue-leaflet": "^0.10.1",

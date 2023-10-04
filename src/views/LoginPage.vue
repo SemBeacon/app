@@ -66,7 +66,7 @@
     IonRow,
     IonCol
   } from '@ionic/vue';
-  import { useUserStore } from '@/stores/user';
+  import { useUserStore } from '../stores/user';
 
   @Options({
     components: {

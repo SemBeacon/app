@@ -1008,10 +1008,10 @@
   dependencies:
     buffer "^6.0.3"
 
-"@capacitor-community/bluetooth-le@>=3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@capacitor-community/bluetooth-le/-/bluetooth-le-3.0.1.tgz#068362c4e7fbeb8dc83d8fa6c203a1201614d7c8"
-  integrity sha512-IRjurszsqKgvEiITmqEJnIAyJdPYkLf/45WaPKrCOP2c8bFYCrenBu2tdKXm8Vfh/d0ybpojK1kcEFj8M4z97w==
+"@capacitor-community/bluetooth-le@>=3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor-community/bluetooth-le/-/bluetooth-le-3.0.2.tgz#d32d3013ae0bfaa02e9dce7b419ea17626e46e58"
+  integrity sha512-3S32RlCnwEGnrWaO6/hVSpirInyoVZhXJEJygfgFvdFQz0b4WnXJwgF/0IZojuomjdfd22cfsWpO4hdGLNc7yg==
   dependencies:
     "@types/web-bluetooth" "^0.0.16"
 
@@ -6558,13 +6558,13 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.12":
-  version "0.4.12"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.12.tgz#cf2505e0d906a1a57e0bd1bfc0e26e8a9579e7b4"
-  integrity sha512-aib5kgxoiP5mAEcaY37wqoM7kaLzHOKg1DneERTg98j6np5vMSSBo1Nw+IcUSUg4ewja/wOxafJkRi5DNF36Zg==
+"@openhps/rdf@^0.4.14":
+  version "0.4.14"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.14.tgz#95da5ca5ea73c8fa8aea4c0a6183f413ad40e16d"
+  integrity sha512-e7TXn3oqrbjSWHaGdomjV9B8UUwZrrMzOnKT9xdlnmJlle27a/KRNYJ2PfrSLM5CKKRDd2VuYb/cGCDAyx2Yeg==
   dependencies:
     "@comunica/query-sparql" "^2.9.0"
-    "@types/n3" "^1.16.0"
+    "@types/n3" "^1.16.1"
     n3 ">=1.17.1"
     sparqljs "^3.7.1"
 
@@ -7048,10 +7048,10 @@
     "@types/node" "*"
     rdf-js "^4.0.2"
 
-"@types/n3@^1.16.0":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.16.0.tgz#6ab894bd2004cc5b6d1a8e09f27d39ceb157b377"
-  integrity sha512-g/67NVSihmIoIZT3/J462NhJrmpCw+5WUkkKqpCE9YxNEWzBwKavGPP+RUmG6DIm5GrW4GPunuxLJ0Yn/GgNjQ==
+"@types/n3@^1.16.1":
+  version "1.16.1"
+  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.16.1.tgz#12f264f323ffcf125ca44605f0514be13b808802"
+  integrity sha512-CN20HKSW7d/5eUQ6BndBLFyE0Wju1a8f3IJiHXSw10A7S2Q8SXmKD04+LGULlR2snuxUTTIjD/zSGvjBJxM37Q==
   dependencies:
     "@rdfjs/types" "^1.1.0"
     "@types/node" "*"
