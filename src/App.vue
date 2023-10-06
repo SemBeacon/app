@@ -56,6 +56,7 @@ import {
   bluetooth,
   logIn
 } from 'ionicons/icons';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 import { useBeaconStore } from './stores/beacon';
 import { useUserStore } from './stores/user';
@@ -119,6 +120,10 @@ export default class App extends Vue {
 
   mounted(): Promise<void> {
     return new Promise((resolve) => {
+      SplashScreen.show({
+        showDuration: 2000,
+        autoHide: true,
+      });
       RDFSerializer.initialize("rf");
       RDFSerializer.initialize("geospatial");
       this.logger.initialize();

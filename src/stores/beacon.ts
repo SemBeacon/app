@@ -18,6 +18,7 @@ import { LocalStorageDriver } from '@openhps/localstorage';
 import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
+import 'cordova-plugin-bluetoothle';
 
 export interface BeaconScan {
     results: number;
@@ -61,6 +62,11 @@ export const useBeaconStore = defineStore('beacon', {
         }
     },
     actions: {
+        startAdvertising(): void {
+            bluetoothle.startAdvertising({
+                
+            })
+        },
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
         },
@@ -113,7 +119,8 @@ export const useBeaconStore = defineStore('beacon', {
                             namespace: "sembeacon",
                         }), 
                         {
-                            accessToken: "2cd7bc12126759042bfb3ebe1160aafda0bc65df"
+                            accessToken: "2cd7bc12126759042bfb3ebe1160aafda0bc65df",
+                            cors: true
                         }))
                     .from(this.source as BLESourceNode)
                     .via(new BLEBeaconClassifierNode({

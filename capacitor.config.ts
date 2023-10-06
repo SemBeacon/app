@@ -10,7 +10,12 @@ const config: CapacitorConfig = {
     androidScheme: "http",
     hostname: "org.sembeacon"
   },
-  loggingBehavior: "none"
+  loggingBehavior: "none",
+  plugins: {
+    SplashScreen: {
+      backgroundColor: "#363795"
+    }
+  }
 };
 
 export default config;

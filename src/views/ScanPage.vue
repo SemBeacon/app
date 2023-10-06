@@ -11,10 +11,9 @@
         <ion-buttons slot="end">
           
         </ion-buttons>
-        <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
       </ion-toolbar>
 
-      <!-- <ion-toolbar color="primary">
+      <ion-toolbar color="primary">
         <ion-segment value="scanning">
           <ion-segment-button value="scanning">
             <ion-label>Scanning</ion-label>
@@ -25,7 +24,7 @@
         </ion-segment>
 
         <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
-      </ion-toolbar> -->
+      </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
@@ -132,6 +131,10 @@ export default class ScanPage extends Vue {
         });
       }
     }
+  }
+
+  mounted() {
+    this.beaconStore.startAdvertising();
   }
 }
 </script>
