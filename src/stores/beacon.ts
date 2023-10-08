@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
-import { BLESemBeacon } from '@/models/BLESemBeacon';
+import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
 import { 
     BLEBeaconObject, 
     BLEBeaconClassifierNode, 
@@ -12,14 +12,14 @@ import {
     RelativeRSSI,
     RelativeRSSIProcessing,
     PropagationModel,
+    BLEUUID,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
-import 'cordova-plugin-bluetoothle';
-
+import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
 export interface BeaconScan {
     results: number;
 }
@@ -63,9 +63,40 @@ export const useBeaconStore = defineStore('beacon', {
     },
     actions: {
         startAdvertising(): void {
-            bluetoothle.startAdvertising({
-                
-            })
+            const bluetoothle = (window as any).bluetoothle;
+            bluetoothle.initialize(() => {
+                console.log("starting advertising")
+                BLESemBeaconBuilder.create()
+                    .namespaceId(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
+                    .instanceId(10)
+                    .resourceUri("https://www.sembeacon.org/")
+                    .flag(SEMBEACON_FLAG_HAS_POSITION)
+                    .flag(SEMBEACON_FLAG_HAS_SYSTEM)
+                    .build().then(beacon => {
+                        console.log(beacon)
+                        const manufacturerData = beacon.manufacturerData.get(0x004C);
+                        // const service = beacon.getServiceByUUID(BLEUUID.fromString('AAFE'));
+                        bluetoothle.startAdvertising((status) => {
+                            console.log(status)
+                        }, (error) => {
+                            console.log(error)
+                            Toast.show({
+                                text: `Error while starting advertising! ${error.message}`,
+                            });
+                        }, {
+                            manufacturerId: 0x004C,
+                            manufacturerSpecificData: manufacturerData,
+                            // service: service.uuid.toString(),
+                            // serviceData: service.data,
+                            includeDeviceName: false,
+                            includeTxPowerLevel: false
+                        } as any);
+                    });
+            }, {
+                request: true,
+                statusReceiver: false,
+                restoreKey: "sembeacon"
+            });
         },
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
