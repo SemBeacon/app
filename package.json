@@ -49,7 +49,7 @@
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vueuse/core": "^10.5.0",
     "axios": "^1.5.1",
-    "cordova-plugin-bluetoothle": "https://github.com/randdusing/cordova-plugin-bluetoothle",
+    "cordova-plugin-bluetoothle": "https://github.com/SemBeacon/cordova-plugin-bluetoothle",
     "core-js": "^3.33.0",
     "ionicons": "^7.1.2",
     "leaflet": "^1.9.4",

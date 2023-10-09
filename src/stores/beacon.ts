@@ -71,6 +71,7 @@ export const useBeaconStore = defineStore('beacon', {
                     BLESemBeaconBuilder.create()
                         .namespaceId(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
                         .instanceId(10)
+                        .calibratedRSSI(-56)
                         .shortResourceUri("https://bit.ly/3Nf0iRi")
                         .flag(SEMBEACON_FLAG_HAS_POSITION)
                         .flag(SEMBEACON_FLAG_HAS_SYSTEM)
@@ -91,12 +92,17 @@ export const useBeaconStore = defineStore('beacon', {
                                 manufacturerId: 0x004C,
                                 manufacturerSpecificData: bluetoothle.bytesToEncodedString(manufacturerData),
                                 includeDeviceName: false,
-                                includeTxPowerLevel: false
+                                includeTxPowerLevel: false,
+                                connectable: false,
+                                mode: 'lowLatency',
+                                txPowerLevel: 'high',
+                                timeout: 0,
+                                discoverable: true
                             }, {
-                                service: service.uuid.toString(),
+                                service: "FEAA",
                                 serviceData: bluetoothle.bytesToEncodedString(service.data),
                                 includeDeviceName: false,
-                                includeTxPowerLevel: false
+                                includeTxPowerLevel: false,
                             });
                     });
                 }, (error) => {
@@ -109,6 +115,15 @@ export const useBeaconStore = defineStore('beacon', {
                 request: true,
                 statusReceiver: false,
                 restoreKey: "sembeacon"
+            });
+        },
+        stopAdvertising() {
+            const bluetoothle = (window as any).bluetoothle;
+            // const logger = useLogger();
+            bluetoothle.stopAdvertising((success) => {
+                console.log(success)
+            }, (error) => {
+                console.error(error)
             });
         },
         findBeaconInfo(uid: string): Beacon {

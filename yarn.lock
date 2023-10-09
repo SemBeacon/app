@@ -7713,9 +7713,9 @@ copy-webpack-plugin@^9.0.1:
     schema-utils "^3.1.1"
     serialize-javascript "^6.0.0"
 
-"cordova-plugin-bluetoothle@https://github.com/randdusing/cordova-plugin-bluetoothle":
+"cordova-plugin-bluetoothle@https://github.com/SemBeacon/cordova-plugin-bluetoothle":
   version "6.7.4"
-  resolved "https://github.com/randdusing/cordova-plugin-bluetoothle#212bdc870868d51ae47de2210936a1f19b22f7d1"
+  resolved "https://github.com/SemBeacon/cordova-plugin-bluetoothle#7bfaeb685b9684687a7b8ee1711166c0f4e5d04c"
 
 core-js-compat@^3.31.0, core-js-compat@^3.32.2, core-js-compat@^3.8.3:
   version "3.33.0"
