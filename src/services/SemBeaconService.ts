@@ -228,11 +228,12 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     }
 
     private _parseCacheControl(response: AxiosResponse): number {
-        const header = response.headers['Cache-Control'].toString();
+        const header = response.headers['Cache-Control'];
         if (!header) {
             return 30000; // Default cache timeout
         }
         const directives = header
+            .toString()
             .toLowerCase()
             .split(",")
             .map(str =>
