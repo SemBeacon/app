@@ -8,13 +8,15 @@ import { BufferUtils } from "@openhps/core";
  */
 export class BLESemBeaconBuilder {
     protected beacon: BLESemBeacon;
+    protected options: SemBeaconBuilderOptions;
 
-    protected constructor() {
+    protected constructor(options?: SemBeaconBuilderOptions) {
+        this.options = options ?? {};
         this.beacon = new BLESemBeacon();
     }
 
-    static create(): BLESemBeaconBuilder {      
-        return new BLESemBeaconBuilder();
+    static create(options?: SemBeaconBuilderOptions): BLESemBeaconBuilder {      
+        return new BLESemBeaconBuilder(options);
     }
 
     namespaceId(namespaceId: BLEUUID): this {
@@ -34,6 +36,11 @@ export class BLESemBeaconBuilder {
 
     resourceUri(resourceUri: IriString): this {
         this.beacon.resourceUri = resourceUri;
+        return this;
+    }
+    
+    shortResourceUri(resourceUri: IriString): this {
+        this.beacon.shortResourceURI = resourceUri;
         return this;
     }
 
@@ -71,10 +78,40 @@ export class BLESemBeaconBuilder {
             serviceData.setUint8(4, 0x10);                     // Eddystone-URL frame
             serviceData.setInt8(5, this.beacon.calibratedRSSI);
             // Encoded URL
+            let index = 6;
+            let url_index = 0;
+            const url = this.beacon.shortResourceURI;
+            for (const prefix in BLESemBeacon.PREFIXES) {
+                if (url.startsWith(prefix)) {
+                    // Encode using this prefix
+                    serviceData.setUint8(index, BLESemBeacon.PREFIXES.indexOf(prefix));
+                    url_index += prefix.length;
+                }
+            }
+            index += 1;
+            for (url_index ; url_index < url.length ; url_index++) {
+                if (index > 23) {
+                    break;
+                }
+                serviceData.setUint8(index, Number(url.charAt(url_index)));
+                for (const suffix in BLESemBeacon.SUFFIXES) {
+                    if (url.slice(url_index).startsWith(suffix)) {
+                        serviceData.setUint8(index, BLESemBeacon.SUFFIXES.indexOf(suffix));
+                    }
+                }
+                index++;
+            }       
 
             this.beacon.manufacturerData.set(0x004C, new Uint8Array(manufacturerData.buffer));
             this.beacon.addService(new BLEService(BLEUUID.fromString('AAFE'), new Uint8Array(serviceData.buffer)));
             resolve(this.beacon);
         });
+    }
+
+}
+
+export interface SemBeaconBuilderOptions {
+    bitly?: {
+        accessToken: string;
     }
 }

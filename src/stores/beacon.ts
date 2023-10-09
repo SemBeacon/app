@@ -20,6 +20,7 @@ import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
+
 export interface BeaconScan {
     results: number;
 }
@@ -64,34 +65,46 @@ export const useBeaconStore = defineStore('beacon', {
     actions: {
         startAdvertising(): void {
             const bluetoothle = (window as any).bluetoothle;
+            const logger = useLogger();
             bluetoothle.initialize(() => {
-                console.log("starting advertising")
-                BLESemBeaconBuilder.create()
-                    .namespaceId(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
-                    .instanceId(10)
-                    .resourceUri("https://www.sembeacon.org/")
-                    .flag(SEMBEACON_FLAG_HAS_POSITION)
-                    .flag(SEMBEACON_FLAG_HAS_SYSTEM)
-                    .build().then(beacon => {
-                        console.log(beacon)
-                        const manufacturerData = beacon.manufacturerData.get(0x004C);
-                        // const service = beacon.getServiceByUUID(BLEUUID.fromString('AAFE'));
-                        bluetoothle.startAdvertising((status) => {
-                            console.log(status)
-                        }, (error) => {
-                            console.log(error)
-                            Toast.show({
-                                text: `Error while starting advertising! ${error.message}`,
+                bluetoothle.requestPermissionBtAdvertise(() => {
+                    BLESemBeaconBuilder.create()
+                        .namespaceId(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
+                        .instanceId(10)
+                        .shortResourceUri("https://bit.ly/3Nf0iRi")
+                        .flag(SEMBEACON_FLAG_HAS_POSITION)
+                        .flag(SEMBEACON_FLAG_HAS_SYSTEM)
+                        .build().then(beacon => {
+                            const manufacturerData = beacon.manufacturerData.get(0x004C);
+                            const service = beacon.getServiceByUUID(BLEUUID.fromString('AAFE'));
+                            bluetoothle.startAdvertising((status) => {
+                                logger.log('info', status);
+                                Toast.show({
+                                    text: `Advertising of SemBeacon started!`,
+                                });
+                            }, (error: any) => {
+                                logger.log('error', error);
+                                Toast.show({
+                                    text: `Error while starting advertising! ${error.message}.`,
+                                });
+                            }, {
+                                manufacturerId: 0x004C,
+                                manufacturerSpecificData: bluetoothle.bytesToEncodedString(manufacturerData),
+                                includeDeviceName: false,
+                                includeTxPowerLevel: false
+                            }, {
+                                service: service.uuid.toString(),
+                                serviceData: bluetoothle.bytesToEncodedString(service.data),
+                                includeDeviceName: false,
+                                includeTxPowerLevel: false
                             });
-                        }, {
-                            manufacturerId: 0x004C,
-                            manufacturerSpecificData: manufacturerData,
-                            // service: service.uuid.toString(),
-                            // serviceData: service.data,
-                            includeDeviceName: false,
-                            includeTxPowerLevel: false
-                        } as any);
                     });
+                }, (error) => {
+                    logger.log('error', error);
+                    Toast.show({
+                        text: `Error while requesting advertising permission! ${error.message}.`,
+                    });
+                });
             }, {
                 request: true,
                 statusReceiver: false,

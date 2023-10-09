@@ -22,8 +22,6 @@
             <ion-label>Advertising</ion-label>
           </ion-segment-button>
         </ion-segment>
-
-        <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
       </ion-toolbar>
     </ion-header>
 
