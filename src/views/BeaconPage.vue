@@ -15,7 +15,15 @@
           <ion-list>
             <ion-item>
               <ion-label position="stacked" color="primary">Namespace ID</ion-label>
-              <ion-label position="stacked">{{ beacon.namespace }}</ion-label>
+              <ion-label position="stacked">{{ beacon.namespaceId.toString() }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Instance ID</ion-label>
+              <ion-label position="stacked">{{ beacon.instanceId }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Short resource URI</ion-label>
+              <ion-label position="stacked">{{ beacon.shortResourceURI }}</ion-label>
             </ion-item>
           </ion-list>
         </div>
