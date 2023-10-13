@@ -66,7 +66,13 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 export default class BeaconItemComponent extends Vue {
   @Prop() beacon: (BLEBeaconObject | BLESemBeacon | BLEiBeacon | BLEAltBeacon | BLEEddystoneURL) & Beacon;
   key: ComputedRef<string> = computed(() => this.beacon.uid + TimeService.now());
-  
+  lastSeen: ComputedRef<string> = computed(() => {
+    if (this.beacon.lastSeen === undefined) {
+        return "";
+    }
+    return moment(this.beacon.lastSeen).fromNow();
+  });
+
   get beaconType(): string {
     if (this.beacon instanceof BLESemBeacon) {
       return "SemBeacon";
@@ -85,13 +91,6 @@ export default class BeaconItemComponent extends Vue {
     const beaconType = this.beaconType;
     return `/assets/beacons/${beaconType.toLowerCase()}${prefersDark.matches ? "_alpha" : ""}.svg`;
   }
-
-  lastSeen: ComputedRef<string> = computed(() => {
-    if (this.beacon.lastSeen === undefined) {
-        return "";
-    }
-    return moment(this.beacon.lastSeen).fromNow();
-  });
 }
 </script>
 

@@ -22,6 +22,9 @@
                     This application was developed for the IoT 2023 conference to demonstrate the capabilities for SemBeacon. This application
                     will scan for SemBeacon, iBeacon, AltBeacon, Eddystone beacons using the OpenHPS framework.
                 </ion-label>
+                <ion-label class="ion-text-wrap">
+                    
+                </ion-label>
             </ion-content>
         </div>
       </ion-content>

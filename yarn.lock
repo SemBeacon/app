@@ -4845,13 +4845,13 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.14":
-  version "0.4.14"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.14.tgz#95da5ca5ea73c8fa8aea4c0a6183f413ad40e16d"
-  integrity sha512-e7TXn3oqrbjSWHaGdomjV9B8UUwZrrMzOnKT9xdlnmJlle27a/KRNYJ2PfrSLM5CKKRDd2VuYb/cGCDAyx2Yeg==
+"@openhps/rdf@^0.4.15":
+  version "0.4.15"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.15.tgz#bf4acb9033648e8d1e80eb049e5bbb6639b3b83f"
+  integrity sha512-zhmXziI8nPsap+c8scOR91q32SIyXhUWp23Zc6Zs5UEjGQMq9bxl1RmytOTtLct3jcdxH1R7V5jalNRigHCZgw==
   dependencies:
     "@comunica/query-sparql" "^2.9.0"
-    "@types/n3" "^1.16.1"
+    "@types/n3" "^1.16.2"
     n3 ">=1.17.1"
     sparqljs "^3.7.1"
 
@@ -5364,10 +5364,18 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.3.tgz#dd249cef80c6fff2ba6a0d4e5beca913e04e25f8"
   integrity sha512-ZYFzrvyWUNhaPomn80dsMNgMeXxNWZBdkuG/hWlUvXvbdUH8ZERNBGXnU87McuGcWDsyzX2aChCv/SVN348k3A==
 
-"@types/n3@^1.10.4", "@types/n3@^1.16.1":
+"@types/n3@^1.10.4":
   version "1.16.1"
   resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.16.1.tgz#12f264f323ffcf125ca44605f0514be13b808802"
   integrity sha512-CN20HKSW7d/5eUQ6BndBLFyE0Wju1a8f3IJiHXSw10A7S2Q8SXmKD04+LGULlR2snuxUTTIjD/zSGvjBJxM37Q==
+  dependencies:
+    "@rdfjs/types" "^1.1.0"
+    "@types/node" "*"
+
+"@types/n3@^1.16.2":
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/@types/n3/-/n3-1.16.2.tgz#080947bb0d4df1f49e23471538c0f579022e4870"
+  integrity sha512-Qe341EXScwNQdBgCcDQN1ejslB1kznTnzs/4Acv/K7P58BXaYqy3Q56xEPOnM7BhQW5r8ADW7njtlxWyaJy6AA==
   dependencies:
     "@rdfjs/types" "^1.1.0"
     "@types/node" "*"
