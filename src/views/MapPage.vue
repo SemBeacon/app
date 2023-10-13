@@ -6,7 +6,7 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
 
-        <ion-title>Map</ion-title>
+        <ion-title>Beacon Map</ion-title>
         <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
       </ion-toolbar>
     </ion-header>

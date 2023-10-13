@@ -13,8 +13,6 @@
               </picture>
             </ion-list-header>
 
-            <ion-note>Companion App</ion-note>
-
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
                 <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
@@ -54,9 +52,9 @@ import { ref } from 'vue';
 import {
   map,
   bluetooth,
-  logIn
+//  logIn,
+  help
 } from 'ionicons/icons';
-// import { SplashScreen } from '@capacitor/splash-screen';
 
 import { useBeaconStore } from './stores/beacon';
 import { useUserStore } from './stores/user';
@@ -101,11 +99,17 @@ export default class App extends Vue {
       iosIcon: bluetooth,
       mdIcon: bluetooth,
     },
+    // {
+    //   title: 'Solid Login',
+    //   url: '/Login',
+    //   iosIcon: logIn,
+    //   mdIcon: logIn,
+    // },
     {
-      title: 'Solid Login',
-      url: '/Login',
-      iosIcon: logIn,
-      mdIcon: logIn,
+      title: 'About',
+      url: '/about',
+      iosIcon: help,
+      mdIcon: help,
     }
   ];
   
@@ -120,10 +124,6 @@ export default class App extends Vue {
 
   mounted(): Promise<void> {
     return new Promise((resolve) => {
-      // SplashScreen.show({
-      //   showDuration: 2000,
-      //   autoHide: true,
-      // });
       RDFSerializer.initialize("rf");
       RDFSerializer.initialize("geospatial");
       this.logger.initialize();

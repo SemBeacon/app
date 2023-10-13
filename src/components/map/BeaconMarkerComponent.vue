@@ -1,8 +1,7 @@
 <template>
     <l-marker 
-        :key="beacon.uid"
+        :key="key"
         :lat-lng="latLng"
-        :v-if="latLng !== undefined"
         ref="marker"
     >
         <l-icon
@@ -19,7 +18,7 @@
             <span class="key">{{ beacon.displayName }}</span><br>
             <div v-if="beacon.lastSeen" :key="lastSeen()">
                 <span class="key">Last seen: </span><span class="value">{{ lastSeen() }}</span><br>
-                <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }}</span><br>
+                <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }} dBm</span><br>
                 <span class="key">Distance: </span><span class="value">{{ beacon.distance }} m</span>
             </div>
         </l-tooltip>
@@ -37,10 +36,11 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
-import { isProxy, toRaw } from 'vue';
+import { ComputedRef, computed, isProxy, toRaw } from 'vue';
 import { Beacon, useBeaconStore } from '../../stores/beacon';
 import moment from 'moment';
 import { ref } from 'vue';
+import { TimeService } from '@openhps/core';
 
 @Options({
   components: {
@@ -53,6 +53,7 @@ export default class BeaconMarkerComponent extends Vue {
     @Prop() beacon: BLEBeaconObject & Beacon;
     marker: any = ref("marker");
     beaconStore = useBeaconStore();
+    key: ComputedRef<string> = computed(() => (this.beacon ? this.beacon.uid : "") + TimeService.now());
 
     get latLng(): number[] {
         if (!this.beacon.position) {
@@ -67,12 +68,14 @@ export default class BeaconMarkerComponent extends Vue {
     }
 
     mounted() {
-        this.marker.leafletObject.setOpacity(this.opacity());
-        setInterval(async () => {
-            console.log("Force updating", this.beacon.displayName, this.beacon.lastSeen, this.opacity());
+        this.$nextTick(() => {
             this.marker.leafletObject.setOpacity(this.opacity());
-            this.$forceUpdate();
-        }, 2000);
+        });
+        setInterval(async () => {
+            if (this.marker) {
+                this.marker.leafletObject.setOpacity(this.opacity());
+            }
+        }, 5000);
     }
 
     opacity(): number {
@@ -85,7 +88,6 @@ export default class BeaconMarkerComponent extends Vue {
         } else if (Date.now() - this.beacon.lastSeen > 5000) {
             return 0.85;
         } else {
-            console.log(this.beacon.displayName, Date.now() - this.beacon.lastSeen)
             return 1;
         }
     }

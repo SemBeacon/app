@@ -22,7 +22,7 @@
     </l-marker>
 
     <beacon-marker-component
-      v-for="beacon in beacons.values()"
+      v-for="beacon in beacons"
       v-bind:beacon="beacon"
       :key="beacon.uid"
     >
@@ -44,7 +44,7 @@ import {
     LMap, LMarker, LTileLayer
     // @ts-ignore
 } from "@vue-leaflet/vue-leaflet";
-import { GeographicalPosition } from '@openhps/core';
+import { Absolute2DPosition, GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
 import GeoJsonComponent from './map/GeoJsonComponent.vue';
 import { ref, computed } from 'vue';
@@ -70,7 +70,20 @@ export default class MapComponent extends Vue {
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
   map: any = ref("map");
   zoom?: number = 18;
-  beacons = computed(() => this.beaconStore.beacons);
+  beacons = computed(() => {
+    console.log("Beacon list", Array.from(this.beaconStore.beacons.values())
+      .filter((b) => {
+        return b.position !== undefined && 
+          (b.position as Absolute2DPosition).x !== undefined && 
+          Number.isNaN((b.position as Absolute2DPosition).x);
+      }))
+    return Array.from(this.beaconStore.beacons.values())
+      .filter((b) => {
+        return b.position !== undefined && 
+          (b.position as Absolute2DPosition).x !== undefined && 
+          Number.isNaN((b.position as Absolute2DPosition).x);
+      });
+  });
   location = computed(() => {
     const location: GeographicalPosition = this.geolocationStore.location;
     return location && location.latitude ? [location.latitude, location.longitude] : undefined;

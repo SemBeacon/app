@@ -15,17 +15,17 @@
 
       <ion-toolbar color="primary">
         <ion-segment value="scanning">
-          <ion-segment-button value="scanning">
+          <ion-segment-button @click="() => tab = 1" value="scanning">
             <ion-label>Scanning</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="advertising">
+          <ion-segment-button @click="() => tab = 2" value="advertising">
             <ion-label>Advertising</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" v-if="tab === 1">
       <div id="container">
         <ion-list v-if="beacons.length > 0">
           <beacon-item-component 
@@ -41,6 +41,31 @@
         <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
           <ion-spinner name="circular" v-if="loading"></ion-spinner>
           <ion-icon :name="this.beaconStore.isScanning ? 'pause' : 'search'" v-if="!loading"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-content>
+
+    <ion-content :fullscreen="true" v-if="tab === 2">
+      <div id="container">
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Namespace ID</ion-label>
+            <ion-input position="stacked" type="text" value=""></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Instance ID</ion-label>
+            <ion-input position="stacked" type="text" value=""></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Short resource URI</ion-label>
+            <ion-input position="stacked" type="text" value=""></ion-input>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+        <ion-fab-button @click="toggleAdvertising" :color="this.beaconStore.isAdvertising ? 'danger' : 'primary'">
+          <ion-icon :name="this.beaconStore.isAdvertising ? 'pause' : 'wifi-outline'"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -101,9 +126,18 @@ import { pause, search } from 'ionicons/icons';
   })
 })
 export default class ScanPage extends Vue {
+  tab = 1;
   beaconStore = useBeaconStore();
   loading = false;
   beacons = computed(() => Array.from(this.beaconStore.beacons.values()).filter(beacon => beacon.lastSeen !== undefined));
+
+  toggleAdvertising(): void {
+    if (this.beaconStore.isAdvertising) {
+      this.beaconStore.stopAdvertising();
+    } else {
+      this.beaconStore.startAdvertising();
+    }
+  }
 
   toggleScan(): void {
     if (!this.loading) {
@@ -129,10 +163,6 @@ export default class ScanPage extends Vue {
         });
       }
     }
-  }
-
-  mounted() {
-    this.beaconStore.startAdvertising();
   }
 }
 </script>

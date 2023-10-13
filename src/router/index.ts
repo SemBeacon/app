@@ -22,6 +22,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/beacon/:uid',
     component: () => import ('../views/BeaconPage.vue')
   },
+  {
+    path: '/about',
+    component: () => import ('../views/AboutPage.vue')
+  },  
 ];
 
 const router = createRouter({

@@ -42,6 +42,7 @@ export interface BeaconState {
     model: Model | undefined;
     beacons: Map<string, BLEBeaconObject & Beacon>;
     beaconInfo: Map<string, BLEBeaconObject>;
+    advertising: boolean;
 }
 
 export const useBeaconStore = defineStore('beacon', {
@@ -52,7 +53,8 @@ export const useBeaconStore = defineStore('beacon', {
         }),
         model: undefined,
         beacons: new Map(),
-        beaconInfo: new Map()
+        beaconInfo: new Map(),
+        advertising: false
     }),
     getters: {
         sourceNode(): BLESourceNode {
@@ -60,6 +62,9 @@ export const useBeaconStore = defineStore('beacon', {
         },
         isScanning(): boolean {
             return (this.source as BLESourceNode).isRunning();
+        },
+        isAdvertising(): boolean {
+            return this.advertising;
         }
     },
     actions: {
@@ -83,6 +88,7 @@ export const useBeaconStore = defineStore('beacon', {
                                 Toast.show({
                                     text: `Advertising of SemBeacon started!`,
                                 });
+                                this.advertising = true;
                             }, (error: any) => {
                                 logger.log('error', error);
                                 Toast.show({
@@ -119,11 +125,17 @@ export const useBeaconStore = defineStore('beacon', {
         },
         stopAdvertising() {
             const bluetoothle = (window as any).bluetoothle;
-            // const logger = useLogger();
-            bluetoothle.stopAdvertising((success) => {
-                console.log(success)
+            const logger = useLogger();
+            bluetoothle.stopAdvertising(() => {
+                this.advertising = false;
+                Toast.show({
+                    text: `Stopped advertising!`,
+                });
             }, (error) => {
-                console.error(error)
+                logger.log('error', error);
+                Toast.show({
+                    text: `Error while stopping advertising! ${error.message}.`,
+                });
             });
         },
         findBeaconInfo(uid: string): Beacon {
