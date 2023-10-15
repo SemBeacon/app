@@ -59,7 +59,7 @@ export class BLESemBeacon extends BLEBeaconObject {
             datatype: xsd.anyURI
         }
     })
-    shortResourceURI: UrlString;
+    shortResourceUri: UrlString;
 
     resourceData: Store;
 
@@ -81,7 +81,7 @@ export class BLESemBeacon extends BLEBeaconObject {
     maxAge?: number;
 
     isValid(): boolean {
-        return (this.resourceUri !== undefined || this.shortResourceURI !== undefined) && this.instanceId !== undefined && this.namespaceId !== undefined;
+        return (this.resourceUri !== undefined || this.shortResourceUri !== undefined) && this.instanceId !== undefined && this.namespaceId !== undefined;
     }
 
     parseManufacturerData(_: number, manufacturerData: Uint8Array): this {
@@ -134,7 +134,7 @@ export class BLESemBeacon extends BLEBeaconObject {
                     ? BLESemBeacon.SUFFIXES[view.getUint8(i)]
                     : String.fromCharCode(view.getUint8(i));
         }
-        this.shortResourceURI = url as IriString;
+        this.shortResourceUri = url as IriString;
         return this;
     }
 

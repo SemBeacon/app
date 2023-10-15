@@ -6,14 +6,14 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
 
-        <ion-title>Beacon</ion-title>
+        <ion-title>Beacon Scanning</ion-title>
 
         <ion-buttons slot="end">
           
         </ion-buttons>
       </ion-toolbar>
 
-      <ion-toolbar color="primary">
+      <!-- <ion-toolbar color="primary">
         <ion-segment value="scanning">
           <ion-segment-button @click="() => tab = 1" value="scanning">
             <ion-label>Scanning</ion-label>
@@ -22,7 +22,7 @@
             <ion-label>Advertising</ion-label>
           </ion-segment-button>
         </ion-segment>
-      </ion-toolbar>
+      </ion-toolbar> -->
     </ion-header>
 
     <ion-content :fullscreen="true" v-if="tab === 1">
@@ -48,17 +48,23 @@
     <ion-content :fullscreen="true" v-if="tab === 2">
       <div id="container">
         <ion-list>
-          <ion-item>
+          <ion-item lines="none">
             <ion-label position="stacked" color="primary">Namespace ID</ion-label>
-            <ion-input position="stacked" type="text" value=""></ion-input>
           </ion-item>
-          <ion-item>
+          <ion-item lines="none">
+            <ion-input position="stacked" value="test"></ion-input>
+          </ion-item>
+          <ion-item lines="none">
             <ion-label position="stacked" color="primary">Instance ID</ion-label>
-            <ion-input position="stacked" type="text" value=""></ion-input>
           </ion-item>
-          <ion-item>
+          <ion-item lines="none">
+            <ion-input position="stacked" value=""></ion-input>
+          </ion-item>
+          <ion-item lines="none">
             <ion-label position="stacked" color="primary">Short resource URI</ion-label>
-            <ion-input position="stacked" type="text" value=""></ion-input>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-input position="stacked" value=""></ion-input>
           </ion-item>
         </ion-list>
       </div>

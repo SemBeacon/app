@@ -42,11 +42,11 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         return new Promise((resolve, reject) => {
             if (object instanceof BLESemBeacon) {
                 Promise.all([
-                    ((!object.shortResourceURI && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
+                    ((!object.shortResourceUri && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
                     this._findByUID(object.uid) as Promise<BLESemBeacon>
                 ]).then((objects: BLESemBeacon[]) => {
                     if ((objects[1] === undefined || TimeService.now() - objects[1].maxAge > objects[1].modifiedTimestamp) && 
-                        (objects[0].resourceUri !== undefined || objects[0].shortResourceURI !== undefined) &&
+                        (objects[0].resourceUri !== undefined || objects[0].shortResourceUri !== undefined) &&
                         !this.queue.has(objects[0].uid)
                     ) {
                         return this.fetchData(objects[0]);
@@ -130,7 +130,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     "Authorization": `Bearer ${this.options.accessToken}`
                 }
             }).then(response => {
-                beacon.shortResourceURI = response.data.link as UrlString;
+                beacon.shortResourceUri = response.data.link as UrlString;
                 resolve(beacon);
             }).catch(reject);
         });
@@ -143,7 +143,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
             }
             this.queue.add(beacon.uid);
             axios.get((this.options.cors ? "https://proxy.linkeddatafragments.org/" : "") + 
-                (beacon.resourceUri ?? beacon.shortResourceURI), {
+                (beacon.resourceUri ?? beacon.shortResourceUri), {
                     headers: {
                         Accept: "text/turtle"
                     },
@@ -155,6 +155,8 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     resourceUri = result.headers['x-final-url'];
                 }
                 let deserialized: BLESemBeacon = RDFSerializer.deserializeFromString(resourceUri, result.data);
+                deserialized.resourceUri = resourceUri;
+                deserialized.shortResourceUri = beacon.shortResourceUri;
                 const parser = new Parser();
                 const quads: Quad[] = parser.parse(result.data);
                 const store = new Store(quads);

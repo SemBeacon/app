@@ -163,7 +163,7 @@ export const useBeaconStore = defineStore('beacon', {
                         model: undefined
                     };
                     this.namespaces[beacon.namespaceId.toString()] = namespace;
-                    logger.log("info", `Detecting SemBeacon with URI=${beacon.shortResourceURI}`);
+                    logger.log("info", `Detecting SemBeacon with URI=${beacon.shortResourceUri}`);
                     service.insert(beacon.uid, beacon).then((insertedBeacon: BLEBeaconObject) => {
                         if (insertedBeacon && insertedBeacon instanceof BLESemBeacon && insertedBeacon.resourceData) {
                             namespace.beacons[insertedBeacon.instanceId.toString()] = insertedBeacon;

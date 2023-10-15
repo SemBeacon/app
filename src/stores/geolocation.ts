@@ -21,6 +21,9 @@ export const useGeolocationStore = defineStore('geolocation', {
     actions: {
         initialize(): Promise<void> {
             return new Promise((resolve, reject) => {
+                if (this.model !== undefined) {
+                    return resolve();
+                }
                 ModelBuilder.create()
                     .from(this.source)
                     .to(new CallbackSinkNode((frame: DataFrame) => {

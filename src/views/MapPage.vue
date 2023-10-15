@@ -13,7 +13,7 @@
 
     <ion-content :fullscreen="true">
       <div id="container">
-        <map-component>
+        <map-component ref="map">
 
         </map-component>
       </div>
@@ -30,7 +30,7 @@
 
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Options, Ref } from 'vue-property-decorator';
 import { 
   IonButtons, 
   IonContent, 
@@ -85,6 +85,13 @@ export default class MapPage extends Vue {
   beaconStore = useBeaconStore();
   beacons = computed(() => this.beaconStore.beacons);
   loading = false;
+  @Ref("map") map: MapComponent;
+
+  ionViewDidEnter(): void {
+    if ((window as any)._leafletMap) {
+      (window as any)._leafletMap.invalidateSize();
+    }
+  }
 
   toggleScan(): void {
     if (!this.loading) {

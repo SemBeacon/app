@@ -1,6 +1,5 @@
 <template>
     <l-marker 
-        :key="key"
         :lat-lng="latLng"
         ref="marker"
     >
@@ -16,7 +15,7 @@
             }"
         >
             <span class="key">{{ beacon.displayName }}</span><br>
-            <div v-if="beacon.lastSeen" :key="lastSeen()">
+            <div v-if="beacon.lastSeen" :key="key">
                 <span class="key">Last seen: </span><span class="value">{{ lastSeen() }}</span><br>
                 <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }} dBm</span><br>
                 <span class="key">Distance: </span><span class="value">{{ beacon.distance }} m</span>
@@ -36,10 +35,9 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
-import { ComputedRef, computed, isProxy, toRaw } from 'vue';
+import { Ref, ref, isProxy, toRaw } from 'vue';
 import { Beacon, useBeaconStore } from '../../stores/beacon';
 import moment from 'moment';
-import { ref } from 'vue';
 import { TimeService } from '@openhps/core';
 
 @Options({
@@ -53,7 +51,7 @@ export default class BeaconMarkerComponent extends Vue {
     @Prop() beacon: BLEBeaconObject & Beacon;
     marker: any = ref("marker");
     beaconStore = useBeaconStore();
-    key: ComputedRef<string> = computed(() => (this.beacon ? this.beacon.uid : "") + TimeService.now());
+    key: Ref<string> = ref(TimeService.now().toString() + Math.random());
 
     get latLng(): number[] {
         if (!this.beacon.position) {
@@ -72,6 +70,7 @@ export default class BeaconMarkerComponent extends Vue {
             this.marker.leafletObject.setOpacity(this.opacity());
         });
         setInterval(async () => {
+            (this.key as any) = (this.beacon ? this.beacon.uid : "") + TimeService.now();
             if (this.marker) {
                 this.marker.leafletObject.setOpacity(this.opacity());
             }

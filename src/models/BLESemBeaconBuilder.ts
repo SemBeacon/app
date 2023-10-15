@@ -45,7 +45,7 @@ export class BLESemBeaconBuilder {
     }
     
     shortResourceUri(resourceUri: IriString): this {
-        this.beacon.shortResourceURI = resourceUri;
+        this.beacon.shortResourceUri = resourceUri;
         return this;
     }
 
@@ -58,7 +58,7 @@ export class BLESemBeaconBuilder {
         const view = new DataView(new ArrayBuffer(17), 0)
         let index = 0;
         let url_index = 0;
-        const url = this.beacon.shortResourceURI;
+        const url = this.beacon.shortResourceUri;
         for (const prefix in BLESemBeacon.PREFIXES) {
             if (url.startsWith(prefix)) {
                 // Encode using this prefix

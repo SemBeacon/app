@@ -20,6 +20,11 @@
               </ion-item>
             </ion-menu-toggle>
 
+            <ion-menu-toggle auto-hide="false">
+              <ion-item lines="none" detail="false" class="hydrated" disabled="true" :key="JSON.stringify(info)">
+                <ion-label>v{{ info.version }} build: {{ info.build }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
           </ion-list>
         </ion-content>
       </ion-menu>
@@ -61,7 +66,7 @@ import { useUserStore } from './stores/user';
 import { useLogger } from './stores/logger';
 
 import { Animation, StatusBar } from '@capacitor/status-bar';
-import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
+import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
 
 @Options({
@@ -84,6 +89,7 @@ export default class App extends Vue {
   beaconStore = useBeaconStore();
   userStore = useUserStore();
   logger = useLogger();
+  info: AppInfo = {} as any;
 
   selectedIndex = ref(0);
   appPages = [
@@ -137,6 +143,11 @@ export default class App extends Vue {
             this.router.navigateByUrl(appPath);
           }
         });
+      });
+
+      CapacitorApp.getInfo().then(info => {
+        console.log("Application information", info);
+        this.info = info;
       });
 
       Promise.all([this.userStore.initialize(), this.beaconStore.initialize()])
@@ -303,5 +314,6 @@ ion-item.selected {
 
 ion-menu ion-list-header img {
   width: 80%;
+  margin-bottom: 2em;
 }
 </style>

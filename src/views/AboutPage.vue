@@ -12,7 +12,7 @@
       <ion-content :fullscreen="true">
         <div id="container">
             <ion-content class="ion-padding">
-                <picture>
+                <picture class="logo">
                     <source 
                     srcset="/assets/logo/logo_alpha.svg" 
                     media="(prefers-color-scheme: dark)">
@@ -23,7 +23,12 @@
                     will scan for SemBeacon, iBeacon, AltBeacon, Eddystone beacons using the OpenHPS framework.
                 </ion-label>
                 <ion-label class="ion-text-wrap">
-                    
+                  <picture>
+                      <source 
+                      srcset="/assets/about/sembeacon_specification_v4_2_alpha.svg" 
+                      media="(prefers-color-scheme: dark)">
+                      <img alt="SemBeacon specification" src="/assets/about/sembeacon_specification_v4_2.svg">
+                  </picture>
                 </ion-label>
             </ion-content>
         </div>
@@ -76,7 +81,7 @@ export default class AboutPage extends Vue {
 </script>
 
 <style scoped lang="scss">
-.container picture img {
+.container picture.logo img {
     width: 50%;
 }
 </style>

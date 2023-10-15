@@ -5,6 +5,7 @@
     :zoom="zoom" 
     :center="location ? location : [0, 0]"
     :options="{ attributionControl: false }"
+    @ready="onMapReady"
   >
     <l-tile-layer
         :url="`https://api.mapbox.com/styles/v1/${id}/tiles/{z}/{x}/{y}?access_token=${accessToken}`"
@@ -47,7 +48,8 @@ import {
 import { Absolute2DPosition, GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
 import GeoJsonComponent from './map/GeoJsonComponent.vue';
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
+import { Ref } from 'vue-property-decorator';
 import { useGeolocationStore } from '../stores/geolocation';
 import { useBeaconStore } from '../stores/beacon';
 import { useEnvironmentStore } from '../stores/environment';
@@ -68,20 +70,15 @@ export default class MapComponent extends Vue {
 
   id = "mapbox/streets-v11";
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
-  map: any = ref("map");
+  @Ref("map") map: any;
   zoom?: number = 18;
   beacons = computed(() => {
-    console.log("Beacon list", Array.from(this.beaconStore.beacons.values())
-      .filter((b) => {
-        return b.position !== undefined && 
-          (b.position as Absolute2DPosition).x !== undefined && 
-          Number.isNaN((b.position as Absolute2DPosition).x);
-      }))
     return Array.from(this.beaconStore.beacons.values())
       .filter((b) => {
-        return b.position !== undefined && 
-          (b.position as Absolute2DPosition).x !== undefined && 
-          Number.isNaN((b.position as Absolute2DPosition).x);
+        const position = (b.position as unknown as Absolute2DPosition);
+        return position !== undefined && 
+          position.x !== undefined && 
+          !Number.isNaN(position.x);
       });
   });
   location = computed(() => {
@@ -94,6 +91,10 @@ export default class MapComponent extends Vue {
     this.geolocationStore.initialize().then(() => {
       return this.geolocationStore.sourceNode.start();
     });
+  }
+
+  onMapReady(map: any) {
+    (window as any)._leafletMap = map;
   }
 
   unmounted() {
