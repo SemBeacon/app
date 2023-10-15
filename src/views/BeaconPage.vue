@@ -183,11 +183,13 @@ export default class BeaconPage extends Vue {
     }).catch(console.error);
 
     setInterval(() => {
-      const beaconInfo = this.beaconStore.findBeaconInfo(beaconUID);
-      this.beacon.rssi = beaconInfo.rssi;
-      this.beacon.lastSeen = beaconInfo.lastSeen;
-      this.beacon.distance = beaconInfo.distance;
-      (this.key as any) = (this.beacon ? this.beacon.uid : "") + TimeService.now();
+      if (this.beaconStore.isScanning) {
+        const beaconInfo = this.beaconStore.findBeaconInfo(beaconUID);
+        this.beacon.rssi = beaconInfo.rssi;
+        this.beacon.lastSeen = beaconInfo.lastSeen;
+        this.beacon.distance = beaconInfo.distance;
+        (this.key as any) = (this.beacon ? this.beacon.uid : "") + TimeService.now();
+      }
     }, 2000);
   }
 

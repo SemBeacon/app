@@ -53,6 +53,32 @@
           </ion-row>
         </ion-grid>
       </div>
+      <div v-else-if="beaconType === 'Eddystone-URL'">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label position="stacked" color="primary">URL</ion-label>
+              <ion-label position="stacked">{{ beacon.url.toString() }}</ion-label>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <div v-else-if="beaconType === 'Eddystone-UID'">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label position="stacked" color="primary">Namespace ID</ion-label>
+              <ion-label position="stacked">{{ beacon.namespaceId.toString() }}</ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-label position="stacked" color="primary">Instance ID</ion-label>
+              <ion-label position="stacked">{{ beacon.instanceId.toString() }}</ion-label>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
       <div v-else>
         <h2>{{ beaconType }}</h2>
         <p>{{ beacon.uid }}</p>
@@ -68,7 +94,7 @@
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
 import { IonItem, IonLabel, IonThumbnail } from '@ionic/vue';
-import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone, BLEEddystoneURL } from '@openhps/rf';
+import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone, BLEEddystoneURL, BLEEddystoneUID } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
 import moment from 'moment';
 import { Beacon } from '../../stores/beacon';
@@ -83,7 +109,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
   }
 })
 export default class BeaconItemComponent extends Vue {
-  @Prop() beacon: (BLEBeaconObject | BLESemBeacon | BLEiBeacon | BLEAltBeacon | BLEEddystoneURL) & Beacon;
+  @Prop() beacon: (BLEBeaconObject | BLESemBeacon | BLEiBeacon | BLEAltBeacon | BLEEddystoneURL | BLEEddystoneUID) & Beacon;
   key: Ref<string> = ref(TimeService.now().toString() + Math.random());
 
   get beaconType(): string {
@@ -93,6 +119,10 @@ export default class BeaconItemComponent extends Vue {
       return "iBeacon";
     } else if (this.beacon instanceof BLEAltBeacon) {
       return "AltBeacon";
+    } else if (this.beacon instanceof BLEEddystoneURL) {
+      return "Eddystone-URL";
+    } else if (this.beacon instanceof BLEEddystoneUID) {
+      return "Eddystone-UID";
     } else if (this.beacon instanceof BLEEddystone) {
       return "Eddystone";
     } else {
