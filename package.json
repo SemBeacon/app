@@ -18,7 +18,7 @@
     "resources": "npx @capacitor/assets generate",
     "ionic:build": "vue-cli-service build",
     "ionic:serve": "vue-cli-service serve",
-    "version": "capacitor-set-version -v 1.0.0 -b 0"
+    "version": "capacitor-set-version -v 1.1 -b 1"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": ">=3.0.2",

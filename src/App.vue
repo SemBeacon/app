@@ -21,7 +21,7 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item lines="none" detail="false" class="hydrated" disabled="true" :key="JSON.stringify(info)">
+              <ion-item lines="none" detail="false" class="hydrated" disabled="true" :key="JSON.stringify(info)" v-if="info">
                 <ion-label>v{{ info.version }} build: {{ info.build }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
@@ -68,6 +68,7 @@ import { useLogger } from './stores/logger';
 import { Animation, StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
+import { Capacitor } from '@capacitor/core';
 
 @Options({
   components: {
@@ -120,12 +121,14 @@ export default class App extends Vue {
   ];
   
   beforeCreate(): void {
-    StatusBar.setBackgroundColor({
-      color: '#363795'
-    });
-    StatusBar.show({
-      animation: Animation.None
-    });
+    if (Capacitor.getPlatform() !== 'web') {
+      StatusBar.setBackgroundColor({
+        color: '#363795'
+      });
+      StatusBar.show({
+        animation: Animation.None
+      });
+    }
   }
 
   mounted(): Promise<void> {
@@ -145,10 +148,12 @@ export default class App extends Vue {
         });
       });
 
-      CapacitorApp.getInfo().then(info => {
-        console.log("Application information", info);
-        this.info = info;
-      });
+      if (Capacitor.getPlatform() !== 'web') {
+        CapacitorApp.getInfo().then(info => {
+          console.log("Application information", info);
+          this.info = info;
+        });
+      }
 
       Promise.all([this.userStore.initialize(), this.beaconStore.initialize()])
         .then(() => resolve())

@@ -41,6 +41,7 @@ describe('BLESemBeacon', () => {
     describe('flags', () => {
         it('should set and get flags', () => {
             const beacon = new BLESemBeacon();
+            beacon.flags = 9;
             
         });
     })

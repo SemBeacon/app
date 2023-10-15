@@ -6,14 +6,16 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
 
-        <ion-title>Beacon Scanning</ion-title>
+        <ion-title>Beacon</ion-title>
 
         <ion-buttons slot="end">
-          
+          <ion-button icon-only color="danger" @click="clearCache">
+            <ion-icon :disabled="beaconStore.cacheSize === 0" name="trash"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
 
-      <!-- <ion-toolbar color="primary">
+      <ion-toolbar color="primary">
         <ion-segment value="scanning">
           <ion-segment-button @click="() => tab = 1" value="scanning">
             <ion-label>Scanning</ion-label>
@@ -22,7 +24,7 @@
             <ion-label>Advertising</ion-label>
           </ion-segment-button>
         </ion-segment>
-      </ion-toolbar> -->
+      </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true" v-if="tab === 1">
@@ -35,6 +37,7 @@
           >
           </beacon-item-component>
         </ion-list>
+        <!-- TODO: Add an image when no beacons -->
       </div>
       
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">
@@ -45,36 +48,7 @@
       </ion-fab>
     </ion-content>
 
-    <ion-content :fullscreen="true" v-if="tab === 2">
-      <div id="container">
-        <ion-list>
-          <ion-item lines="none">
-            <ion-label position="stacked" color="primary">Namespace ID</ion-label>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-input position="stacked" value="test"></ion-input>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-label position="stacked" color="primary">Instance ID</ion-label>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-input position="stacked" value=""></ion-input>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-label position="stacked" color="primary">Short resource URI</ion-label>
-          </ion-item>
-          <ion-item lines="none">
-            <ion-input position="stacked" value=""></ion-input>
-          </ion-item>
-        </ion-list>
-      </div>
-
-      <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-        <ion-fab-button @click="toggleAdvertising" :color="this.beaconStore.isAdvertising ? 'danger' : 'primary'">
-          <ion-icon :name="this.beaconStore.isAdvertising ? 'pause' : 'wifi-outline'"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ion-content>
+    <advertising-component v-if="tab === 2"></advertising-component>
   </ion-page>
 </template>
 
@@ -82,6 +56,7 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
 import { computed } from 'vue';
+import AdvertisingComponent from '../components/AdvertisingComponent.vue';
 import { 
   IonButtons, 
   IonContent, 
@@ -92,6 +67,7 @@ import {
   IonToolbar, 
   IonList, 
   IonItem, 
+  IonInput,
   IonLabel,
   IonFab,
   IonFabButton,
@@ -100,6 +76,7 @@ import {
   IonProgressBar,
   IonSegment,
   IonSegmentButton,
+  IonButton
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { useBeaconStore } from '../stores/beacon';
@@ -125,6 +102,9 @@ import { pause, search } from 'ionicons/icons';
     IonIcon,
     IonSegment,
     IonSegmentButton,
+    IonInput,
+    IonButton,
+    AdvertisingComponent,
   },
   data: () => ({
     pause,
@@ -136,14 +116,6 @@ export default class ScanPage extends Vue {
   beaconStore = useBeaconStore();
   loading = false;
   beacons = computed(() => Array.from(this.beaconStore.beacons.values()).filter(beacon => beacon.lastSeen !== undefined));
-
-  toggleAdvertising(): void {
-    if (this.beaconStore.isAdvertising) {
-      this.beaconStore.stopAdvertising();
-    } else {
-      this.beaconStore.startAdvertising();
-    }
-  }
 
   toggleScan(): void {
     if (!this.loading) {
@@ -169,6 +141,10 @@ export default class ScanPage extends Vue {
         });
       }
     }
+  }
+
+  clearCache(): void {
+    this.beaconStore.clear();
   }
 }
 </script>

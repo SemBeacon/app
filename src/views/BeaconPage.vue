@@ -55,6 +55,17 @@
                 <ion-label position="stacked" color="primary">Resource URI</ion-label>
                 <ion-label position="stacked">{{ beacon.resourceUri }}</ion-label>
               </ion-item>
+              <ion-item lines="none">
+                <ion-label position="stacked" color="primary">SemBeacon Flags</ion-label>
+                <div class="chip-container">
+                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">HAS_POSITION</ion-chip>
+                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">IS_PRIVATE</ion-chip>
+                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">IS_MOVING</ion-chip>
+                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">HAS_SYSTEM</ion-chip>
+                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">HAS_TELEMETRY</ion-chip>
+                  <ion-chip color="danger" v-if="beacon.flags === 0">No SemBeaocn flags</ion-chip>
+                </div>
+              </ion-item>
           </div>
           <div v-else-if="beaconType() === 'iBeacon'">
             <ion-item lines="none">
@@ -104,6 +115,7 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
 import { 
+  IonChip,
   IonButtons, 
   IonContent, 
   IonHeader, 
@@ -144,7 +156,11 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     IonFab,
     IonFabButton,
     IonSpinner,
-  }
+    IonChip,
+  },
+  data: () => ({
+    BLESemBeacon
+  })
 })
 export default class BeaconPage extends Vue {
   loading = false;
@@ -162,6 +178,8 @@ export default class BeaconPage extends Vue {
       this.beacon.rssi = beaconInfo.rssi;
       this.beacon.lastSeen = beaconInfo.lastSeen;
       this.beacon.distance = beaconInfo.distance;
+      
+    (window as any).beacon = this.beacon;
     }).catch(console.error);
 
     setInterval(() => {
@@ -233,5 +251,11 @@ ion-item.info h1,h2,h3 {
   padding-bottom: 0;
   margin-top: 0;
   padding-top: 0;
+}
+.chip-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 </style>

@@ -47,8 +47,8 @@
         <ion-grid>
           <ion-row>
             <ion-col>
-              <ion-label position="stacked" color="primary">Beacon UID</ion-label>
-              <ion-label position="stacked">{{ beacon.beaconUID.toString() }}</ion-label>
+              <ion-label position="stacked" color="primary">Beacon ID</ion-label>
+              <ion-label position="stacked">{{ beacon.beaconId.toString() }}</ion-label>
             </ion-col>
           </ion-row>
         </ion-grid>

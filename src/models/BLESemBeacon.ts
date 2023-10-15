@@ -25,6 +25,13 @@ export const SEMBEACON_FLAG_UNDEFINED		    = (0x00);
     }
 })
 export class BLESemBeacon extends BLEBeaconObject {
+    static readonly FLAGS = {
+        SEMBEACON_FLAG_HAS_POSITION,
+        SEMBEACON_FLAG_HAS_SYSTEM,
+        SEMBEACON_FLAG_HAS_TELEMETRY,
+        SEMBEACON_FLAG_MOVING,
+        SEMBEACON_FLAG_PRIVATE,
+    };
     static readonly PREFIXES = [
         ...BLEEddystoneURL.PREFIXES
     ];
@@ -89,7 +96,7 @@ export class BLESemBeacon extends BLEBeaconObject {
         const view = new DataView(manufacturerData.buffer, 0);
         if (
             !(
-                manufacturerData.byteLength === 26 &&
+                manufacturerData.byteLength >= 24 &&
                 BufferUtils.arrayBuffersAreEqual(manufacturerData.buffer.slice(0, 2), Uint8Array.from([0xbe, 0xac]).buffer)
             )
         ) {
@@ -97,9 +104,8 @@ export class BLESemBeacon extends BLEBeaconObject {
         }
         this.namespaceId = BLEUUID.fromBuffer(manufacturerData.subarray(2, 18));
         this.instanceId = BufferUtils.toHexString(manufacturerData.subarray(18, 22));
-        this.txPower = view.getInt8(22);
-        this.flags = view.getInt8(23);
-
+        this.calibratedRSSI = view.getInt8(22);
+        this.flags = view.getUint8(23);
         if (this.uid === undefined) {
             this.uid = this.computeUID();
         }
@@ -154,7 +160,7 @@ export class BLESemBeacon extends BLEBeaconObject {
      * @returns {boolean} Result
      */
     hasFlag(flag: number): boolean {
-        return Boolean(this.flags & flag);
+        return (this.flags & flag) !== 0;
     }
 
     /**
@@ -164,7 +170,7 @@ export class BLESemBeacon extends BLEBeaconObject {
      * @returns {this}
      */
     setFlag(flag: number): this {
-        this.flags = this.flags & flag;
+        this.flags = this.flags | flag;
         return this;
     }
     

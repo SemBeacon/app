@@ -217,13 +217,15 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         beacon.services.forEach(service => {
             online.addService(service);
         });
-        online.txPower = beacon.txPower;
+        online.calibratedRSSI = beacon.calibratedRSSI;
         online.relativePositions = beacon.relativePositions;
         online.manufacturerData = beacon.manufacturerData;
+
         if (online instanceof BLESemBeacon && beacon instanceof BLESemBeacon) {
             online.modifiedTimestamp = TimeService.now();
             online.namespaceId = beacon.namespaceId;
             online.instanceId = beacon.instanceId;
+            online.flags = beacon.flags;
         }
         online.uid = online.computeUID();
         return online;

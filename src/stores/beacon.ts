@@ -57,6 +57,9 @@ export const useBeaconStore = defineStore('beacon', {
         advertising: false
     }),
     getters: {
+        cacheSize(): number {
+            return (this.beacons as Map<string, BLEBeaconObject>).size;
+        },
         sourceNode(): BLESourceNode {
             return this.source;
         },
@@ -68,16 +71,16 @@ export const useBeaconStore = defineStore('beacon', {
         }
     },
     actions: {
-        startAdvertising(): void {
+        startAdvertising(beaconData: any): void {
             const bluetoothle = (window as any).bluetoothle;
             const logger = useLogger();
             bluetoothle.initialize(() => {
                 bluetoothle.requestPermissionBtAdvertise(() => {
                     BLESemBeaconBuilder.create()
-                        .namespaceId(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
+                        .namespaceId(BLEUUID.fromString(beaconData.namespaceId))
                         .instanceId(10)
                         .calibratedRSSI(-56)
-                        .shortResourceUri("https://bit.ly/3Nf0iRi")
+                        .shortResourceUri(beaconData.shortResourceUri)
                         .flag(SEMBEACON_FLAG_HAS_POSITION)
                         .flag(SEMBEACON_FLAG_HAS_SYSTEM)
                         .build().then(beacon => {
@@ -275,6 +278,13 @@ export const useBeaconStore = defineStore('beacon', {
                 const source: BLESourceNode = this.source;
                 source.stop().then(resolve).catch(reject);
             });
+        },
+        clear(): void {
+            this.namespaces = {};
+            this.beacons = new Map();
+            this.beaconInfo = new Map();
+            const service = this.model.findDataService(SemBeaconService);
+            service.deleteAll();
         }
     }
 });
