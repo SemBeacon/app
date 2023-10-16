@@ -40,7 +40,8 @@
 
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
-//import L from 'leaflet';
+// import L from 'leaflet';
+// import 'leaflet.vectorgrid';
 import {
     LMap, LMarker, LTileLayer
     // @ts-ignore
@@ -53,6 +54,8 @@ import { Ref } from 'vue-property-decorator';
 import { useGeolocationStore } from '../stores/geolocation';
 import { useBeaconStore } from '../stores/beacon';
 import { useEnvironmentStore } from '../stores/environment';
+
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
   components: {
@@ -67,8 +70,7 @@ export default class MapComponent extends Vue {
   geolocationStore = useGeolocationStore();
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
-
-  id = "mapbox/streets-v11";
+  id = prefersDark ? "mapbox/dark-v11" : "mapbox/streets-v11";
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
   @Ref("map") map: any;
   zoom?: number = 18;
@@ -95,6 +97,15 @@ export default class MapComponent extends Vue {
 
   onMapReady(map: any) {
     (window as any)._leafletMap = map;
+
+    // Vector tile layer
+    // const url = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.vector.pbf?access_token={accessToken}';
+    // (L as any).vectorGrid.protobuf(url, {
+    //   id: 'mapbox.mapbox-streets-v8', 
+    //   attribution: '', 
+    //   maxZoom: 20, 
+    //   accessToken: accessToken
+    // }).addTo(map);
   }
 
   unmounted() {

@@ -21,7 +21,7 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item lines="none" detail="false" class="hydrated" disabled="true" :key="JSON.stringify(info)" v-if="info">
+              <ion-item lines="none" detail="false" class="hydrated" disabled="true" :key="JSON.stringify(info)" v-if="info.version">
                 <ion-label>v{{ info.version }} build: {{ info.build }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
@@ -123,7 +123,7 @@ export default class App extends Vue {
   beforeCreate(): void {
     if (Capacitor.getPlatform() !== 'web') {
       StatusBar.setBackgroundColor({
-        color: '#363795'
+        color: '#363795',
       });
       StatusBar.show({
         animation: Animation.None

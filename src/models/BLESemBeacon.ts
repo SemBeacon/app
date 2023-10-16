@@ -68,6 +68,7 @@ export class BLESemBeacon extends BLEBeaconObject {
     })
     shortResourceUri: UrlString;
 
+    // Transient
     resourceData: Store;
 
     /**

@@ -14,14 +14,14 @@
             <ion-label position="stacked" color="primary">Short resource URI</ion-label>
             <ion-input position="stacked" v-model="beacon.shortResourceUri" :disabled="beaconStore.isAdvertising"></ion-input>
           </ion-item>
-          <ion-item lines="none">
-            <ion-label position="stacked" color="primary">SemBeacon Flags</ion-label>
+          <!-- <ion-item lines="none">
+            <ion-label color="primary">SemBeacon Flags</ion-label>
             <ion-toggle>HAS_POSITION</ion-toggle>
             <ion-toggle>IS_PRIVATE</ion-toggle>
             <ion-toggle>IS_MOVING</ion-toggle>
             <ion-toggle>HAS_SYSTEM</ion-toggle>
             <ion-toggle>HAS_TELEMETRY</ion-toggle>
-          </ion-item>
+          </ion-item> -->
         </ion-list>
 
         <!-- <ion-card>

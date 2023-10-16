@@ -56,7 +56,7 @@
                 <ion-label position="stacked">{{ beacon.resourceUri }}</ion-label>
               </ion-item>
               <ion-item lines="none">
-                <ion-label position="stacked" color="primary">SemBeacon Flags</ion-label>
+                <ion-label color="primary">SemBeacon Flags</ion-label>
                 <div class="chip-container">
                   <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">HAS_POSITION</ion-chip>
                   <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">IS_PRIVATE</ion-chip>
@@ -86,6 +86,25 @@
               <ion-label position="stacked" color="primary">Beacon UID</ion-label>
               <ion-label position="stacked">{{ beacon.beaconType.toString() }}</ion-label>
             </ion-item>
+          </div>
+          <div v-else-if="beaconType() === 'Eddystone-URL'">
+            <ion-item lines="none">
+              <ion-label position="stacked" color="primary">URL</ion-label>
+              <ion-label position="stacked">{{ beacon.url }}</ion-label>
+            </ion-item>
+          </div>
+          <div v-else-if="beaconType() === 'Eddystone-UID'">
+            <ion-item lines="none">
+              <ion-label position="stacked" color="primary">Namespace ID</ion-label>
+              <ion-label position="stacked">{{ beacon.namespaceId.toString() }}</ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-label position="stacked" color="primary">Instance ID</ion-label>
+              <ion-label position="stacked">{{ beacon.instanceId.toString() }}</ion-label>
+            </ion-item>
+          </div>
+          <div v-else-if="beaconType() === 'Eddystone-TLM'">
+            
           </div>
           <div v-else-if="beaconType() === 'Eddystone'">
             
@@ -131,7 +150,7 @@ import {
   IonSpinner,
 } from '@ionic/vue';
 import { useRoute } from 'vue-router';
-import { BLEBeaconObject } from '@openhps/rf';
+import { BLEBeaconObject, BLEEddystoneTLM, BLEEddystoneUID, BLEEddystoneURL } from '@openhps/rf';
 import { Beacon, useBeaconStore } from '../stores/beacon';
 import { BLESemBeacon } from '../models/BLESemBeacon';
 import { BLEiBeacon, BLEEddystone, BLEAltBeacon } from '@openhps/rf';
@@ -200,6 +219,12 @@ export default class BeaconPage extends Vue {
       return "iBeacon";
     } else if (this.beacon instanceof BLEAltBeacon) {
       return "AltBeacon";
+    } else if (this.beacon instanceof BLEEddystoneURL) {
+      return "Eddystone-URL";
+    } else if (this.beacon instanceof BLEEddystoneUID) {
+      return "Eddystone-UID";
+    } else if (this.beacon instanceof BLEEddystoneTLM) {
+      return "Eddystone-TLM";
     } else if (this.beacon instanceof BLEEddystone) {
       return "Eddystone";
     } else {

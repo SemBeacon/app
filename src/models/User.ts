@@ -13,5 +13,11 @@ export class User {
         }
     })
     firstName: string;
+    
+    @SerializableMember({
+        rdf: {
+            predicates: [vcard.family_name, foaf.surname]
+        }
+    })
     lastName: string;
 }
