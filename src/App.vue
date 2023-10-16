@@ -160,6 +160,8 @@ export default class App extends Vue {
         .catch(err => {
           console.error(err);
         });
+
+      // this.$intro().start();
     });
   }
 }

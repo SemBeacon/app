@@ -9,13 +9,18 @@
         <ion-title>Beacon</ion-title>
 
         <ion-buttons slot="end">
-          <ion-button icon-only color="danger" @click="clearCache">
-            <ion-icon :disabled="beaconStore.cacheSize === 0" name="trash"></ion-icon>
+          <ion-button 
+            icon-only 
+            color="danger" 
+            :disabled="beaconStore.cacheSize === 0" 
+            @click="clearCache"
+          >
+            <ion-icon name="trash"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
 
-      <ion-toolbar color="primary">
+      <!-- <ion-toolbar color="primary">
         <ion-segment value="scanning">
           <ion-segment-button @click="() => tab = 1" value="scanning">
             <ion-label>Scanning</ion-label>
@@ -24,7 +29,7 @@
             <ion-label>Advertising</ion-label>
           </ion-segment-button>
         </ion-segment>
-      </ion-toolbar>
+      </ion-toolbar> -->
     </ion-header>
 
     <ion-content :fullscreen="true" v-if="tab === 1">
