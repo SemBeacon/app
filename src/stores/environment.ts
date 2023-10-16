@@ -44,6 +44,9 @@ export const useEnvironmentStore = defineStore('environments', {
                         resolve();
                     }).catch(reject);
             });
+        },
+        clear(): void {
+            this.environments = new Map();
         }
     }
 });

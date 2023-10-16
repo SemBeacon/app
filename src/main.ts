@@ -4,7 +4,6 @@ import router from './router';
 import { createPinia } from 'pinia'
 import * as icons from 'ionicons/icons';
 import { addIcons } from 'ionicons';
-import VueIntro from 'vue-introjs';
 
 import { IonicVue } from '@ionic/vue';
 
@@ -26,13 +25,11 @@ import '@ionic/vue/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import 'intro.js/introjs.css';
 
 const app = createApp(App)
   .use(IonicVue)
   .use(createPinia())
-  .use(router)
-  .use(VueIntro);
+  .use(router);
 
 router.isReady().then(() => {
   addIcons({ ...icons });

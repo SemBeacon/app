@@ -4,13 +4,17 @@ const config: CapacitorConfig = {
   appId: 'org.sembeacon',
   appName: 'SemBeacon',
   webDir: 'dist',
-  bundledWebRuntime: false,
   server: {
     iosScheme: "ionic",
     androidScheme: "http",
     hostname: "org.sembeacon"
   },
-  loggingBehavior: "none"
+  loggingBehavior: "none",
+  plugins: {
+    SplashScreen: {
+      backgroundColor: "#363795"
+    }
+  }
 };
 
 export default config;

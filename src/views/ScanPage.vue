@@ -20,7 +20,7 @@
         </ion-buttons>
       </ion-toolbar>
 
-      <!-- <ion-toolbar color="primary">
+      <ion-toolbar color="primary">
         <ion-segment value="scanning">
           <ion-segment-button @click="() => tab = 1" value="scanning">
             <ion-label>Scanning</ion-label>
@@ -29,7 +29,7 @@
             <ion-label>Advertising</ion-label>
           </ion-segment-button>
         </ion-segment>
-      </ion-toolbar> -->
+      </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true" v-if="tab === 1">
@@ -86,6 +86,7 @@ import {
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { useBeaconStore } from '../stores/beacon';
 import { pause, search } from 'ionicons/icons';
+import { useEnvironmentStore } from '../stores/environment';
 
 @Options({
   components: {
@@ -119,6 +120,7 @@ import { pause, search } from 'ionicons/icons';
 export default class ScanPage extends Vue {
   tab = 1;
   beaconStore = useBeaconStore();
+  environmentStore = useEnvironmentStore();
   loading = false;
   beacons = computed(() => Array.from(this.beaconStore.beacons.values()).filter(beacon => beacon.lastSeen !== undefined));
 
@@ -150,6 +152,7 @@ export default class ScanPage extends Vue {
 
   clearCache(): void {
     this.beaconStore.clear();
+    this.environmentStore.clear();
   }
 }
 </script>

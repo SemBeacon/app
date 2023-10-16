@@ -4983,22 +4983,22 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.15":
-  version "0.4.15"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.15.tgz#bf4acb9033648e8d1e80eb049e5bbb6639b3b83f"
-  integrity sha512-zhmXziI8nPsap+c8scOR91q32SIyXhUWp23Zc6Zs5UEjGQMq9bxl1RmytOTtLct3jcdxH1R7V5jalNRigHCZgw==
+"@openhps/rdf@^0.4.16":
+  version "0.4.16"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.16.tgz#e6c07eedf6945db02b89fbcea4e8651d5bbd3d62"
+  integrity sha512-rWteDmKVoBiRpYA1f8Eo5+JW4rTF6Hmw8FGxM+p+JHBYNCdnb5az5hxHhP1sce6q0pfoCUcvtTVOeEjcnQIHzg==
   dependencies:
     "@comunica/query-sparql" "^2.9.0"
     "@types/n3" "^1.16.2"
     n3 ">=1.17.1"
     sparqljs "^3.7.1"
 
-"@openhps/rf@^0.1.40":
-  version "0.1.40"
-  resolved "https://registry.yarnpkg.com/@openhps/rf/-/rf-0.1.40.tgz#c0a28e66c2ffbcdcb5ad695e78194b8fc363449a"
-  integrity sha512-FSdzexa7Tl5ByTrqicAUI2YegPw3qO/e65UwIO20FyygxIQLeoZHHwP/6S1w7CtIcUiZzPQQCSqh8WB64tNoaA==
+"@openhps/rf@^0.1.41":
+  version "0.1.41"
+  resolved "https://registry.yarnpkg.com/@openhps/rf/-/rf-0.1.41.tgz#c842145fa47ac445ffd31489c42923be7f794b8b"
+  integrity sha512-9kLp8Fbm6LldbqPz+D8eHs8cRMjBcTabWiYDrJsDiC7/rCehEHBt+NcVjC4rLfhJMLxo2BtC4XgrvArecqityw==
   dependencies:
-    ml-levenberg-marquardt "^4.1.2"
+    ml-levenberg-marquardt "^4.1.3"
 
 "@openhps/solid@^0.1.13":
   version "0.1.13"
@@ -10186,11 +10186,6 @@ interpret@^1.0.0:
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.4.0.tgz#665ab8bc4da27a774a40584e812e3e0fa45b1a1e"
   integrity sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==
 
-intro.js@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/intro.js/-/intro.js-7.2.0.tgz#e58e8fee4f6b43d6e0fcb264c9ca8a0f0565026d"
-  integrity sha512-qbMfaB70rOXVBceIWNYnYTpVTiZsvQh/MIkfdQbpA9di9VBfj1GigUPfcCv3aOfsbrtPcri8vTLTA4FcEDcHSQ==
-
 ionicons@^7.0.0:
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/ionicons/-/ionicons-7.1.2.tgz#fdf47afdad980349803a705473f51697370b3dad"
@@ -12278,7 +12273,7 @@ ml-array-rescale@^1.3.7:
     ml-array-max "^1.2.4"
     ml-array-min "^1.2.3"
 
-ml-levenberg-marquardt@^4.1.2:
+ml-levenberg-marquardt@^4.1.3:
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/ml-levenberg-marquardt/-/ml-levenberg-marquardt-4.1.3.tgz#60ffd2546b4ce21907194b8ccb8e12a60e3a7321"
   integrity sha512-CuR8mg1IIgb5IuDkdJBpnHmx+r6FpRDDPvYhAGq+4WVMLw/lu44P6PniyCrdvk1PNBmxVXN/LwBDMpQ/VaWhgA==
@@ -15701,11 +15696,6 @@ vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
-
-vue-introjs@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/vue-introjs/-/vue-introjs-1.3.2.tgz#ff2e3628adaab6c54cae47c12234cce00dd1db34"
-  integrity sha512-Bj27iGimO6VKr/Ngxs5hr/Fh8ONSHmvTUj2gh1f5CGZC5vfF1Vb5VyetjXiDdMXhLsqeGSIhac6SbVNHwUh9yQ==
 
 vue-loader@^17.0.0:
   version "17.3.0"
