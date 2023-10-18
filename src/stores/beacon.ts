@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
+import { CallbackNode, CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
 import { 
@@ -23,31 +23,36 @@ import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
 
-LocalNotifications.requestPermissions().then(() => {
-    LocalNotifications.registerActionTypes({
-        types: [
-            {
-                id: "sembeacon-1",
-                actions: [
+if (Capacitor.getPlatform() !== 'web') {
+    LocalNotifications.requestPermissions().then(() => {
+        if (Capacitor.getPlatform() === 'android') {
+            LocalNotifications.registerActionTypes({
+                types: [
                     {
-                        id: "stop",
-                        title: "Stop broadcasting",
-                        destructive: true,
-                    },
+                        id: "sembeacon-1",
+                        actions: [
+                            {
+                                id: "stop",
+                                title: "Stop broadcasting",
+                                destructive: true,
+                            },
+                        ]
+                    }
                 ]
-            }
-        ]
-    }); 
-    LocalNotifications.createChannel({
-        importance: 3,
-        id: 'sembeacon-advertising',
-        name: "SemBeacon Advertising",
-        vibration: false,
-        sound: "",
-        visibility: 1,
+            }).catch(console.error); 
+            LocalNotifications.createChannel({
+                importance: 3,
+                id: 'sembeacon-advertising',
+                name: "SemBeacon Advertising",
+                vibration: false,
+                sound: "",
+                visibility: 1,
+            }).catch(console.error); 
+        }
     });
-});
+}
 
 export interface BeaconScan {
     results: number;
@@ -77,7 +82,11 @@ export const useBeaconStore = defineStore('beacon', {
     state: (): BeaconState => ({
         namespaces: {},
         source: new BLESourceNode({
-            uid: "ble"
+            uid: "ble",
+            debug: true,
+            uuids: Capacitor.getPlatform() === 'ios' ? 
+                ['0000FEAA-0000-1000-8000-00805F9B34FB'] : 
+                undefined
         }),
         model: undefined,
         beacons: new Map(),
@@ -240,7 +249,7 @@ export const useBeaconStore = defineStore('beacon', {
         initialize(): Promise<void> {
             return new Promise((resolve, reject) => {
                 const logger = useLogger();
-
+                logger.log('info', 'Initializing beacon scanner model ...');
                 ModelBuilder.create()
                     .addService(new SemBeaconService(
                         new LocalStorageDriver(BLESemBeacon, {
@@ -251,6 +260,7 @@ export const useBeaconStore = defineStore('beacon', {
                             cors: true
                         }))
                     .from(this.source as BLESourceNode)
+                    .via(new CallbackNode(frame => console.log(frame.getObjects())))
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,
                         types: [
@@ -296,6 +306,7 @@ export const useBeaconStore = defineStore('beacon', {
                     }))
                     .build().then((model: Model) => {
                         this.model = model;
+                        logger.log('info', 'Initialized beacon scanning model.');
                         const service = this.model.findDataService(SemBeaconService);
                         service.on('beacon', (beacon) => {
                             const info = this.beaconInfo.get(beacon.uid);
@@ -325,12 +336,16 @@ export const useBeaconStore = defineStore('beacon', {
         },
         startScan(): Promise<void> {
             return new Promise((resolve, reject) => {
+                const logger = useLogger();
+                logger.log('info', 'Starting BLE scan ...');
                 const source: BLESourceNode = this.source;
                 source.start().then(resolve).catch(reject);
             });
         },
         stopScan(): Promise<void> {
             return new Promise((resolve, reject) => {
+                const logger = useLogger();
+                logger.log('info', 'Stopping BLE scan ...');
                 const source: BLESourceNode = this.source;
                 source.stop().then(resolve).catch(reject);
             });

@@ -35,7 +35,7 @@
           </ion-card-content>
         </ion-card> -->
 
-        <section class="ion-padding-top ion-text-center" v-if="!beaconStore.isAdvertising">
+        <section class="ion-padding-top help-text ion-text-center" v-if="!beaconStore.isAdvertising">
           <div>
             <h2 style="font-size: 1em">Click the advertising button to start advertising the SemBeacon URI and identifier.</h2>
           </div>
@@ -139,5 +139,9 @@ enum AdvertisingStatus {
 </script>
 
 <style scoped lang="scss">
-
+.help-text {
+  margin-top: 3em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
 </style>

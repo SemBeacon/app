@@ -42,7 +42,7 @@
           >
           </beacon-item-component>
         </ion-list>
-        <section class="ion-padding-top ion-text-center" v-else-if="!beaconStore.isScanning">
+        <section class="help-text ion-padding-top ion-text-center" v-else-if="!beaconStore.isScanning">
           <div>
             <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
           </div>
@@ -164,5 +164,10 @@ export default class BeaconsPage extends Vue {
 <style scoped lang="scss">
 ion-header ion-toolbar:first-child {
   margin-bottom: -1px;
+}
+.help-text {
+  margin-top: 3em;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 </style>

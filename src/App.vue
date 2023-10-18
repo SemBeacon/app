@@ -329,4 +329,9 @@ ion-menu ion-list-header img {
   width: 80%;
   margin-bottom: 2em;
 }
+
+ion-menu.ios ion-list-header img {
+  margin-top: 2em;
+  margin-left: 1em;
+}
 </style>

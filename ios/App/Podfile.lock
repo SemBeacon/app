@@ -1,23 +1,33 @@
 PODS:
-  - Capacitor (5.0.3):
+  - Capacitor (5.5.0):
     - CapacitorCordova
-  - CapacitorApp (5.0.2):
+  - CapacitorApp (5.0.6):
     - Capacitor
-  - CapacitorBrowser (5.0.2):
+  - CapacitorBrowser (5.1.0):
     - Capacitor
-  - CapacitorCommunityBluetoothLe (3.0.0):
+  - CapacitorCommunityBluetoothLe (3.0.2):
     - Capacitor
-  - CapacitorCordova (5.0.3)
-  - CapacitorDevice (5.0.2):
+  - CapacitorCordova (5.5.0)
+  - CapacitorDevice (5.0.6):
     - Capacitor
-  - CapacitorGeolocation (5.0.2):
+  - CapacitorFilesystem (5.1.4):
     - Capacitor
-  - CapacitorHaptics (5.0.2):
+  - CapacitorGeolocation (5.0.6):
     - Capacitor
-  - CapacitorKeyboard (5.0.2):
+  - CapacitorHaptics (5.0.6):
     - Capacitor
-  - CapacitorStatusBar (5.0.2):
+  - CapacitorKeyboard (5.0.6):
     - Capacitor
+  - CapacitorLocalNotifications (5.0.6):
+    - Capacitor
+  - CapacitorSplashScreen (5.0.6):
+    - Capacitor
+  - CapacitorStatusBar (5.0.6):
+    - Capacitor
+  - CapacitorToast (5.0.6):
+    - Capacitor
+  - CordovaPlugins (5.5.0):
+    - CapacitorCordova
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -26,10 +36,15 @@ DEPENDENCIES:
   - "CapacitorCommunityBluetoothLe (from `../../node_modules/@capacitor-community/bluetooth-le`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
+  - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
+  - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+  - "CapacitorToast (from `../../node_modules/@capacitor/toast`)"
+  - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -44,27 +59,42 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorFilesystem:
+    :path: "../../node_modules/@capacitor/filesystem"
   CapacitorGeolocation:
     :path: "../../node_modules/@capacitor/geolocation"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
+  CapacitorLocalNotifications:
+    :path: "../../node_modules/@capacitor/local-notifications"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
+  CapacitorToast:
+    :path: "../../node_modules/@capacitor/toast"
+  CordovaPlugins:
+    :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: 304a960e431f9e6f78556554ca71c41c1b2b9680
-  CapacitorApp: 28fef1fd75b2b3686e875216806fb8416d421097
-  CapacitorBrowser: 7986ee35377383fc40f7c1a0a793e0d9a49fe527
-  CapacitorCommunityBluetoothLe: f2cab9f83b1ac5568c6450f39ad6c8553c64ef16
-  CapacitorCordova: def732a63679698df6fb392bbe6d269a0b61e937
-  CapacitorDevice: 980e172f6fbfa0a945c73f908adc74b5a031e7d4
-  CapacitorGeolocation: 8532cd1585dbf0b5b721fa65ea51a36bf9a71e92
-  CapacitorHaptics: 864585542a435bd41eaabf7f30d9ff5ec03024d3
-  CapacitorKeyboard: e628d4e66d621c69e449945ebabded17c5b9c2e8
-  CapacitorStatusBar: 48f2899f6846cc7d8431b251ebfc58e1c10e3d58
+  Capacitor: 57890b363df14d5d2d5d8461aa23e886cb34da2a
+  CapacitorApp: 024e1b1bea5f883d79f6330d309bc441c88ad04a
+  CapacitorBrowser: 7a0fb6a1011abfaaf2dfedfd8248f942a8eda3d6
+  CapacitorCommunityBluetoothLe: 83b0de348b2ec461e0f9fa0e48c9e79c8378ddb0
+  CapacitorCordova: 3d3908a3d208a11a75f9df3b18c4405c4de76e1d
+  CapacitorDevice: 2c968f98a1ec4d22357418c1521e7ddc46c675e6
+  CapacitorFilesystem: af704badfbc69f6f8623d9ed313e5490e3723dcb
+  CapacitorGeolocation: 7be5f77abc205c0efe319fff8587a7183e7b0240
+  CapacitorHaptics: 1fffc1217c7e64a472d7845be50fb0c2f7d4204c
+  CapacitorKeyboard: b978154b024a5f65e044908e37d15b7de58b9d12
+  CapacitorLocalNotifications: c2d8b14794064fd4814b1d6c4ddbac8029afa295
+  CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
+  CapacitorStatusBar: 565c0a1ebd79bb40d797606a8992b4a105885309
+  CapacitorToast: bb0d79b78d9c27c0199b57f735dd50b8fc363489
+  CordovaPlugins: 27510862bb8ec6c7b883f2fb4bd4933eebe576f3
 
-PODFILE CHECKSUM: 80d96488b9a567bad6894ba6b82cf8bcba7ccfb7
+PODFILE CHECKSUM: 2378297adcfba9ba4b1b731a9d51b18142029386
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.9.1

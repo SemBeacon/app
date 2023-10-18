@@ -22,7 +22,9 @@ export const useLogger = defineStore('logging', {
                 Filesystem.mkdir({
                     path: "sembeacon",
                     directory:  Directory.Documents
-                }).catch(console.error);    
+                }).catch(err => {
+                    console.warn(`Unable to (re)create sembeacon log directory.`, err);
+                });    
             });
         },
         log(level: string, message: string) {

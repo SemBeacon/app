@@ -9,7 +9,7 @@
         <ion-buttons slot="end">
           <ion-button 
             icon-only 
-            color="light"
+            color="#ffffff"
             v-if="beacon.position" 
             @click="showOnMap"
           >
