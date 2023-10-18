@@ -14,7 +14,6 @@
     <ion-content :fullscreen="true">
       <div id="container">
         <map-component ref="map">
-
         </map-component>
       </div>
       
@@ -54,6 +53,7 @@ import { useBeaconStore } from '../stores/beacon';
 import { computed } from 'vue';
 import { pause, play } from 'ionicons/icons';
 import MapComponent from '../components/MapComponent.vue';
+import { useRoute } from 'vue-router';
 
 @Options({
   components: {
@@ -82,6 +82,7 @@ import MapComponent from '../components/MapComponent.vue';
   })
 })
 export default class MapPage extends Vue {
+  route = useRoute();
   beaconStore = useBeaconStore();
   beacons = computed(() => this.beaconStore.beacons);
   loading = false;
@@ -91,6 +92,8 @@ export default class MapPage extends Vue {
     if ((window as any)._leafletMap) {
       (window as any)._leafletMap.invalidateSize();
     }
+    const beaconUID = this.route.params.beaconUID as string;
+    this.map.highlightBeacon(beaconUID);
   }
 
   toggleScan(): void {

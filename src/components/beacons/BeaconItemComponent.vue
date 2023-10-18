@@ -79,6 +79,22 @@
           </ion-row>
         </ion-grid>
       </div>
+      <div v-else-if="beaconType === 'Eddystone-TLM'">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-label position="stacked" color="primary">Voltage</ion-label>
+              <ion-label position="stacked">{{ beacon.voltage }} mV</ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row v-if="beacon.temperature">
+            <ion-col>
+              <ion-label position="stacked" color="primary">Temperature</ion-label>
+              <ion-label position="stacked">{{ beacon.temperature.value }} &deg;C</ion-label>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
       <div v-else>
         <h2>{{ beaconType }}</h2>
         <p>{{ beacon.uid }}</p>
@@ -94,7 +110,7 @@
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
 import { IonItem, IonLabel, IonThumbnail } from '@ionic/vue';
-import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone, BLEEddystoneURL, BLEEddystoneUID } from '@openhps/rf';
+import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone, BLEEddystoneURL, BLEEddystoneUID, BLEEddystoneTLM } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
 import moment from 'moment';
 import { Beacon } from '../../stores/beacon';
@@ -123,6 +139,8 @@ export default class BeaconItemComponent extends Vue {
       return "Eddystone-URL";
     } else if (this.beacon instanceof BLEEddystoneUID) {
       return "Eddystone-UID";
+    } else if (this.beacon instanceof BLEEddystoneTLM) {
+      return "Eddystone-TLM";
     } else if (this.beacon instanceof BLEEddystone) {
       return "Eddystone";
     } else {

@@ -3,12 +3,18 @@ import { RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '',
+    path: '/',
+    redirect: '/beacons',
+  },
+  {
+    name: 'map',
+    path: '/map/:beaconUID?',
     component: () => import ('../views/MapPage.vue')
   },
   {
-    path: '/scan',
-    component: () => import ('../views/ScanPage.vue')
+    name: 'beacons',
+    path: '/beacons',
+    component: () => import ('../views/BeaconsPage.vue')
   },
   {
     path: '/login',
@@ -19,10 +25,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import ('../views/ProfilePage.vue')
   },
   {
+    name: 'beacon',
     path: '/beacon/:uid',
     component: () => import ('../views/BeaconPage.vue')
   },
   {
+    name: 'about',
     path: '/about',
     component: () => import ('../views/AboutPage.vue')
   },  

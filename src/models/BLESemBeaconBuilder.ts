@@ -24,13 +24,19 @@ export class BLESemBeaconBuilder {
         return this;
     }
 
-    instanceId(instanceId: number): this {
-        const arr = new Uint8Array(8);
-        for (let i = 0; i < 8; i++) {
-            arr[i] = instanceId % 256;
-            instanceId = Math.floor(instanceId / 256);
+    instanceId(instanceId: string): this;
+    instanceId(instanceId: number): this;
+    instanceId(instanceId: number | string): this {
+        if (typeof instanceId === 'number') {
+            const arr = new Uint8Array(8);
+            for (let i = 0; i < 8; i++) {
+                arr[i] = instanceId % 256;
+                instanceId = Math.floor(instanceId / 256);
+            }
+            this.beacon.instanceId = BufferUtils.toHexString(arr);
+        } else {
+            this.beacon.instanceId = instanceId;
         }
-        this.beacon.instanceId = BufferUtils.toHexString(arr);
         return this;
     }
 

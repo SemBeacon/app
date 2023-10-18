@@ -13,6 +13,10 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       backgroundColor: "#363795"
+    },
+    LocalNotifications: {
+      smallIcon: "ic_stat_icon",
+      iconColor: "#488AFF",
     }
   }
 };

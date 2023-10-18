@@ -42,7 +42,11 @@
           >
           </beacon-item-component>
         </ion-list>
-        <!-- TODO: Add an image when no beacons -->
+        <section class="ion-padding-top ion-text-center" v-else-if="!beaconStore.isScanning">
+          <div>
+            <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
+          </div>
+        </section>
       </div>
       
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">
@@ -117,7 +121,7 @@ import { useEnvironmentStore } from '../stores/environment';
     search
   })
 })
-export default class ScanPage extends Vue {
+export default class BeaconsPage extends Vue {
   tab = 1;
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();

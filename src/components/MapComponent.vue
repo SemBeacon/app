@@ -3,12 +3,12 @@
     ref="map"
     id="map" 
     :zoom="zoom" 
-    :center="location ? location : [0, 0]"
+    :center="center"
     :options="{ attributionControl: false }"
     @ready="onMapReady"
   >
     <l-tile-layer
-        :url="`https://api.mapbox.com/styles/v1/${id}/tiles/{z}/{x}/{y}?access_token=${accessToken}`"
+        :url="url"
         :accessToken="accessToken"
         layer-type="base"
         :options="{ maxNativeZoom: 18, maxZoom: 20, minZoom: 4 }"
@@ -70,8 +70,9 @@ export default class MapComponent extends Vue {
   geolocationStore = useGeolocationStore();
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
-  id = prefersDark ? "mapbox/dark-v11" : "mapbox/streets-v11";
+  id = prefersDark.matches ? "mapbox/dark-v11" : "mapbox/streets-v11";
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
+  url = `https://api.mapbox.com/styles/v1/${this.id}/tiles/{z}/{x}/{y}?access_token=${this.accessToken}`;
   @Ref("map") map: any;
   zoom?: number = 18;
   beacons = computed(() => {
@@ -88,6 +89,10 @@ export default class MapComponent extends Vue {
     return location && location.latitude ? [location.latitude, location.longitude] : undefined;
   });
   environments = computed(() => this.environmentStore.environments);
+  defaultCenter: number[] = undefined;
+  center = computed(() => {
+    return this.defaultCenter ? this.defaultCenter : (this.location ? this.location : [0, 0])
+  });
 
   mounted() {
     this.geolocationStore.initialize().then(() => {
@@ -97,19 +102,26 @@ export default class MapComponent extends Vue {
 
   onMapReady(map: any) {
     (window as any)._leafletMap = map;
-
-    // Vector tile layer
-    // const url = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.vector.pbf?access_token={accessToken}';
-    // (L as any).vectorGrid.protobuf(url, {
-    //   id: 'mapbox.mapbox-streets-v8', 
-    //   attribution: '', 
-    //   maxZoom: 20, 
-    //   accessToken: accessToken
-    // }).addTo(map);
+    if (this.defaultCenter) {
+      map.setView(this.defaultCenter, 18);
+    }
   }
 
   unmounted() {
     this.geolocationStore.sourceNode.stop();
+  }
+
+  highlightBeacon(uid: string): void {
+    this.beaconStore.findByUID(uid).then(beacon => {
+      const position = (beacon.position as unknown as Absolute2DPosition);
+      if (position !== undefined && 
+          position.x !== undefined && 
+          !Number.isNaN(position.x)) {
+        const array = beacon.position.toVector3().toArray();
+        this.defaultCenter = [array[1], array[0]];
+        (window as any)._leafletMap.setView(this.defaultCenter, 18);
+      }
+    }).catch(console.error);
   }
 }
 </script>

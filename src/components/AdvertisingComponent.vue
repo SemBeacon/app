@@ -34,6 +34,12 @@
             Here's a small text description for the card content. Nothing more, nothing less.
           </ion-card-content>
         </ion-card> -->
+
+        <section class="ion-padding-top ion-text-center" v-if="!beaconStore.isAdvertising">
+          <div>
+            <h2 style="font-size: 1em">Click the advertising button to start advertising the SemBeacon URI and identifier.</h2>
+          </div>
+        </section>
       </div>
 
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">

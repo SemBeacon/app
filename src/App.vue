@@ -14,7 +14,12 @@
             </ion-list-header>
 
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
+              <ion-item 
+                router-direction="root" 
+                :router-link="p.url" 
+                lines="none" detail="false" class="hydrated" 
+                :class="{ selected: this.$route.name === p.name }"
+              >
                 <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
@@ -29,7 +34,9 @@
         </ion-content>
       </ion-menu>
       
-      <ion-router-outlet id="main-content"></ion-router-outlet>
+      <ion-router-outlet 
+        id="main-content"
+      ></ion-router-outlet>
     </ion-split-pane>
   </ion-app>
 </template>
@@ -53,7 +60,6 @@ import {
   IonRouterOutlet,
   IonSplitPane,
 } from '@ionic/vue';
-import { ref } from 'vue';
 import {
   map,
   bluetooth,
@@ -92,19 +98,20 @@ export default class App extends Vue {
   logger = useLogger();
   info: AppInfo = {} as any;
 
-  selectedIndex = ref(0);
   appPages = [
     {
-      title: 'Map',
-      url: '/',
-      iosIcon: map,
-      mdIcon: map,
-    },
-    {
+      name: 'beacons',
       title: 'Beacons',
-      url: '/scan',
+      url: '/beacons',
       iosIcon: bluetooth,
       mdIcon: bluetooth,
+    },
+    {
+      name: 'map',
+      title: 'Map',
+      url: '/map',
+      iosIcon: map,
+      mdIcon: map,
     },
     // {
     //   title: 'Solid Login',
@@ -113,6 +120,7 @@ export default class App extends Vue {
     //   mdIcon: logIn,
     // },
     {
+      name: 'about',
       title: 'About',
       url: '/about',
       iosIcon: help,

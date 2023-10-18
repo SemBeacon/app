@@ -13,6 +13,8 @@ import {
     RelativeRSSIProcessing,
     PropagationModel,
     BLEUUID,
+    BLEEddystoneTLM,
+    BLEEddystone,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
@@ -20,6 +22,32 @@ import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
+LocalNotifications.requestPermissions().then(() => {
+    LocalNotifications.registerActionTypes({
+        types: [
+            {
+                id: "sembeacon-1",
+                actions: [
+                    {
+                        id: "stop",
+                        title: "Stop broadcasting",
+                        destructive: true,
+                    },
+                ]
+            }
+        ]
+    }); 
+    LocalNotifications.createChannel({
+        importance: 3,
+        id: 'sembeacon-advertising',
+        name: "SemBeacon Advertising",
+        vibration: false,
+        sound: "",
+        visibility: 1,
+    });
+});
 
 export interface BeaconScan {
     results: number;
@@ -78,7 +106,7 @@ export const useBeaconStore = defineStore('beacon', {
                 bluetoothle.requestPermissionBtAdvertise(() => {
                     BLESemBeaconBuilder.create()
                         .namespaceId(BLEUUID.fromString(beaconData.namespaceId))
-                        .instanceId(10)
+                        .instanceId(beaconData.instanceId)
                         .calibratedRSSI(-56)
                         .shortResourceUri(beaconData.shortResourceUri)
                         .flag(SEMBEACON_FLAG_HAS_POSITION)
@@ -86,10 +114,27 @@ export const useBeaconStore = defineStore('beacon', {
                         .build().then(beacon => {
                             const manufacturerData = beacon.manufacturerData.get(0x004C);
                             const service = beacon.getServiceByUUID(BLEUUID.fromString('AAFE'));
-                            bluetoothle.startAdvertising((status) => {
-                                logger.log('info', status);
+                            bluetoothle.startAdvertising(() => {
+                                logger.log('info', `SemBeacon advertising started!`);
                                 Toast.show({
                                     text: `Advertising of SemBeacon started!`,
+                                });
+                                LocalNotifications.schedule({
+                                    notifications: [
+                                        {
+                                          title: 'SemBeacon Advertising',
+                                          body: 'Broadcasting SemBeacon ...',
+                                          id: 1,
+                                          channelId: "sembeacon-advertising",
+                                          actionTypeId: 'sembeacon-1',
+                                          ongoing: true
+                                        },
+                                      ]
+                                });
+                                LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+                                    if (action.actionId == "stop") {
+                                        this.stopAdvertising();
+                                    }
                                 });
                                 this.advertising = true;
                             }, (error: any) => {
@@ -133,6 +178,14 @@ export const useBeaconStore = defineStore('beacon', {
                 this.advertising = false;
                 Toast.show({
                     text: `Stopped advertising!`,
+                });
+                LocalNotifications.removeAllListeners();
+                LocalNotifications.cancel({
+                    notifications: [
+                        {
+                            id: 1
+                        }
+                    ]
                 });
             }, (error) => {
                 logger.log('error', error);
@@ -205,11 +258,12 @@ export const useBeaconStore = defineStore('beacon', {
                             BLEAltBeacon,
                             BLEiBeacon,
                             BLEEddystoneURL,
-                            BLEEddystoneUID
+                            BLEEddystoneUID,
+                            BLEEddystoneTLM,
                         ]
                     }))
                     .via(new RelativeRSSIProcessing({
-                        environmentFactor: 2.2,
+                        environmentFactor: 2.0,
                         propagationModel: PropagationModel.LOG_DISTANCE
                     }))
                     .to(new CallbackSinkNode((frame: DataFrame) => {
@@ -229,6 +283,8 @@ export const useBeaconStore = defineStore('beacon', {
                                         logger.log("info", `Detected SemBeacon ${beacon.knownAddresses[0].toString()} with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`);
                                     } else if (beacon instanceof BLEiBeacon) {
                                         logger.log("info", `Detected iBeacon ${beacon.knownAddresses[0].toString()} with major=${beacon.major}, minor=${beacon.minor}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`);
+                                    } else if (beacon instanceof BLEEddystone) {
+                                        logger.log("info", `Detected Eddystone ${beacon.knownAddresses[0].toString()} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`);
                                     } else {
                                         logger.log("info", `Detected beacon ${beacon.knownAddresses[0].toString()} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`);
                                     }
