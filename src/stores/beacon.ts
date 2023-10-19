@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackNode, CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
+import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
 import { 
@@ -122,7 +122,7 @@ export const useBeaconStore = defineStore('beacon', {
                         .flag(SEMBEACON_FLAG_HAS_SYSTEM)
                         .build().then(beacon => {
                             const manufacturerData = beacon.manufacturerData.get(0x004C);
-                            const service = beacon.getServiceByUUID(BLEUUID.fromString('AAFE'));
+                            const service = beacon.getServiceByUUID(BLEUUID.fromString('FEAA'));
                             bluetoothle.startAdvertising(() => {
                                 logger.log('info', `SemBeacon advertising started!`);
                                 Toast.show({
@@ -260,7 +260,6 @@ export const useBeaconStore = defineStore('beacon', {
                             cors: true
                         }))
                     .from(this.source as BLESourceNode)
-                    .via(new CallbackNode(frame => console.log(frame.getObjects())))
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,
                         types: [
@@ -290,13 +289,13 @@ export const useBeaconStore = defineStore('beacon', {
                                     };
                                     this.beaconInfo.set(beacon.uid, beaconInfo);
                                     if (beacon instanceof BLESemBeacon) {
-                                        logger.log("info", `Detected SemBeacon ${beacon.knownAddresses[0].toString()} with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`);
+                                        logger.log("info", `Detected SemBeacon ${beacon.uid} with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`);
                                     } else if (beacon instanceof BLEiBeacon) {
-                                        logger.log("info", `Detected iBeacon ${beacon.knownAddresses[0].toString()} with major=${beacon.major}, minor=${beacon.minor}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`);
+                                        logger.log("info", `Detected iBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`);
                                     } else if (beacon instanceof BLEEddystone) {
-                                        logger.log("info", `Detected Eddystone ${beacon.knownAddresses[0].toString()} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`);
+                                        logger.log("info", `Detected Eddystone ${beacon.uid} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`);
                                     } else {
-                                        logger.log("info", `Detected beacon ${beacon.knownAddresses[0].toString()} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`);
+                                        logger.log("info", `Detected beacon ${beacon.uid} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`);
                                     }
                                     this.addBeacon(beacon);
                                 }

@@ -176,6 +176,6 @@ export class BLESemBeacon extends BLEBeaconObject {
     }
     
     protected get service(): BLEService {
-        return this.getServiceByUUID(BLEUUID.fromString('AAFE'));
+        return this.getServiceByUUID(BLEUUID.fromString('FEAA'));
     }
 }

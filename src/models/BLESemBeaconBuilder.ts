@@ -120,7 +120,7 @@ export class BLESemBeaconBuilder {
             }
 
             this.beacon.manufacturerData.set(0x004C, new Uint8Array(manufacturerData.buffer));
-            this.beacon.addService(new BLEService(BLEUUID.fromString('AAFE'), new Uint8Array(serviceData.buffer)));
+            this.beacon.addService(new BLEService(BLEUUID.fromString('FEAA'), new Uint8Array(serviceData.buffer)));
             resolve(this.beacon);
         });
     }

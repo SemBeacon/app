@@ -4950,15 +4950,15 @@
   resolved "https://registry.yarnpkg.com/@one-ini/wasm/-/wasm-0.1.1.tgz#6013659736c9dbfccc96e8a9c2b3de317df39323"
   integrity sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==
 
-"@openhps/capacitor-bluetooth@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-bluetooth/-/capacitor-bluetooth-0.1.9.tgz#5254b13db0bd76be546e7cf8fd941dcba9ff134d"
-  integrity sha512-waAsHkjVdxbDi+f0DlblbHCEKYtbT0sB2RkgAhT22wwWkYg3U/PzlDz/WuZe8tTMboqzGVI7tNJ/wCYbMcunmA==
+"@openhps/capacitor-bluetooth@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-bluetooth/-/capacitor-bluetooth-0.1.10.tgz#9cc39bd29c0fc5ba40144f3eae84b78c0642b420"
+  integrity sha512-gpr/99U4P1KZv/nWjithxBNC/3eCUKz5NSl6vNdEv6HtplsWa5o138+KYYoomkbsCqvw5Q8kjCspmzVXl453vg==
 
-"@openhps/capacitor-geolocation@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.9.tgz#894ebf40bebe5af6d62deb8ddc48b12927d49d7b"
-  integrity sha512-9ciALx7JRrIMYS59DEsMdrp9OrFP104DQacdeOiAQAujyfAqUNRKjsGLT9akOYgQQ00bjQuZvbqkrfP44He5eA==
+"@openhps/capacitor-geolocation@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.10.tgz#71eb199ce16fa3270b779cfdbb501bff533e5bd5"
+  integrity sha512-xQhvk0lSlpvNGo3cVtMl39hC/34IXlDCaCbFV2sCrlaJu4Tmh3zop9WSFKoI5Ozyon/f8RNlALRQyljdnv3iEg==
 
 "@openhps/core@^0.5.12":
   version "0.5.12"
@@ -4998,10 +4998,10 @@
     n3 ">=1.17.1"
     sparqljs "^3.7.1"
 
-"@openhps/rf@^0.1.46":
-  version "0.1.46"
-  resolved "https://registry.yarnpkg.com/@openhps/rf/-/rf-0.1.46.tgz#4a8c118d543748710b41149f5537c2dc17923fa3"
-  integrity sha512-KPcrOYAITaJ6JP8NWIV95RKYpcnRV7uv6Oal+Xi1hUdPa7hlt9LKFbdnBN/9Ka1GASseD/UPwZqPQReLR+982g==
+"@openhps/rf@^0.1.48":
+  version "0.1.48"
+  resolved "https://registry.yarnpkg.com/@openhps/rf/-/rf-0.1.48.tgz#1545d2ef00f9d303689b0da9dd4b237cb77f67e0"
+  integrity sha512-7U1kiLevtp54Ho7Zz1nI+f/P2m8dhwtLdASwmAHTvooeXdEzujxGiZJVBjsg4ZPXpgmvL63RLcedstJCUHsVag==
   dependencies:
     ml-levenberg-marquardt "^4.1.3"
 
@@ -8312,10 +8312,10 @@ csstype@^3.1.1:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
 
-cypress@^13.3.1:
-  version "13.3.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.3.1.tgz#d72f922e167891574c7773d07ac64d7114e11d49"
-  integrity sha512-g4mJLZxYN+UAF2LMy3Znd4LBnUmS59Vynd81VES59RdW48Yt+QtR2cush3melOoVNz0PPbADpWr8DcUx6mif8Q==
+cypress@^13.3.2:
+  version "13.3.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.3.2.tgz#b4baa64ce37d7874f6bdd8efbc28a9c722c0686f"
+  integrity sha512-ArLmZObcLC+xxCp7zJZZbhby9FUf5CueLej9dUM4+5j37FTS4iMSgHxQLDu01PydFUvDXcNoIVRCYrHHxD7Ybg==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
