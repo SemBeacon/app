@@ -12,7 +12,14 @@ const config: CapacitorConfig = {
   loggingBehavior: "none",
   plugins: {
     SplashScreen: {
-      backgroundColor: "#363795"
+      backgroundColor: "#363795",
+      androidScaleType: "CENTER_CROP",
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      androidSplashResourceName: 'splash',
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true,
     },
     LocalNotifications: {
       smallIcon: "ic_stat_icon",

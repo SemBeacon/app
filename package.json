@@ -1,6 +1,6 @@
 {
   "name": "@sembeacon/app",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "SemBeacon Application",
   "license": "Apache-2.0",
   "private": false,
@@ -47,7 +47,7 @@
     "@openhps/geospatial": "^0.1.27",
     "@openhps/localstorage": "^1.0.1",
     "@openhps/rdf": "^0.4.16",
-    "@openhps/rf": "^0.1.48",
+    "@openhps/rf": "^0.1.51",
     "@openhps/solid": "^0.1.13",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vueuse/core": "^10.5.0",

@@ -1,7 +1,7 @@
 import { BLEService, BLEUUID } from "@openhps/rf";
 import { BLESemBeacon } from "./BLESemBeacon";
 import { IriString } from "@openhps/rdf";
-import { BufferUtils } from "@openhps/core";
+import { BufferUtils, LengthUnit } from "@openhps/core";
 
 /**
  * BLE SemBeacon builder
@@ -65,28 +65,28 @@ export class BLESemBeaconBuilder {
         let index = 0;
         let url_index = 0;
         const url = this.beacon.shortResourceUri;
-        for (const prefix in BLESemBeacon.PREFIXES) {
-            if (url.startsWith(prefix)) {
+        BLESemBeacon.PREFIXES.forEach(prefix => {
+            if (url.toLowerCase().startsWith(prefix)) {
                 // Encode using this prefix
                 view.setUint8(index, BLESemBeacon.PREFIXES.indexOf(prefix));
                 url_index += prefix.length;
             }
-        }
+        });
         index += 1;
         for (let i = url_index; i < url.length ; i++) {
-            if (index > 16) {
+            if (index > 17) {
                 break;
             }
-            view.setUint8(index, url.charCodeAt(url_index));
-            for (const suffix in BLESemBeacon.SUFFIXES) {
-                if (url.slice(i).startsWith(suffix)) {
+            view.setUint8(index, url.charCodeAt(i));
+            BLESemBeacon.SUFFIXES.forEach(suffix => {
+                if (url.slice(i).toLowerCase().startsWith(suffix)) {
                     view.setUint8(index, BLESemBeacon.SUFFIXES.indexOf(suffix));
                     i += suffix.length - 1;
                 }
-            }
+            });
             index++;
         }       
-        return { url: view, length: index - 1 };
+        return { url: view, length: index };
     }
 
     build(): Promise<BLESemBeacon> {
@@ -110,16 +110,16 @@ export class BLESemBeaconBuilder {
             manufacturerData.setUint8(23, this.beacon.flags);           // SemBeacon flags
 
             // Eddystone Service
-            const serviceData = new DataView(new ArrayBuffer(19), 0);
             const { url, length } = this.getEncodedURL();
+            const serviceData = new DataView(new ArrayBuffer(19 - (17 - length)), 0);
             serviceData.setUint8(0, 0x10);                     // Eddystone-URL frame
-            serviceData.setInt8(1, this.beacon.calibratedRSSI);
+            serviceData.setInt8(1, this.beacon.getCalibratedRSSI(0, LengthUnit.METER));
             // Encoded URL
             for (let i = 0 ; i < length ; i++) {
                 serviceData.setUint8(2 + i, url.getUint8(i));
             }
 
-            this.beacon.manufacturerData.set(0x004C, new Uint8Array(manufacturerData.buffer));
+            this.beacon.manufacturerData.set(0xFFFF, new Uint8Array(manufacturerData.buffer));
             this.beacon.addService(new BLEService(BLEUUID.fromString('FEAA'), new Uint8Array(serviceData.buffer)));
             resolve(this.beacon);
         });

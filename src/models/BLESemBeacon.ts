@@ -96,10 +96,8 @@ export class BLESemBeacon extends BLEBeaconObject {
         super.parseManufacturerData(_, manufacturerData);
         const view = new DataView(manufacturerData.buffer, 0);
         if (
-            !(
-                manufacturerData.byteLength >= 24 &&
-                BufferUtils.arrayBuffersAreEqual(manufacturerData.buffer.slice(0, 2), Uint8Array.from([0xbe, 0xac]).buffer)
-            )
+            manufacturerData.byteLength < 24 ||
+            !BufferUtils.arrayBuffersAreEqual(manufacturerData.buffer.slice(0, 2), Uint8Array.from([0xbe, 0xac]).buffer)
         ) {
             return this;
         }

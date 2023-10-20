@@ -9,11 +9,11 @@
         <ion-buttons slot="end">
           <ion-button 
             icon-only 
-            color="#ffffff"
+            :style="{ color: '#ffffff' }"
             v-if="beacon.position" 
             @click="showOnMap"
           >
-            <ion-icon name="map-outline"></ion-icon>
+            <ion-icon name="locate-outline"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -47,9 +47,13 @@
               </ion-row>
             </ion-grid>
           </ion-item>
-          <ion-item lines="none">
+          <ion-item lines="none" v-if="beacon.address">
             <ion-label position="stacked" color="primary">MAC Address</ion-label>
             <ion-label position="stacked">{{ beacon.address.toString() }}</ion-label>
+          </ion-item>
+          <ion-item lines="none" v-if="beacon.manufacturerData.size > 0">
+            <ion-label position="stacked" color="primary">Manufacturer</ion-label>
+            <ion-label position="stacked">{{ manufacturer }}</ion-label>
           </ion-item>
           <div v-if="beaconType() === 'SemBeacon'">
               <ion-item lines="none">
@@ -181,6 +185,7 @@ import { BLEiBeacon, BLEEddystone, BLEAltBeacon } from '@openhps/rf';
 import moment from 'moment';
 import { Ref, ref } from 'vue';
 import { TimeService } from '@openhps/core';
+const BLECompanies = require('../models/BLECompanies.json'); // eslint-disable-line
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -223,8 +228,7 @@ export default class BeaconPage extends Vue {
       this.beacon.rssi = beaconInfo.rssi;
       this.beacon.lastSeen = beaconInfo.lastSeen;
       this.beacon.distance = beaconInfo.distance;
-      
-    (window as any).beacon = this.beacon;
+      (window as any).beacon = this.beacon; // Debuggin
     }).catch(console.error);
 
     setInterval(() => {
@@ -298,6 +302,19 @@ export default class BeaconPage extends Vue {
   get beaconIcon(): string {
     const beaconType = this.beaconType();
     return `/assets/beacons/${beaconType.toLowerCase()}${prefersDark.matches ? "_alpha" : ""}.svg`;
+  }
+
+  get manufacturer(): string {
+    if (this.beacon.manufacturerData.size === 0) {
+      return undefined;
+    }
+    const manufacturerId: number = this.beacon.manufacturerData.keys().next().value;
+    const manufacturerIdHex = `0x${manufacturerId.toString(16).toUpperCase().padStart(4, "0")}`;
+    const companyName = BLECompanies[manufacturerIdHex];
+    if (!companyName) {
+      return manufacturerIdHex;
+    }
+    return `${companyName} (${manufacturerIdHex})`
   }
 }
 </script>

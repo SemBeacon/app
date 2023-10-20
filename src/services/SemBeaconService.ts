@@ -54,7 +54,9 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                         return Promise.resolve(this._mergeBeacon(objects[0], objects[1]))
                     }
                 }).then((fetchedObject: BLESemBeacon) => {
-                    if (!fetchedObject.resourceData) {
+                    if (!fetchedObject.resourceData 
+                        && fetchedObject.modifiedTimestamp !== -1) {
+                        // No resource data included
                         this.emitAsync('beacon', fetchedObject);
                         return Promise.resolve(undefined);
                     }
@@ -154,7 +156,14 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                 if (result.headers['x-final-url']) {                // Permanent URL fix
                     resourceUri = result.headers['x-final-url'];
                 }
-                let deserialized: BLESemBeacon = RDFSerializer.deserializeFromString(resourceUri, result.data);
+                let deserialized: BLESemBeacon;
+                try {
+                    deserialized = RDFSerializer.deserializeFromString(resourceUri, result.data);
+                } catch (ex) {
+                    // Unable to deserialize
+                    resolve(beacon);
+                    return;
+                }
                 deserialized.resourceUri = resourceUri;
                 deserialized.shortResourceUri = beacon.shortResourceUri;
                 const parser = new Parser();
@@ -210,7 +219,8 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     }
 
     private _mergeBeacon(beacon: BLEBeaconObject, online: BLEBeaconObject): BLEBeaconObject {
-        if (online === undefined) {
+        if (online === undefined || 
+            online.constructor.name !== beacon.constructor.name) {
             return beacon;
         }
         online.rawAdvertisement = beacon.rawAdvertisement;

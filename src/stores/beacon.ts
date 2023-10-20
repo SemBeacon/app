@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
+import { CallbackNode, CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
 import { 
@@ -15,6 +15,7 @@ import {
     BLEUUID,
     BLEEddystoneTLM,
     BLEEddystone,
+    BLEObject,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
@@ -83,10 +84,10 @@ export const useBeaconStore = defineStore('beacon', {
         namespaces: {},
         source: new BLESourceNode({
             uid: "ble",
-            debug: true,
-            uuids: Capacitor.getPlatform() === 'ios' ? 
-                ['0000FEAA-0000-1000-8000-00805F9B34FB'] : 
-                undefined
+            debug: false,
+            // uuids: Capacitor.getPlatform() === 'ios' ? 
+            //     ['0000FEAA-0000-1000-8000-00805F9B34FB'] : 
+            //     undefined
         }),
         model: undefined,
         beacons: new Map(),
@@ -121,7 +122,7 @@ export const useBeaconStore = defineStore('beacon', {
                         .flag(SEMBEACON_FLAG_HAS_POSITION)
                         .flag(SEMBEACON_FLAG_HAS_SYSTEM)
                         .build().then(beacon => {
-                            const manufacturerData = beacon.manufacturerData.get(0x004C);
+                            const manufacturerData = beacon.manufacturerData.get(0xFFFF);
                             const service = beacon.getServiceByUUID(BLEUUID.fromString('FEAA'));
                             bluetoothle.startAdvertising(() => {
                                 logger.log('info', `SemBeacon advertising started!`);
@@ -152,7 +153,7 @@ export const useBeaconStore = defineStore('beacon', {
                                     text: `Error while starting advertising! ${error.message}.`,
                                 });
                             }, {
-                                manufacturerId: 0x004C,
+                                manufacturerId: 0xFFFF,
                                 manufacturerSpecificData: bluetoothle.bytesToEncodedString(manufacturerData),
                                 includeDeviceName: false,
                                 includeTxPowerLevel: false,
@@ -260,6 +261,12 @@ export const useBeaconStore = defineStore('beacon', {
                             cors: true
                         }))
                     .from(this.source as BLESourceNode)
+                    .via(new CallbackNode(frame => {
+                        const object: BLEObject = frame.getObjects().filter(o => o.uid !== frame.source.uid)[0];
+                        if (object.manufacturerData.size > 0) {
+                            console.log(object)
+                        }
+                    }))
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,
                         types: [
@@ -321,11 +328,11 @@ export const useBeaconStore = defineStore('beacon', {
                             console.log("Beacon", beacon);
                             this.beacons.set(beacon.uid, beacon);
                             if (beacon instanceof BLESemBeacon) {
-                                logger.log("info", `Added SemBeacon ${beacon.knownAddresses[0].toString()} with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}`);
+                                logger.log("info", `Added SemBeacon ${beacon.uid} with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}`);
                             } else if (beacon instanceof BLEiBeacon) {
-                                logger.log("info", `Added iBeacon ${beacon.knownAddresses[0].toString()} with major=${beacon.major}, minor=${beacon.minor}`);
+                                logger.log("info", `Added iBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`);
                             } else {
-                                logger.log("info", `Added beacon ${beacon.knownAddresses[0].toString()}`);
+                                logger.log("info", `Added beacon ${beacon.uid}`);
                             }
                         });
                         this.model.on('error', console.error);
