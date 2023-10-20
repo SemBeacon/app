@@ -10,6 +10,36 @@ const config: CapacitorConfig = {
     hostname: "org.sembeacon"
   },
   loggingBehavior: "none",
+  android: {
+    includePlugins: [
+      '@capacitor/toast',
+      '@capacitor/status-bar',
+      '@capacitor/local-notifications',
+      '@capacitor/geolocation',
+      '@capacitor/filesystem',
+      '@capacitor/device',
+      '@capacitor/browser',
+      '@capacitor/app',
+      '@capacitor-community/bluetooth-le',
+      'cordova-plugin-bluetoothle'
+    ]
+  },
+  ios: {
+    includePlugins: [
+      '@capacitor/toast',
+      '@capacitor/status-bar',
+      '@capacitor/local-notifications',
+      '@capacitor/geolocation',
+      '@capacitor/filesystem',
+      '@capacitor/device',
+      '@capacitor/browser',
+      '@capacitor/app',
+      '@capacitor-community/bluetooth-le',
+      'cordova-plugin-bluetoothle',
+      'cordova-plugin-ibeacon',
+      'cordova-plugin-device',
+    ]
+  },
   plugins: {
     SplashScreen: {
       backgroundColor: "#363795",

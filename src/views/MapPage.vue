@@ -13,14 +13,14 @@
 
     <ion-content :fullscreen="true">
       <div id="container">
-        <map-component ref="map">
+        <map-component ref="mapComponent">
         </map-component>
       </div>
       
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">
         <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
           <ion-spinner name="circular" v-if="loading"></ion-spinner>
-          <ion-icon :name="this.beaconStore.isScanning ? 'pause' : 'play'" v-if="!loading"></ion-icon>
+          <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'play'" v-if="!loading"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -49,9 +49,9 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/vue';
-import { useBeaconStore } from '../stores/beacon';
+import { useBeaconStore } from '../stores/beacon.scanning';
 import { computed } from 'vue';
-import { pause, play } from 'ionicons/icons';
+import { stop, play } from 'ionicons/icons';
 import MapComponent from '../components/MapComponent.vue';
 import { useRoute } from 'vue-router';
 
@@ -77,7 +77,7 @@ import { useRoute } from 'vue-router';
     MapComponent
   },
   data: () => ({
-    pause,
+    stop,
     play
   })
 })
@@ -86,14 +86,16 @@ export default class MapPage extends Vue {
   beaconStore = useBeaconStore();
   beacons = computed(() => this.beaconStore.beacons);
   loading = false;
-  @Ref("map") map: MapComponent;
+  @Ref("mapComponent") map: MapComponent;
 
   ionViewDidEnter(): void {
     if ((window as any)._leafletMap) {
       (window as any)._leafletMap.invalidateSize();
     }
     const beaconUID = this.route.params.beaconUID as string;
-    this.map.highlightBeacon(beaconUID);
+    if (beaconUID) {
+      this.map.highlightBeacon(beaconUID);
+    }
   }
 
   toggleScan(): void {

@@ -1,8 +1,6 @@
 <template>
-    <ion-content :fullscreen="true">
-      <div id="container">
-        <ion-list>
-          <ion-item lines="none">
+    <ion-list>
+        <ion-item lines="none">
             <ion-label position="stacked" color="primary">Namespace ID</ion-label>
             <ion-input position="stacked" v-model="beacon.namespaceId" :disabled="beaconStore.isAdvertising"></ion-input>
           </ion-item>
@@ -22,32 +20,7 @@
             <ion-toggle>HAS_SYSTEM</ion-toggle>
             <ion-toggle>HAS_TELEMETRY</ion-toggle>
           </ion-item> -->
-        </ion-list>
-
-        <!-- <ion-card>
-          <ion-card-header>
-            <ion-card-title><ion-icon :icon="logoIonic"></ion-icon> Card Title</ion-card-title>
-            <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-          </ion-card-header>
-
-          <ion-card-content>
-            Here's a small text description for the card content. Nothing more, nothing less.
-          </ion-card-content>
-        </ion-card> -->
-
-        <section class="ion-padding-top help-text ion-text-center" v-if="!beaconStore.isAdvertising">
-          <div>
-            <h2 style="font-size: 1em">Click the advertising button to start advertising the SemBeacon URI and identifier.</h2>
-          </div>
-        </section>
-      </div>
-
-      <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-        <ion-fab-button @click="toggleAdvertising" :color="this.beaconStore.isAdvertising ? 'danger' : 'primary'">
-          <ion-icon :name="this.beaconStore.isAdvertising ? 'pause' : 'wifi-outline'"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ion-content>
+    </ion-list>
 </template>
 
 
@@ -79,8 +52,8 @@ import {
   IonToggle,
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { useBeaconStore } from '../stores/beacon';
-import { pause, search } from 'ionicons/icons';
+import { useBeaconAdvertisingStore } from '../../stores/beacon.advertising';
+import { stop, search } from 'ionicons/icons';
 
 @Options({
   components: {
@@ -110,38 +83,19 @@ import { pause, search } from 'ionicons/icons';
     IonToggle,
   },
   data: () => ({
-    pause,
+    stop,
     search
   })
 })
-export default class AdvertisingComponent extends Vue {
-  beaconStore = useBeaconStore();
-  loading = false;
-  status: AdvertisingStatus;
+export default class SemBeaconBuilderComponent extends Vue {
+  beaconStore = useBeaconAdvertisingStore();
   beacon: any = {
       namespaceId: "77f340db-ac0d-20e8-aa3a-f656a29f236c",
       instanceId: "9c7ce6fc",
       shortResourceUri: "https://bit.ly/3JsEnF9"
   };
-
-  toggleAdvertising(): void {
-    if (this.beaconStore.isAdvertising) {
-      this.beaconStore.stopAdvertising();
-    } else {
-      this.beaconStore.startAdvertising(this.beacon);
-    }
-  }
-}
-
-enum AdvertisingStatus {
-
 }
 </script>
 
 <style scoped lang="scss">
-.help-text {
-  margin-top: 3em;
-  padding-left: 1em;
-  padding-right: 1em;
-}
 </style>

@@ -1,4 +1,4 @@
-import { BLEService, BLEUUID } from "@openhps/rf";
+import { BLEBeaconBuilder, BLEService, BLEUUID } from "@openhps/rf";
 import { BLESemBeacon } from "./BLESemBeacon";
 import { IriString } from "@openhps/rdf";
 import { BufferUtils, LengthUnit } from "@openhps/core";
@@ -6,17 +6,23 @@ import { BufferUtils, LengthUnit } from "@openhps/core";
 /**
  * BLE SemBeacon builder
  */
-export class BLESemBeaconBuilder {
-    protected beacon: BLESemBeacon;
+export class BLESemBeaconBuilder extends BLEBeaconBuilder<BLESemBeacon> {
     protected options: SemBeaconBuilderOptions;
+    protected manufacturer: number = 0xFFFF;
 
     protected constructor(options?: SemBeaconBuilderOptions) {
+        super();
         this.options = options ?? {};
         this.beacon = new BLESemBeacon();
     }
 
     static create(options?: SemBeaconBuilderOptions): BLESemBeaconBuilder {      
         return new BLESemBeaconBuilder(options);
+    }
+
+    manufacturerId(manufacturer: number): this {
+        this.manufacturer = manufacturer;
+        return this;
     }
 
     namespaceId(namespaceId: BLEUUID): this {
@@ -119,7 +125,7 @@ export class BLESemBeaconBuilder {
                 serviceData.setUint8(2 + i, url.getUint8(i));
             }
 
-            this.beacon.manufacturerData.set(0xFFFF, new Uint8Array(manufacturerData.buffer));
+            this.beacon.manufacturerData.set(this.manufacturer, new Uint8Array(manufacturerData.buffer));
             this.beacon.addService(new BLEService(BLEUUID.fromString('FEAA'), new Uint8Array(serviceData.buffer)));
             resolve(this.beacon);
         });

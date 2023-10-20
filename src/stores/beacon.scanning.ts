@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
-import { CallbackNode, CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
+import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
-import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
+import { BLEiBeaconSourceNode } from "@openhps/cordova-ibeacon";
+import { BLESemBeacon } from '@/models/BLESemBeacon';
 import { 
     BLEBeaconObject, 
     BLEBeaconClassifierNode, 
@@ -12,48 +13,15 @@ import {
     RelativeRSSI,
     RelativeRSSIProcessing,
     PropagationModel,
-    BLEUUID,
     BLEEddystoneTLM,
     BLEEddystone,
-    BLEObject,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
-import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
-import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
-
-if (Capacitor.getPlatform() !== 'web') {
-    LocalNotifications.requestPermissions().then(() => {
-        if (Capacitor.getPlatform() === 'android') {
-            LocalNotifications.registerActionTypes({
-                types: [
-                    {
-                        id: "sembeacon-1",
-                        actions: [
-                            {
-                                id: "stop",
-                                title: "Stop broadcasting",
-                                destructive: true,
-                            },
-                        ]
-                    }
-                ]
-            }).catch(console.error); 
-            LocalNotifications.createChannel({
-                importance: 3,
-                id: 'sembeacon-advertising',
-                name: "SemBeacon Advertising",
-                vibration: false,
-                sound: "",
-                visibility: 1,
-            }).catch(console.error); 
-        }
-    });
-}
 
 export interface BeaconScan {
     results: number;
@@ -71,139 +39,51 @@ export interface Beacon {
 }
 
 export interface BeaconState {
+    proximityUUIDs: string[];
     namespaces: Record<string, SemBeaconNamespace>;
-    source: BLESourceNode;
+    sources: (BLESourceNode | BLEiBeaconSourceNode)[];
     model: Model | undefined;
     beacons: Map<string, BLEBeaconObject & Beacon>;
     beaconInfo: Map<string, BLEBeaconObject>;
-    advertising: boolean;
 }
 
-export const useBeaconStore = defineStore('beacon', {
+export const useBeaconStore = defineStore('beacon.scanning', {
     state: (): BeaconState => ({
+        proximityUUIDs: [],
         namespaces: {},
-        source: new BLESourceNode({
-            uid: "ble",
-            debug: false,
-            // uuids: Capacitor.getPlatform() === 'ios' ? 
-            //     ['0000FEAA-0000-1000-8000-00805F9B34FB'] : 
-            //     undefined
-        }),
+        sources: [
+            new BLESourceNode({
+                uid: "ble",
+                debug: false,
+            }), 
+            ...(
+                Capacitor.getPlatform() === 'ios' ?
+                [
+                    new BLEiBeaconSourceNode({
+                        uid: "ble-ibeacon",
+                        debug: true,
+                        uuids: [
+                            "53b71dca-eb49-4ba6-a697-59f3acd184b1"
+                        ]
+                    })] : []
+            )
+        ],
         model: undefined,
         beacons: new Map(),
-        beaconInfo: new Map(),
-        advertising: false
+        beaconInfo: new Map()
     }),
     getters: {
         cacheSize(): number {
             return (this.beacons as Map<string, BLEBeaconObject>).size;
         },
-        sourceNode(): BLESourceNode {
-            return this.source;
-        },
         isScanning(): boolean {
-            return (this.source as BLESourceNode).isRunning();
+            return (this.sources as BLESourceNode)[0].isRunning();
         },
         isAdvertising(): boolean {
             return this.advertising;
         }
     },
     actions: {
-        startAdvertising(beaconData: any): void {
-            const bluetoothle = (window as any).bluetoothle;
-            const logger = useLogger();
-            bluetoothle.initialize(() => {
-                bluetoothle.requestPermissionBtAdvertise(() => {
-                    BLESemBeaconBuilder.create()
-                        .namespaceId(BLEUUID.fromString(beaconData.namespaceId))
-                        .instanceId(beaconData.instanceId)
-                        .calibratedRSSI(-56)
-                        .shortResourceUri(beaconData.shortResourceUri)
-                        .flag(SEMBEACON_FLAG_HAS_POSITION)
-                        .flag(SEMBEACON_FLAG_HAS_SYSTEM)
-                        .build().then(beacon => {
-                            const manufacturerData = beacon.manufacturerData.get(0xFFFF);
-                            const service = beacon.getServiceByUUID(BLEUUID.fromString('FEAA'));
-                            bluetoothle.startAdvertising(() => {
-                                logger.log('info', `SemBeacon advertising started!`);
-                                Toast.show({
-                                    text: `Advertising of SemBeacon started!`,
-                                });
-                                LocalNotifications.schedule({
-                                    notifications: [
-                                        {
-                                          title: 'SemBeacon Advertising',
-                                          body: 'Broadcasting SemBeacon ...',
-                                          id: 1,
-                                          channelId: "sembeacon-advertising",
-                                          actionTypeId: 'sembeacon-1',
-                                          ongoing: true
-                                        },
-                                      ]
-                                });
-                                LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-                                    if (action.actionId == "stop") {
-                                        this.stopAdvertising();
-                                    }
-                                });
-                                this.advertising = true;
-                            }, (error: any) => {
-                                logger.log('error', error);
-                                Toast.show({
-                                    text: `Error while starting advertising! ${error.message}.`,
-                                });
-                            }, {
-                                manufacturerId: 0xFFFF,
-                                manufacturerSpecificData: bluetoothle.bytesToEncodedString(manufacturerData),
-                                includeDeviceName: false,
-                                includeTxPowerLevel: false,
-                                connectable: false,
-                                mode: 'lowLatency',
-                                txPowerLevel: 'high',
-                                timeout: 0,
-                                discoverable: true
-                            }, {
-                                service: "FEAA",
-                                serviceData: bluetoothle.bytesToEncodedString(service.data),
-                                includeDeviceName: false,
-                                includeTxPowerLevel: false,
-                            });
-                    });
-                }, (error) => {
-                    logger.log('error', error);
-                    Toast.show({
-                        text: `Error while requesting advertising permission! ${error.message}.`,
-                    });
-                });
-            }, {
-                request: true,
-                statusReceiver: false,
-                restoreKey: "sembeacon"
-            });
-        },
-        stopAdvertising() {
-            const bluetoothle = (window as any).bluetoothle;
-            const logger = useLogger();
-            bluetoothle.stopAdvertising(() => {
-                this.advertising = false;
-                Toast.show({
-                    text: `Stopped advertising!`,
-                });
-                LocalNotifications.removeAllListeners();
-                LocalNotifications.cancel({
-                    notifications: [
-                        {
-                            id: 1
-                        }
-                    ]
-                });
-            }, (error) => {
-                logger.log('error', error);
-                Toast.show({
-                    text: `Error while stopping advertising! ${error.message}.`,
-                });
-            });
-        },
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
         },
@@ -242,6 +122,13 @@ export const useBeaconStore = defineStore('beacon', {
                     });
                     resolve();
                 } else {
+                    if (beacon instanceof BLEiBeacon) {
+                        const uuidStr = beacon.proximityUUID.toString();
+                        if (!this.proximityUUIDs.has(uuidStr)) {
+                            this.proximityUUIDs.push(uuidStr);
+                            // Update source node
+                        }
+                    }
                     service.insert(beacon.uid, beacon);
                     resolve();
                 }
@@ -260,13 +147,7 @@ export const useBeaconStore = defineStore('beacon', {
                             accessToken: "2cd7bc12126759042bfb3ebe1160aafda0bc65df",
                             cors: true
                         }))
-                    .from(this.source as BLESourceNode)
-                    .via(new CallbackNode(frame => {
-                        const object: BLEObject = frame.getObjects().filter(o => o.uid !== frame.source.uid)[0];
-                        if (object.manufacturerData.size > 0) {
-                            console.log(object)
-                        }
-                    }))
+                    .from(...this.sources)
                     .via(new BLEBeaconClassifierNode({
                         resetUID: true,
                         types: [
@@ -344,16 +225,20 @@ export const useBeaconStore = defineStore('beacon', {
             return new Promise((resolve, reject) => {
                 const logger = useLogger();
                 logger.log('info', 'Starting BLE scan ...');
-                const source: BLESourceNode = this.source;
-                source.start().then(resolve).catch(reject);
+                const sources: BLESourceNode[] = this.sources;
+                Promise.all(sources.map(source => {
+                    return source.start();
+                })).then(() => resolve()).catch(reject);
             });
         },
         stopScan(): Promise<void> {
             return new Promise((resolve, reject) => {
                 const logger = useLogger();
                 logger.log('info', 'Stopping BLE scan ...');
-                const source: BLESourceNode = this.source;
-                source.stop().then(resolve).catch(reject);
+                const sources: BLESourceNode[] = this.sources;
+                Promise.all(sources.map(source => {
+                    return source.stop();
+                })).then(() => resolve()).catch(reject);
             });
         },
         clear(): void {

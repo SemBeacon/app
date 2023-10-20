@@ -67,7 +67,7 @@ import {
   help
 } from 'ionicons/icons';
 
-import { useBeaconStore } from './stores/beacon';
+import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';
 import { useLogger } from './stores/logger';
 
@@ -75,6 +75,7 @@ import { Animation, StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
+import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
 
 @Options({
   components: {
@@ -94,6 +95,7 @@ import { Capacitor } from '@capacitor/core';
 })
 export default class App extends Vue {
   beaconStore = useBeaconStore();
+  beaconSimulatorStore = useBeaconAdvertisingStore();
   userStore = useUserStore();
   logger = useLogger();
   info: AppInfo = {} as any;
@@ -163,7 +165,11 @@ export default class App extends Vue {
         });
       }
 
-      Promise.all([this.userStore.initialize(), this.beaconStore.initialize()])
+      Promise.all([
+        this.userStore.initialize(), 
+        this.beaconStore.initialize(),
+        this.beaconSimulatorStore.initialize()
+      ])
         .then(() => resolve())
         .catch(err => {
           console.error(err);

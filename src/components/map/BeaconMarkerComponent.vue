@@ -36,7 +36,7 @@ import {
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
 import { Ref, ref, isProxy, toRaw } from 'vue';
-import { Beacon, useBeaconStore } from '../../stores/beacon';
+import { Beacon, useBeaconStore } from '../../stores/beacon.scanning';
 import moment from 'moment';
 import { TimeService } from '@openhps/core';
 

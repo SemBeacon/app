@@ -148,7 +148,7 @@
         <ion-fab slot="fixed" horizontal="end" vertical="bottom">
           <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
             <ion-spinner name="circular" v-if="loading"></ion-spinner>
-            <ion-icon :name="this.beaconStore.isScanning ? 'pause' : 'search'" v-if="!loading"></ion-icon>
+            <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
           </ion-fab-button>
         </ion-fab>
       </div>
@@ -179,7 +179,7 @@ import {
 } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 import { BLEBeaconObject, BLEEddystoneTLM, BLEEddystoneUID, BLEEddystoneURL } from '@openhps/rf';
-import { Beacon, useBeaconStore } from '../stores/beacon';
+import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
 import { BLESemBeacon } from '../models/BLESemBeacon';
 import { BLEiBeacon, BLEEddystone, BLEAltBeacon } from '@openhps/rf';
 import moment from 'moment';

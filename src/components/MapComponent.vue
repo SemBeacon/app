@@ -1,7 +1,6 @@
 <template>
   <l-map 
-    ref="map"
-    id="map" 
+    ref="map" 
     :zoom="zoom" 
     :center="center"
     :options="{ attributionControl: false }"
@@ -40,8 +39,6 @@
 
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
-// import L from 'leaflet';
-// import 'leaflet.vectorgrid';
 import {
     LMap, LMarker, LTileLayer
     // @ts-ignore
@@ -50,9 +47,8 @@ import { Absolute2DPosition, GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
 import GeoJsonComponent from './map/GeoJsonComponent.vue';
 import { computed } from 'vue';
-import { Ref } from 'vue-property-decorator';
 import { useGeolocationStore } from '../stores/geolocation';
-import { useBeaconStore } from '../stores/beacon';
+import { useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -73,7 +69,6 @@ export default class MapComponent extends Vue {
   id = prefersDark.matches ? "mapbox/dark-v11" : "mapbox/streets-v11";
   accessToken = "pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw";
   url = `https://api.mapbox.com/styles/v1/${this.id}/tiles/{z}/{x}/{y}?access_token=${this.accessToken}`;
-  @Ref("map") map: any;
   zoom?: number = 18;
   beacons = computed(() => {
     return Array.from(this.beaconStore.beacons.values())
@@ -94,10 +89,14 @@ export default class MapComponent extends Vue {
     return this.defaultCenter ? this.defaultCenter : (this.location ? this.location : [0, 0])
   });
 
+  async beforeMount() {
+    // await require('../../public/js/vendor/leaflet/Leaflet.EdgeMarker.js'); // esline-disable-line
+  }
+  
   mounted() {
     this.geolocationStore.initialize().then(() => {
       return this.geolocationStore.sourceNode.start();
-    });
+    }).catch(console.error);
   }
 
   onMapReady(map: any) {

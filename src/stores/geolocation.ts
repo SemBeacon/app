@@ -37,8 +37,9 @@ export const useGeolocationStore = defineStore('geolocation', {
                     .build().then((model: Model) => {
                         this.model = model;
                         this.model.on('error', console.error);
-                        resolve();
-                    }).catch(reject);
+
+                        return this.source.requestPermissions();
+                    }).then(() => resolve()).catch(reject);
             });
         }
     }
