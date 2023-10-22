@@ -27,7 +27,7 @@ export const useLogger = defineStore('logging', {
                 });    
             });
         },
-        log(level: string, message: string) {
+        log(level: string, message: string | any) {
             const timestamp = Date.now();
             this.logs.push({
                 timestamp,

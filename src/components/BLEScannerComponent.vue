@@ -1,28 +1,34 @@
 <template>
-    <ion-content :fullscreen="true">
-      <div id="container">
-        <ion-list v-if="beacons.length > 0">
-          <beacon-item-component 
-            v-for="beacon in beacons" 
-            :key="beacon.uid"
-            :beacon="beacon"
-          >
-          </beacon-item-component>
-        </ion-list>
-        <section class="help-text ion-padding-top ion-text-center" v-else-if="!beaconStore.isScanning">
-          <div>
-            <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
-          </div>
-        </section>
-      </div>
-      
-      <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-        <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
-          <ion-spinner name="circular" v-if="loading"></ion-spinner>
-          <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ion-content>
+  <ion-page>
+    <div id="container">
+      <ion-list v-if="beacons.length > 0">
+        <beacon-item-component 
+          v-for="beacon in beacons" 
+          :key="beacon.uid"
+          :beacon="beacon"
+          @clickBeacon="() => $router.push(`/beacon/${beacon.uid}`)"
+        >
+        </beacon-item-component>
+      </ion-list>
+
+      <section class="help-text ion-padding-top ion-text-center" v-else-if="!beaconStore.isScanning">
+        <div>
+          <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
+        </div>
+      </section>
+    </div>
+    
+    <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+      <ion-fab-button 
+        @click="toggleScan" 
+        :color="this.beaconStore.isScanning ? 'danger' : 'primary'"
+        :disabled="!this.beaconStore.hasPermission"
+      >
+        <ion-spinner name="circular" v-if="loading"></ion-spinner>
+        <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ion-page>
 </template>
 
 
@@ -59,6 +65,7 @@ import { stop, search } from 'ionicons/icons';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
 import { Capacitor } from '@capacitor/core';
+import { Toast } from '@capacitor/toast';
 
 @Options({
   components: {
@@ -96,7 +103,11 @@ export default class BLESimulatorComponent extends Vue {
     beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   loading = false;
-  beacons = computed(() => Array.from(this.beaconStore.beacons.values()).filter(beacon => beacon.lastSeen !== undefined));
+  beacons = computed(() => 
+    Array.from(this.beaconStore.beacons.values())
+      .filter(beacon => beacon.lastSeen !== undefined)
+      .sort((a, b) => b.lastSeen - a.lastSeen)
+  );
   platform = Capacitor.getPlatform();
 
   toggleScan(): void {
@@ -108,6 +119,9 @@ export default class BLESimulatorComponent extends Vue {
         }).catch(err => {
           //
           console.error(err);
+          Toast.show({
+            text: `Error while stopping scan! ${err}`,
+          });
         }).finally(() => {
           this.loading = false;
         });
@@ -118,6 +132,9 @@ export default class BLESimulatorComponent extends Vue {
         }).catch(err => {
           //
           console.error(err);
+          Toast.show({
+            text: `Error while starting scan! ${err}`,
+          });
         }).finally(() => {
           this.loading = false;
         });

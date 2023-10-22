@@ -47,6 +47,7 @@ import '@openhps/geospatial';
 import 'reflect-metadata';
 import { Vue, Options } from 'vue-property-decorator';
 import {
+  alertController,
   IonApp,
   IonContent,
   IonIcon,
@@ -64,7 +65,8 @@ import {
   map,
   bluetooth,
 //  logIn,
-  help
+  help,
+  wifiOutline
 } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon.scanning';
@@ -76,6 +78,9 @@ import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/a
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
 import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
+import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
+import { useGeolocationStore } from './stores/geolocation';
+import moment from 'moment';
 
 @Options({
   components: {
@@ -96,21 +101,30 @@ import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
 export default class App extends Vue {
   beaconStore = useBeaconStore();
   beaconSimulatorStore = useBeaconAdvertisingStore();
+  geolocationStore = useGeolocationStore();
   userStore = useUserStore();
   logger = useLogger();
   info: AppInfo = {} as any;
+  alertOpen: boolean = false;
 
   appPages = [
     {
-      name: 'beacons',
-      title: 'Beacons',
-      url: '/beacons',
+      name: 'scanner',
+      title: 'Scanner',
+      url: '/beacon/scanner',
       iosIcon: bluetooth,
       mdIcon: bluetooth,
     },
     {
+      name: 'simulator',
+      title: 'Simulator',
+      url: '/beacon/simulator',
+      iosIcon: wifiOutline,
+      mdIcon: wifiOutline,
+    },
+    {
       name: 'map',
-      title: 'Map',
+      title: 'Beacon map',
       url: '/map',
       iosIcon: map,
       mdIcon: map,
@@ -141,11 +155,72 @@ export default class App extends Vue {
     }
   }
 
-  mounted(): Promise<void> {
+  handlePermissions(): Promise<void> {
     return new Promise((resolve) => {
+      if (!(this.beaconStore.hasPermission || this.beaconSimulatorStore.hasPermission) && !this.alertOpen) {
+        Promise.all([
+          this.geolocationStore.initialize(),
+          this.beaconStore.initialize(),
+          this.beaconSimulatorStore.initialize(),
+        ])
+          .catch(async (err: Error) => {
+            console.error("Initialization error", err);
+            if (err.message === "Permission denied.") {
+                this.alertOpen = true;
+                const alert = await alertController.create({
+                  header: 'Permissions missing',
+                  message: 'Please enable the location and Bluetooth permissions for this application to work.',
+                  buttons: [{
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: () => {
+                      console.log('Alert canceled');
+                    },
+                  },
+                  {
+                    text: 'Edit permissions',
+                    role: 'confirm',
+                    handler: () => {
+                      NativeSettings.open({
+                        optionAndroid: AndroidSettings.ApplicationDetails, 
+                        optionIOS: IOSSettings.App
+                      });
+                    },
+                  }],
+                });
+                await alert.present();
+                this.alertOpen = false;
+            }
+          }).finally(() => {
+            resolve();
+          });
+      }
+    });
+  }
+
+  beforeMount(): Promise<void> {
+    return new Promise((resolve, reject) => {
       RDFSerializer.initialize("rf");
       RDFSerializer.initialize("geospatial");
       this.logger.initialize();
+      moment.updateLocale('en', {
+        relativeTime: {
+            future: "in %s",
+            past: "%s",
+            s: number=>number + "s ago",
+            ss: '%ds ago',
+            m: "1m ago",
+            mm: "%dm ago",
+            h: "1h ago",
+            hh: "%dh ago",
+            d: "1d ago",
+            dd: "%dd ago",
+            M: "a month ago",
+            MM: "%d months ago",
+            y: "a year ago",
+            yy: "%d years ago"
+        }
+      });
 
       CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
         this.zone.run(() => {
@@ -165,15 +240,11 @@ export default class App extends Vue {
         });
       }
 
-      Promise.all([
-        this.userStore.initialize(), 
-        this.beaconStore.initialize(),
-        this.beaconSimulatorStore.initialize()
-      ])
-        .then(() => resolve())
-        .catch(err => {
-          console.error(err);
-        });
+      CapacitorApp.addListener('resume', () => {
+        this.handlePermissions();
+      });
+
+      this.handlePermissions().then(resolve).catch(reject);
     });
   }
 }

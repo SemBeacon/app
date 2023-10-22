@@ -20,32 +20,34 @@
         </ion-buttons>
       </ion-toolbar>
 
-      <ion-toolbar color="primary" v-if="platform !== 'ios'">
-        <ion-segment value="scanning">
-          <ion-segment-button @click="() => tab = 1" value="scanning">
+      <ion-toolbar color="primary" class="tab-selector">
+        <ion-segment :value="$route.name" @ionChange="e => $router.push(e.target.value)">
+          <ion-segment-button value="scanner">
             <ion-label>Scanner</ion-label>
           </ion-segment-button>
-          <ion-segment-button @click="() => tab = 2" value="advertising">
+          <ion-segment-button value="simulator">
             <ion-label>Simulator</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-toolbar>
     </ion-header>
 
-    <BLEScannerComponent v-if="tab === 1"></BLEScannerComponent>
-    <BLESimulatorComponent v-if="tab === 2"></BLESimulatorComponent>
-    
-    <ion-tab-bar slot="bottom" v-if="platform === 'ios'">
-      <ion-tab-button tab="home" @click="() => tab = 1">
-        <ion-icon icon="search"/>
-        <ion-label>Scanner</ion-label>
-      </ion-tab-button>
+    <ion-content :fullscreen="true">
+      <ion-tabs style="position: none">
+        <ion-router-outlet></ion-router-outlet>
+        <ion-tab-bar class="tab-selector" slot="bottom">
+          <ion-tab-button tab="scanner" href="/beacon/scanner">
+            <ion-icon icon="search"/>
+            <ion-label>Scanner</ion-label>
+          </ion-tab-button>
 
-      <ion-tab-button tab="radio" @click="() => tab = 2">
-        <ion-icon icon="wifi" />
-        <ion-label>Simulator</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
+          <ion-tab-button tab="simulator" href="/beacon/simulator">
+            <ion-icon icon="wifi"/>
+            <ion-label>Simulator</ion-label>
+          </ion-tab-button>
+        </ion-tab-bar>
+      </ion-tabs>
+    </ion-content>
   </ion-page>
 </template>
 
@@ -55,6 +57,8 @@ import { Vue, Options } from 'vue-property-decorator';
 import BLESimulatorComponent from '../components/BLESimulatorComponent.vue';
 import BLEScannerComponent from '../components/BLEScannerComponent.vue';
 import { 
+  IonRouterOutlet,
+  IonTabs,
   IonTabBar,
   IonTabButton,
   IonButtons, 
@@ -84,6 +88,8 @@ import { Capacitor } from '@capacitor/core';
 
 @Options({
   components: {
+    IonRouterOutlet,
+    IonTabs,
     IonButtons, 
     IonContent, 
     IonHeader, 
@@ -114,7 +120,6 @@ import { Capacitor } from '@capacitor/core';
   })
 })
 export default class BeaconsPage extends Vue {
-  tab = 1;
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   platform = Capacitor.getPlatform();
@@ -134,5 +139,13 @@ ion-header ion-toolbar:first-child {
   margin-top: 3em;
   padding-left: 1em;
   padding-right: 1em;
+}
+
+ion-tab-bar.tab-selector.md {
+  display: none;
+}
+
+ion-toolbar.tab-selector.ios {
+  display: none;
 }
 </style>

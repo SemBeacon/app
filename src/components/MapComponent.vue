@@ -1,5 +1,6 @@
 <template>
   <l-map 
+    id="map"
     ref="map" 
     :zoom="zoom" 
     :center="center"
@@ -94,9 +95,7 @@ export default class MapComponent extends Vue {
   }
   
   mounted() {
-    this.geolocationStore.initialize().then(() => {
-      return this.geolocationStore.sourceNode.start();
-    }).catch(console.error);
+    this.geolocationStore.sourceNode.start();
   }
 
   onMapReady(map: any) {
@@ -131,5 +130,13 @@ export default class MapComponent extends Vue {
 #map {
   height: 100%;
   width: 100%;
+  background-color: var(--ion-background-color);
+}
+
+img.leaflet-tile, img.leaflet-marker-icon, img.leaflet-marker-shadow {
+    /* work-around from here: https://github.com/Leaflet/Leaflet/issues/161 */
+    outline: 1px solid transparent;
+    /* work-around from here: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+    mix-blend-mode: plus-lighter;
 }
 </style>

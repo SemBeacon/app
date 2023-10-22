@@ -18,7 +18,11 @@
       </div>
       
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-        <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
+        <ion-fab-button 
+          @click="toggleScan" 
+          :color="this.beaconStore.isScanning ? 'danger' : 'primary'"
+          :disabled="!this.beaconStore.hasPermission"
+        >
           <ion-spinner name="circular" v-if="loading"></ion-spinner>
           <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'play'" v-if="!loading"></ion-icon>
         </ion-fab-button>

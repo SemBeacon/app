@@ -12,6 +12,7 @@ const config: CapacitorConfig = {
   loggingBehavior: "none",
   android: {
     includePlugins: [
+      'capacitor-native-settings',
       '@capacitor/toast',
       '@capacitor/status-bar',
       '@capacitor/local-notifications',
@@ -26,6 +27,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     includePlugins: [
+      'capacitor-native-settings',
       '@capacitor/toast',
       '@capacitor/status-bar',
       '@capacitor/local-notifications',

@@ -30,18 +30,21 @@ export class BLESemBeaconBuilder extends BLEBeaconBuilder<BLESemBeacon> {
         return this;
     }
 
+    instanceId(instanceId: BLEUUID): this;
     instanceId(instanceId: string): this;
     instanceId(instanceId: number): this;
-    instanceId(instanceId: number | string): this {
+    instanceId(instanceId: number | string | BLEUUID): this {
         if (typeof instanceId === 'number') {
             const arr = new Uint8Array(8);
             for (let i = 0; i < 8; i++) {
                 arr[i] = instanceId % 256;
                 instanceId = Math.floor(instanceId / 256);
             }
-            this.beacon.instanceId = BufferUtils.toHexString(arr);
-        } else {
+            this.beacon.instanceId = BLEUUID.fromString(BufferUtils.toHexString(arr));
+        } else if (instanceId instanceof BLEUUID) {
             this.beacon.instanceId = instanceId;
+        } else {
+            this.beacon.instanceId = BLEUUID.fromString(instanceId);
         }
         return this;
     }
@@ -108,7 +111,7 @@ export class BLESemBeaconBuilder extends BLEBeaconBuilder<BLESemBeacon> {
                 manufacturerData.setUint8(i, namespaceId.getUint8(i - 2));
             }
             // Instance ID
-            const instanceId = new DataView(BufferUtils.fromHexString(this.beacon.instanceId).buffer, 0);
+            const instanceId = new DataView(this.beacon.instanceId.toBuffer().buffer, 0);
             for (let i = 18 ; i < 18 + 4 ; i++) {
                 manufacturerData.setUint8(i, instanceId.getUint8(i - 18));
             }

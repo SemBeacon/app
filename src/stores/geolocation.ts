@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { CallbackSinkNode, DataFrame, GeographicalPosition, Model, ModelBuilder } from '@openhps/core';
 import { GeolocationSourceNode } from '@openhps/capacitor-geolocation';
+import { Capacitor } from '@capacitor/core';
 
 export const useGeolocationStore = defineStore('geolocation', {
     state: () => ({
@@ -37,8 +38,11 @@ export const useGeolocationStore = defineStore('geolocation', {
                     .build().then((model: Model) => {
                         this.model = model;
                         this.model.on('error', console.error);
-
-                        return this.source.requestPermissions();
+                        if (Capacitor.getPlatform() === 'web') {
+                            return resolve();
+                        } else {
+                            return GeolocationSourceNode.requestPermissions();
+                        }
                     }).then(() => resolve()).catch(reject);
             });
         }

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { NumberType, SerializableMember, SerializableObject } from "@openhps/core";
-import { IriString, Store, UrlString, xsd } from "@openhps/rdf";
+import { DataFactory, IriString, Store, Thing, UrlString, xsd } from "@openhps/rdf";
 import { BLEBeaconObject, BLEEddystoneURL, BLEService, BLEUUID, BufferUtils } from "@openhps/rf";
 
 /**
@@ -44,7 +44,19 @@ export class BLESemBeacon extends BLEBeaconObject {
     @SerializableMember({
         rdf: {
             predicate: "http://purl.org/sembeacon/namespaceId",
-            datatype: xsd.hexBinary
+            datatype: xsd.hexBinary,
+            serializer: (value: BLEUUID) => {
+                if (!value) {
+                    return undefined;
+                }
+                return DataFactory.literal(value.toString().replace(/-/g, ''), DataFactory.namedNode(xsd.hexBinary));
+            },
+            deserializer: (thing: Thing) => {
+                if (!thing) {
+                    return undefined;
+                }
+                return BLEUUID.fromString(thing.value);
+            },
         }
     })
     namespaceId: BLEUUID;
@@ -52,10 +64,22 @@ export class BLESemBeacon extends BLEBeaconObject {
     @SerializableMember({
         rdf: {
             predicate: "http://purl.org/sembeacon/instanceId",
-            datatype: xsd.hexBinary
+            datatype: xsd.hexBinary,
+            serializer: (value: BLEUUID) => {
+                if (!value) {
+                    return undefined;
+                }
+                return DataFactory.literal(value.toString().replace(/-/g, ''), DataFactory.namedNode(xsd.hexBinary));
+            },
+            deserializer: (thing: Thing) => {
+                if (!thing) {
+                    return undefined;
+                }
+                return BLEUUID.fromString(thing.value);
+            },
         }
     })
-    instanceId: string;
+    instanceId: BLEUUID;
 
     @SerializableMember()
     resourceUri: UrlString;
@@ -101,8 +125,8 @@ export class BLESemBeacon extends BLEBeaconObject {
         ) {
             return this;
         }
-        this.namespaceId = BLEUUID.fromBuffer(manufacturerData.subarray(2, 18));
-        this.instanceId = BufferUtils.toHexString(manufacturerData.subarray(18, 22));
+        this.namespaceId = BLEUUID.fromBuffer(manufacturerData.slice(2, 18));
+        this.instanceId = BLEUUID.fromBuffer(manufacturerData.slice(18, 22));
         this.calibratedRSSI = view.getInt8(22);
         this.flags = view.getUint8(23);
         if (this.uid === undefined) {
@@ -147,7 +171,7 @@ export class BLESemBeacon extends BLEBeaconObject {
         return BufferUtils.toHexString(
             BufferUtils.concatBuffer(
                 this.namespaceId.toBuffer(),
-                BufferUtils.fromHexString(this.instanceId)
+                this.instanceId.toBuffer()
             ),
         );
     }

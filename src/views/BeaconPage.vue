@@ -5,12 +5,12 @@
         <ion-buttons slot="start">
           <ion-back-button></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ beaconType() }}</ion-title>
+        <ion-title>Beacon details</ion-title>
         <ion-buttons slot="end">
           <ion-button 
             icon-only 
             :style="{ color: '#ffffff' }"
-            v-if="beacon.position" 
+            v-if="beacon && beacon.position" 
             @click="showOnMap"
           >
             <ion-icon name="locate-outline"></ion-icon>
@@ -20,57 +20,83 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <div id="container">
-        <ion-list v-if="beacon" :key="key">
-          <ion-item class="info" lines="none">
-            <ion-thumbnail v-if="beaconIcon" slot="start">
-              <img :alt="beacon.displayName" :src="beaconIcon" />
-            </ion-thumbnail>
+      <template v-if="beacon">
+        <!-- <ion-card>
+          <ion-card-content>
+            <ion-input size="20" label-placement="floating" v-model="beacon.displayName">
+              <div slot="label">Name</div>
+            </ion-input>
+          </ion-card-content>
+        </ion-card> -->
+
+        <ion-card>
+          <ion-card-content>
             <ion-grid>
               <ion-row>
-                <ion-col>
-                  <h1>RSSI: {{ beacon.rssi }} <small>dBm</small></h1>
+                <ion-col size='2'>
+                  <ion-thumbnail v-if="beaconIcon">
+                    <img :alt="beaconType()" :src="beaconIcon" />
+                  </ion-thumbnail>
                 </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col v-if="beacon.distance">
-                  <h3>Distance: {{ beacon.distance }} <small>m</small></h3>
-                </ion-col>
-                <ion-col v-else>
-                  <h3>Distance: -</h3>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col>
-                  <h5>Last seen: {{ lastSeen() }}</h5>
+                <ion-col size='10'>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size='12'>
+                        <h1>{{ beaconType() }}</h1>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row :key="key">
+                      <ion-col size="12">
+                        <h2>RSSI: {{ beacon.rssi }} <small>dBm</small></h2>
+                      </ion-col>
+                      <ion-col size="6" v-if="beacon.distance">
+                        <h3>Distance: {{ beacon.distance }} <small>m</small></h3>
+                      </ion-col>
+                      <ion-col size="6" v-else>
+                        <h3>Distance: -</h3>
+                      </ion-col>
+                      <ion-col size="6">
+                        <h3>Last seen: {{ lastSeen() }}</h3>
+                      </ion-col>
+                      </ion-row>
+                  </ion-grid>
                 </ion-col>
               </ion-row>
             </ion-grid>
-          </ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-list v-if="beacon">
           <ion-item lines="none" v-if="beacon.address">
-            <ion-label position="stacked" color="primary">MAC Address</ion-label>
-            <ion-label position="stacked">{{ beacon.address.toString() }}</ion-label>
+            <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.address.toString()">
+              <div slot="label">MAC Address</div>
+            </ion-input>
           </ion-item>
           <ion-item lines="none" v-if="beacon.manufacturerData.size > 0">
-            <ion-label position="stacked" color="primary">Manufacturer</ion-label>
-            <ion-label position="stacked">{{ manufacturer }}</ion-label>
+            <ion-input :readonly="true" size="20" label-placement="stacked" :value="manufacturer">
+              <div slot="label">Manufacturer</div>
+            </ion-input>
           </ion-item>
-          <div v-if="beaconType() === 'SemBeacon'">
+          <template v-if="beaconType() === 'SemBeacon'">
               <ion-item lines="none">
-                <ion-label position="stacked" color="primary">Namespace ID</ion-label>
-                <ion-label position="stacked">{{ beacon.namespaceId.toString() }}</ion-label>
+                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.namespaceId.toString()">
+                  <div slot="label">Namespace ID</div>
+                </ion-input>
               </ion-item>
               <ion-item lines="none">
-                <ion-label position="stacked" color="primary">Instance ID</ion-label>
-                <ion-label position="stacked">{{ beacon.instanceId }}</ion-label>
+                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.instanceId.toString()">
+                  <div slot="label">Instance ID</div>
+                </ion-input>
               </ion-item>
               <ion-item lines="none">
-                <ion-label position="stacked" color="primary">Short resource URI</ion-label>
-                <ion-label position="stacked">{{ beacon.shortResourceUri }}</ion-label>
+                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.shortResourceUri">
+                  <div slot="label">Short resource URI</div>
+                </ion-input>
               </ion-item>
               <ion-item lines="none">
-                <ion-label position="stacked" color="primary">Resource URI</ion-label>
-                <ion-label position="stacked">{{ beacon.resourceUri }}</ion-label>
+                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.resourceUri">
+                  <div slot="label">Resource URI</div>
+                </ion-input>
               </ion-item>
               <ion-item lines="none">
                 <ion-label position="stacked" color="primary">SemBeacon Flags</ion-label>
@@ -85,73 +111,87 @@
                   <ion-chip color="danger" v-if="beacon.flags === 0">No SemBeaocn flags</ion-chip>
                 </div>
               </ion-item>
-          </div>
-          <div v-else-if="beaconType() === 'iBeacon'">
+          </template>
+          <template v-else-if="beaconType() === 'iBeacon' || beaconType() === 'AltBeacon'">
             <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Proximity UUID</ion-label>
-              <ion-label position="stacked">{{ beacon.proximityUUID.toString() }}</ion-label>
-            </ion-item>
-            <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Major</ion-label>
-              <ion-label position="stacked">{{ beacon.major }}</ion-label>
+              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.proximityUUID.toString()">
+                <div slot="label">Proximity UUID</div>
+              </ion-input>
             </ion-item>
             <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Minor</ion-label>
-              <ion-label position="stacked">{{ beacon.minor }}</ion-label>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="6">
+                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.major">
+                      <div slot="label">Major</div>
+                    </ion-input>
+                  </ion-col>
+                  <ion-col size="6">
+                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.minor">
+                      <div slot="label">Minor</div>
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </ion-item>
-          </div>
-          <div v-else-if="beaconType() === 'AltBeacon'">
+          </template>
+          <template v-else-if="beaconType() === 'Eddystone-URL'">
             <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Beacon UID</ion-label>
-              <ion-label position="stacked">{{ beacon.beaconId.toString() }}</ion-label>
+              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.url">
+                <div slot="label">URL</div>
+              </ion-input>
             </ion-item>
-          </div>
-          <div v-else-if="beaconType() === 'Eddystone-URL'">
+          </template>
+          <template v-else-if="beaconType() === 'Eddystone-UID'">
             <ion-item lines="none">
-              <ion-label position="stacked" color="primary">URL</ion-label>
-              <ion-label position="stacked">{{ beacon.url }}</ion-label>
-            </ion-item>
-          </div>
-          <div v-else-if="beaconType() === 'Eddystone-UID'">
-            <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Namespace ID</ion-label>
-              <ion-label position="stacked">{{ beacon.namespaceId.toString() }}</ion-label>
+              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.namespaceId.toString()">
+                <div slot="label">Namespace ID</div>
+              </ion-input>
             </ion-item>
             <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Instance ID</ion-label>
-              <ion-label position="stacked">{{ beacon.instanceId.toString() }}</ion-label>
+              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.instanceId.toString()">
+                <div slot="label">Instance ID</div>
+              </ion-input>
             </ion-item>
-          </div>
-          <div v-else-if="beaconType() === 'Eddystone-TLM'">
+          </template>
+          <template v-else-if="beaconType() === 'Eddystone-TLM'">
             <ion-item lines="none">
-              <ion-label position="stacked" color="primary">Voltage</ion-label>
-              <ion-label position="stacked">{{ beacon.voltage }} mV</ion-label>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="6">
+                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.voltage + ' mV'">
+                      <div slot="label">Voltage</div>
+                    </ion-input>
+                  </ion-col>
+                  <ion-col size="6" v-if="beacon.temperature">
+                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.temperature.value + ' &deg;C'">
+                      <div slot="label">Temperature</div>
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
             </ion-item>
-            <ion-item lines="none" v-if="beacon.temperature">
-              <ion-label position="stacked" color="primary">Temperature</ion-label>
-              <ion-label position="stacked">{{ beacon.temperature.value }} &deg;C</ion-label>
-            </ion-item>
-          </div>
-          <div v-else-if="beaconType() === 'Eddystone'">
+          </template>
+          <template v-else-if="beaconType() === 'Eddystone'">
             
-          </div>
-          <div v-else>
+          </template>
+          <template v-else>
             
-          </div>
+          </template>
           <ion-item lines="none" v-if="beacon && beacon.position">
-            <ion-label position="stacked" color="primary">Position</ion-label>
-            <ion-label position="stacked">{{ beacon.position.latitude }}, {{ beacon.position.longitude }}</ion-label>
+            <ion-input :readonly="true" size="20" label-placement="stacked" :value="`${beacon.position.latitude}, ${beacon.position.longitude}`">
+              <div slot="label">Position</div>
+            </ion-input>
           </ion-item>
         </ion-list>
-
-              
-        <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-          <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
-            <ion-spinner name="circular" v-if="loading"></ion-spinner>
-            <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-      </div>
+      </template>
+            
+      <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+        <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
+          <ion-spinner name="circular" v-if="loading"></ion-spinner>
+          <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -160,6 +200,8 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
 import { 
+  IonCardContent,
+  IonCard,
   IonChip,
   IonButtons, 
   IonContent, 
@@ -191,6 +233,8 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
   components: {
+    IonCard,
+    IonCardContent,
     IonButtons, 
     IonContent, 
     IonHeader, 
@@ -219,10 +263,15 @@ export default class BeaconPage extends Vue {
   beacon: (BLEBeaconObject | BLESemBeacon) & Beacon;
   key: Ref<string> = ref(TimeService.now().toString() + Math.random());
 
-  mounted(): void {
+  created(): void {
     const beaconUID = this.route.params.uid as string;
     console.log("Loading beacon details", beaconUID);
     this.beaconStore.findByUID(beaconUID).then(beacon => {
+      if (!beacon) {
+        // Can not find beacon...
+        this.$router.push("/beacon/scanner");
+        return;
+      }
       const beaconInfo = this.beaconStore.findBeaconInfo(beaconUID);
       this.beacon = beacon;
       this.beacon.rssi = beaconInfo.rssi;
@@ -237,9 +286,9 @@ export default class BeaconPage extends Vue {
         this.beacon.rssi = beaconInfo.rssi;
         this.beacon.lastSeen = beaconInfo.lastSeen;
         this.beacon.distance = beaconInfo.distance;
-        (this.key as any) = (this.beacon ? this.beacon.uid : "") + TimeService.now();
       }
-    }, 2000);
+      (this.key as any) = (this.beacon ? this.beacon.uid : "") + TimeService.now();
+    }, 500);
   }
 
    beaconType(): string {
@@ -331,5 +380,24 @@ ion-item.info h1,h2,h3,h4,h5 {
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+ion-col ion-thumbnail {
+  --size: 32px;
+}
+
+ion-grid {
+  margin: 0;
+  padding: 0;
+}
+
+ion-col {
+  margin: 0;
+  padding: 0;
+}
+
+ion-col h1,h2,h3,h4 {
+  margin: 0;
+  padding: 0;
 }
 </style>

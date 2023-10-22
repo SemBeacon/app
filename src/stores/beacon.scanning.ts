@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { CallbackSinkNode, DataFrame, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLEiBeaconSourceNode } from "@openhps/cordova-ibeacon";
-import { BLESemBeacon } from '@/models/BLESemBeacon';
+import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
 import { 
     BLEBeaconObject, 
     BLEBeaconClassifierNode, 
@@ -15,6 +15,11 @@ import {
     PropagationModel,
     BLEEddystoneTLM,
     BLEEddystone,
+    BLEEddystoneTLMBuilder,
+    BLEEddystoneURLBuilder,
+    BLEAltBeaconBuilder,
+    BLEUUID,
+    BLEiBeaconBuilder,
 } from '@openhps/rf';
 import { SemBeaconService } from '@/services/SemBeaconService';
 import { LocalStorageDriver } from '@openhps/localstorage';
@@ -22,6 +27,7 @@ import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { Capacitor } from '@capacitor/core';
+import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
 
 export interface BeaconScan {
     results: number;
@@ -45,10 +51,12 @@ export interface BeaconState {
     model: Model | undefined;
     beacons: Map<string, BLEBeaconObject & Beacon>;
     beaconInfo: Map<string, BLEBeaconObject>;
+    hasPermission?: boolean;
 }
 
 export const useBeaconStore = defineStore('beacon.scanning', {
     state: (): BeaconState => ({
+        hasPermission: false,
         proximityUUIDs: [],
         namespaces: {},
         sources: [
@@ -84,12 +92,57 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         }
     },
     actions: {
+        populate(): void {
+            Promise.all([
+                BLESemBeaconBuilder.create()
+                    .namespaceId(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
+                    .instanceId("9c7ce6fc")
+                    .calibratedRSSI(-56)
+                    .shortResourceUri("https://bit.ly/3JsEnF9")
+                    .flag(SEMBEACON_FLAG_HAS_POSITION)
+                    .flag(SEMBEACON_FLAG_HAS_SYSTEM)
+                    .build(),
+                BLEiBeaconBuilder.create()
+                    .proximityUUID(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
+                    .calibratedRSSI(-56)
+                    .major(51243)
+                    .minor(14124)
+                    .build(),
+                BLEAltBeaconBuilder.create()
+                    .proximityUUID(BLEUUID.fromString("77f340db-ac0d-20e8-aa3a-f656a29f236c"))
+                    .major(51243)
+                    .minor(14124)
+                    .calibratedRSSI(-56)
+                    .build(),
+                BLEEddystoneURLBuilder.create()
+                    .calibratedRSSI(-56)
+                    .url("https://maximvdw.be")
+                    .build(),
+                BLEEddystoneTLMBuilder.create()
+                    .calibratedRSSI(-56)
+                    .voltage(3215)
+                    .temperature(25.91)
+                    .uptime(5)
+                    .advertiseCount(100)
+                    .build(),
+            ]).then(beacons => {
+                beacons.forEach((beacon: any) => {
+                    const beaconInfo = {
+                        lastSeen: Date.now(),
+                        rssi: -64,
+                        distance: 1.5
+                    };
+                    this.beaconInfo.set(beacon.uid, beaconInfo);
+                    this.addBeacon(beacon);
+                });
+            });
+        },
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
         },
         findByUID(uid: string): Promise<BLEBeaconObject & Beacon> {
             if (!this.model) {
-                return undefined;
+                return new Promise((resolve) => resolve(undefined));
             }
             const service = this.model.findDataService(SemBeaconService);
             return service.findByUID(uid);
@@ -124,7 +177,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 } else {
                     if (beacon instanceof BLEiBeacon) {
                         const uuidStr = beacon.proximityUUID.toString();
-                        if (!this.proximityUUIDs.has(uuidStr)) {
+                        if (!this.proximityUUIDs.includes(uuidStr)) {
                             this.proximityUUIDs.push(uuidStr);
                             // Update source node
                         }
@@ -193,7 +246,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     }))
                     .build().then((model: Model) => {
                         this.model = model;
-                        logger.log('info', 'Initialized beacon scanning model.');
+                        logger.log('info', 'Initialized beacon scanner model');
                         const service = this.model.findDataService(SemBeaconService);
                         service.on('beacon', (beacon) => {
                             const info = this.beaconInfo.get(beacon.uid);
@@ -217,8 +270,13 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                             }
                         });
                         this.model.on('error', console.error);
+                        this.hasPermission = true;
+                        this.populate();
                         resolve();
-                    }).catch(reject);
+                    }).catch((error: Error) => {
+                        this.hasPermission = false;
+                        reject(error);
+                    });
             });
         },
         startScan(): Promise<void> {

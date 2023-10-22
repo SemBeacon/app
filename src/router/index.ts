@@ -4,7 +4,7 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/beacons',
+    redirect: '/beacon/scanner',
   },
   {
     name: 'map',
@@ -12,9 +12,20 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import ('../views/MapPage.vue')
   },
   {
-    name: 'beacons',
-    path: '/beacons',
-    component: () => import ('../views/BeaconsPage.vue')
+    path: '/beacon',
+    component: () => import ('../views/BeaconsPage.vue'),
+    children: [
+      {
+        name: 'scanner',
+        path: 'scanner', 
+        component: () => import('../components/BLEScannerComponent.vue')
+      },
+      {
+        name: 'simulator',
+        path: 'simulator', 
+        component: () => import('../components/BLESimulatorComponent.vue')
+      },
+    ]
   },
   {
     path: '/login',
