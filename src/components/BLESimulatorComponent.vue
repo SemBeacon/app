@@ -1,7 +1,15 @@
 <template>
   <ion-page>
     <div id="container">
-      <ion-list :disabled="!this.beaconStore.hasPermission">
+      <ion-list :disabled="this.beaconStore.state === ControllerState.NO_PERMISSION">
+        <ion-item 
+          button="false" 
+          v-if="this.beaconStore.state === ControllerState.NO_PERMISSION"
+          color="danger">
+          <ion-label class="ion-text-center">
+            <h2>No Bluetooth permission to initiate advertising!</h2>
+          </ion-label>
+        </ion-item>
         <beacon-item-component 
           v-for="beacon in beacons" 
           :key="beacon.uid"
@@ -9,6 +17,7 @@
           simulator="true"
           @clickBeacon="console.log"
           @simulateToggle="toggleAdvertising"
+          :disabled="this.beaconStore.state === ControllerState.NO_PERMISSION"
         >
         </beacon-item-component>
       </ion-list>
@@ -25,7 +34,7 @@
       <ion-fab-button 
         @click="addBeacon" 
         color="primary"
-        :disabled="!this.beaconStore.hasPermission"
+        :disabled="this.beaconStore.state !== ControllerState.READY"
       >
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
@@ -65,6 +74,7 @@ import {
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
 import { computed } from 'vue';
+import { ControllerState } from '../stores/types';
 
 @Options({
   components: {
@@ -95,6 +105,7 @@ import { computed } from 'vue';
     IonToggle,
   },
   data: () => ({
+    ControllerState
   })
 })
 export default class BLESimulatorComponent extends Vue {

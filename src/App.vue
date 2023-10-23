@@ -81,6 +81,7 @@ import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
 import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
 import { useGeolocationStore } from './stores/geolocation';
 import moment from 'moment';
+import { ControllerState } from './stores/types';
 
 @Options({
   components: {
@@ -157,7 +158,8 @@ export default class App extends Vue {
 
   handlePermissions(): Promise<void> {
     return new Promise((resolve) => {
-      if (!(this.beaconStore.hasPermission || this.beaconSimulatorStore.hasPermission) && !this.alertOpen) {
+      if ((this.beaconStore.state !== ControllerState.READY || 
+        this.beaconSimulatorStore.state === ControllerState.READY) && !this.alertOpen) {
         Promise.all([
           this.geolocationStore.initialize(),
           this.beaconStore.initialize(),

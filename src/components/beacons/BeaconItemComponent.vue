@@ -3,6 +3,7 @@
     class="beacon-item"
     button 
     @click="onClick" :detail="false"
+    :disabled="disabled"
   >
     <ion-thumbnail v-if="beaconIcon" slot="start">
       <img :alt="beacon.displayName" :src="beaconIcon" />
@@ -25,7 +26,7 @@
             <ion-label class="key" color="primary">Instance</ion-label>
           </ion-col>
           <ion-col size="6" size-md="8">
-            <ion-label>{{ beacon.instanceId }}</ion-label>
+            <ion-label>{{ beacon.instanceId.toString(false) }}</ion-label>
           </ion-col>
         </template>
         <template v-else-if="beaconType === 'iBeacon' || beaconType === 'AltBeacon'">
@@ -104,6 +105,7 @@
     </ion-grid>
     <ion-label slot="end" v-if="simulator">
       <ion-toggle 
+        aria-label="Toggle advertising of the beacon"
         :checked="beacon.advertising"
         @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
       ></ion-toggle>
@@ -117,7 +119,15 @@
 
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
-import { IonItem, IonLabel, IonThumbnail, IonToggle } from '@ionic/vue';
+import { 
+  IonItem, 
+  IonLabel, 
+  IonThumbnail, 
+  IonToggle,
+  IonGrid,
+  IonCol,
+  IonRow,
+} from '@ionic/vue';
 import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone, BLEEddystoneURL, BLEEddystoneUID, BLEEddystoneTLM } from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
 import moment from 'moment';
@@ -129,13 +139,15 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
   components: {
-    IonItem, IonLabel, IonThumbnail, IonToggle
+    IonItem, IonLabel, IonThumbnail, IonToggle,
+    IonGrid, IonCol, IonRow,
   }
 })
 export default class BeaconItemComponent extends Vue {
   @Prop() beacon: (BLEBeaconObject | BLESemBeacon | BLEiBeacon | BLEAltBeacon | BLEEddystoneURL | BLEEddystoneUID) & Beacon;
   key: Ref<string> = ref(TimeService.now().toString() + Math.random());
   @Prop() simulator: boolean;
+  @Prop() disabled: boolean;
 
   get beaconType(): string {
     if (this.beacon instanceof BLESemBeacon) {

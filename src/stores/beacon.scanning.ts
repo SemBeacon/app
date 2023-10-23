@@ -28,6 +28,7 @@ import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { Capacitor } from '@capacitor/core';
 import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
+import { ControllerState } from './types';
 
 export interface BeaconScan {
     results: number;
@@ -51,12 +52,12 @@ export interface BeaconState {
     model: Model | undefined;
     beacons: Map<string, BLEBeaconObject & Beacon>;
     beaconInfo: Map<string, BLEBeaconObject>;
-    hasPermission?: boolean;
+    state?: ControllerState;
 }
 
 export const useBeaconStore = defineStore('beacon.scanning', {
     state: (): BeaconState => ({
-        hasPermission: false,
+        state: ControllerState.PENDING,
         proximityUUIDs: [],
         namespaces: {},
         sources: [
@@ -127,6 +128,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .build(),
             ]).then(beacons => {
                 beacons.forEach((beacon: any) => {
+                    beacon.uid = beacon.computeUID();
                     const beaconInfo = {
                         lastSeen: Date.now(),
                         rssi: -64,
@@ -189,6 +191,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         },
         initialize(): Promise<void> {
             return new Promise((resolve, reject) => {
+                this.state = ControllerState.INITIALIZING;
                 const logger = useLogger();
                 logger.log('info', 'Initializing beacon scanner model ...');
                 ModelBuilder.create()
@@ -270,11 +273,11 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                             }
                         });
                         this.model.on('error', console.error);
-                        this.hasPermission = true;
+                        this.state = ControllerState.READY;
                         this.populate();
                         resolve();
                     }).catch((error: Error) => {
-                        this.hasPermission = false;
+                        this.state = ControllerState.NO_PERMISSION;
                         reject(error);
                     });
             });

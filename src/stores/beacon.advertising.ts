@@ -13,6 +13,7 @@ import { useLogger } from './logger';
 import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
+import { ControllerState } from './types';
 
 if (Capacitor.getPlatform() !== 'web') {
     LocalNotifications.requestPermissions().then(() => {
@@ -49,13 +50,13 @@ export type SimulatedBeacon = BLEBeaconObject & {
 
 export interface BeaconAdvertisingState {
     beacons: Map<string, SimulatedBeacon>;
-    hasPermission?: boolean;
+    state: ControllerState;
 }
 
 export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
     state: (): BeaconAdvertisingState => ({
         beacons: new Map(),
-        hasPermission: false
+        state: ControllerState.PENDING
     }),
     getters: {
 
@@ -101,6 +102,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             });
         },
         initialize(): Promise<void> {
+            this.state = ControllerState.INITIALIZING;
             this.populate();
             return new Promise((resolve, reject) => {
                 const bluetoothle = (window as any).bluetoothle;
@@ -115,16 +117,20 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                     }
                     if (platform === 'android') {
                         bluetoothle.requestPermissionBtAdvertise(() => {
+                            this.state = ControllerState.READY;
                             resolve();
                         }, (error) => {
+                            this.state = ControllerState.NO_PERMISSION;
                             logger.log('error', error);
                             reject(error);
                         });
                     } else if (platform === 'ios') {
                         bluetoothle.requestPermissions(() => {
+                            this.state = ControllerState.READY;
                             resolve();
                         }, (error) => {
-                            logger.log('error', error);
+                            logger.log('error', error); 
+                            this.state = ControllerState.NO_PERMISSION;
                             reject(error);
                         });
                     } else {

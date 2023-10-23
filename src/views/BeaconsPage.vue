@@ -11,8 +11,8 @@
         <ion-buttons slot="end">
           <ion-button 
             icon-only 
-            color="danger" 
-            :disabled="beaconStore.cacheSize === 0" 
+            :style="{ color: '#ffffff' }"
+            :v-if="beaconStore.cacheSize !== 0" 
             @click="clearCache"
           >
             <ion-icon name="trash"></ion-icon>
@@ -34,7 +34,7 @@
 
     <ion-content :fullscreen="true">
       <ion-tabs style="position: none">
-        <ion-router-outlet></ion-router-outlet>
+        <ion-router-outlet animated="false"></ion-router-outlet>
         <ion-tab-bar class="tab-selector" slot="bottom">
           <ion-tab-button tab="scanner" href="/beacon/scanner">
             <ion-icon icon="search"/>

@@ -21,7 +21,7 @@
         <ion-fab-button 
           @click="toggleScan" 
           :color="this.beaconStore.isScanning ? 'danger' : 'primary'"
-          :disabled="!this.beaconStore.hasPermission"
+          :disabled="this.beaconStore.state !== ControllerState.READY"
         >
           <ion-spinner name="circular" v-if="loading"></ion-spinner>
           <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'play'" v-if="!loading"></ion-icon>
@@ -58,6 +58,7 @@ import { computed } from 'vue';
 import { stop, play } from 'ionicons/icons';
 import MapComponent from '../components/MapComponent.vue';
 import { useRoute } from 'vue-router';
+import { ControllerState } from '../stores/types';
 
 @Options({
   components: {
@@ -82,7 +83,8 @@ import { useRoute } from 'vue-router';
   },
   data: () => ({
     stop,
-    play
+    play,
+    ControllerState
   })
 })
 export default class MapPage extends Vue {

@@ -31,7 +31,7 @@
 
         <ion-card>
           <ion-card-content>
-            <ion-grid>
+            <ion-grid class="compact">
               <ion-row>
                 <ion-col size='2'>
                   <ion-thumbnail v-if="beaconIcon">
@@ -41,8 +41,18 @@
                 <ion-col size='10'>
                   <ion-grid>
                     <ion-row>
-                      <ion-col size='12'>
+                      <ion-col size='10'>
                         <h1>{{ beaconType() }}</h1>
+                      </ion-col>
+                      <ion-col size="2" v-if="beaconType() === 'SemBeacon'">
+                        <ion-button 
+                          fill="outline" 
+                          icon-only="true"
+                          size="small"
+                          :disabled="!beacon.shortResourceUri && !beacon.resourceUri">
+                          <ion-icon name="refresh">
+                          </ion-icon>
+                        </ion-button>
                       </ion-col>
                     </ion-row>
                     <ion-row :key="key">
@@ -66,124 +76,206 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-list v-if="beacon">
-          <ion-item lines="none" v-if="beacon.address">
-            <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.address.toString()">
-              <div slot="label">MAC Address</div>
-            </ion-input>
-          </ion-item>
-          <ion-item lines="none" v-if="beacon.manufacturerData.size > 0">
-            <ion-input :readonly="true" size="20" label-placement="stacked" :value="manufacturer">
-              <div slot="label">Manufacturer</div>
-            </ion-input>
-          </ion-item>
-          <template v-if="beaconType() === 'SemBeacon'">
-              <ion-item lines="none">
-                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.namespaceId.toString()">
+        <ion-grid>
+          <ion-row>
+            <ion-col size='12' v-if="beacon.address">
+              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.address.toString()">
+                <div slot="label">MAC Address</div>
+              </ion-input>
+            </ion-col>
+            <ion-col size='12' v-if="beacon.manufacturerData">
+              <ion-input :readonly="true" size="20" label-placement="stacked" :value="manufacturer">
+                <div slot="label">Manufacturer</div>
+              </ion-input>
+            </ion-col>
+            <template v-if="beaconType().startsWith('Eddystone')">
+              <ion-col size="12" v-if="beacon.calibratedRSSI">
+                <ion-input 
+                  :readonly="true"
+                  label-placement="floating" 
+                  fill="outline"
+                  :value="beacon.getCalibratedRSSI(0)">
+                  <div slot="label">Calibrated RSSI at 0m</div>
+                </ion-input>
+              </ion-col>
+            </template>
+            <template v-else>
+              <ion-col size="12" v-if="beacon.calibratedRSSI">
+                <ion-input 
+                  :readonly="true" 
+                  label-placement="floating" 
+                  fill="outline"
+                  :value="beacon.calibratedRSSI">
+                  <div slot="label">Calibrated RSSI at 1m</div>
+                </ion-input>
+              </ion-col>
+            </template>
+            <template v-if="beaconType() === 'SemBeacon'">
+                <ion-col size="12">
+                  <ion-input 
+                    fill="outline"
+                    :readonly="false" 
+                    label-placement="floating"
+                    v-maskito="uuid128Options"
+                    :value="beacon.namespaceId.toString()">
+                    <div slot="label">Namespace ID</div>
+                  </ion-input>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-input 
+                    fill="outline"
+                    :readonly="false"
+                    label-placement="floating"
+                    v-maskito="uuid32Options" 
+                    :value="beacon.instanceId.toString(false)">
+                    <div slot="label">
+                      Instance ID
+                    </div>
+                  </ion-input>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-input 
+                    fill="outline"
+                    :readonly="true" 
+                    label-placement="floating"
+                    :value="beacon.shortResourceUri">
+                    <div slot="label">
+                      Short resource URI
+                    </div>
+                  </ion-input>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-input 
+                    :readonly="true" 
+                    fill="outline"
+                    label-placement="floating" 
+                    :value="beacon.resourceUri">
+                    <div slot="label">
+                      Resource URI
+                    </div>
+                  </ion-input>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-label position="stacked" class="chip-label">Beacon flags</ion-label>
+                  <div class="chip-container">
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">HAS_POSITION</ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">IS_PRIVATE</ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">IS_MOVING</ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">HAS_SYSTEM</ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">HAS_TELEMETRY</ion-chip>
+                    <ion-chip color="danger" v-if="beacon.flags === 0">No SemBeaocn flags</ion-chip>
+                  </div>
+                </ion-col>
+            </template>
+            <template v-else-if="beaconType() === 'iBeacon' || beaconType() === 'AltBeacon'">
+              <ion-col size="12">
+                <ion-input 
+                  :readonly="true" 
+                  label-placement="floating" 
+                  fill="outline"
+                  v-maskito="uuid128Options"
+                  :value="beacon.proximityUUID.toString()">
+                  <div slot="label">Proximity UUID</div>
+                </ion-input>
+              </ion-col>
+              <ion-col size="12">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="6">
+                      <ion-input 
+                        :readonly="true"
+                        label-placement="floating" 
+                        fill="outline"
+                        :value="beacon.major">
+                        <div slot="label">Major</div>
+                      </ion-input>
+                    </ion-col>
+                    <ion-col size="6">
+                      <ion-input 
+                        :readonly="true"
+                        label-placement="floating" 
+                        fill="outline"
+                        :value="beacon.minor">
+                        <div slot="label">Minor</div>
+                      </ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-col>
+            </template>
+            <template v-else-if="beaconType() === 'Eddystone-URL'">
+              <ion-col size="12">
+                <ion-input 
+                  :readonly="true" 
+                  label-placement="floating" 
+                  fill="outline"
+                  :value="beacon.url">
+                  <div slot="label">URL</div>
+                </ion-input>
+              </ion-col>
+            </template>
+            <template v-else-if="beaconType() === 'Eddystone-UID'">
+              <ion-col size="12">
+                <ion-input 
+                  :readonly="true"
+                  label-placement="floating" 
+                  fill="outline"
+                  :value="beacon.namespaceId.toString()">
                   <div slot="label">Namespace ID</div>
                 </ion-input>
-              </ion-item>
-              <ion-item lines="none">
-                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.instanceId.toString()">
+              </ion-col>
+              <ion-col size="12">
+                <ion-input 
+                  :readonly="true"
+                  label-placement="floating" 
+                  fill="outline"
+                  :value="beacon.instanceId.toString()">
                   <div slot="label">Instance ID</div>
                 </ion-input>
-              </ion-item>
-              <ion-item lines="none">
-                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.shortResourceUri">
-                  <div slot="label">Short resource URI</div>
-                </ion-input>
-              </ion-item>
-              <ion-item lines="none">
-                <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.resourceUri">
-                  <div slot="label">Resource URI</div>
-                </ion-input>
-              </ion-item>
-              <ion-item lines="none">
-                <ion-label position="stacked" color="primary">SemBeacon Flags</ion-label>
-              </ion-item>
-              <ion-item lines="none">
-                <div class="chip-container">
-                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">HAS_POSITION</ion-chip>
-                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">IS_PRIVATE</ion-chip>
-                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">IS_MOVING</ion-chip>
-                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">HAS_SYSTEM</ion-chip>
-                  <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">HAS_TELEMETRY</ion-chip>
-                  <ion-chip color="danger" v-if="beacon.flags === 0">No SemBeaocn flags</ion-chip>
-                </div>
-              </ion-item>
-          </template>
-          <template v-else-if="beaconType() === 'iBeacon' || beaconType() === 'AltBeacon'">
-            <ion-item lines="none">
-              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.proximityUUID.toString()">
-                <div slot="label">Proximity UUID</div>
+              </ion-col>
+            </template>
+            <template v-else-if="beaconType() === 'Eddystone-TLM'">
+              <ion-col size="12">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="6">
+                      <ion-input 
+                        :readonly="true" 
+                        label-placement="floating" 
+                        fill="outline"
+                        :value="beacon.voltage + ' mV'">
+                        <div slot="label">Voltage</div>
+                      </ion-input>
+                    </ion-col>
+                    <ion-col size="6" v-if="beacon.temperature">
+                      <ion-input 
+                        :readonly="true"
+                        label-placement="floating" 
+                        fill="outline"
+                        :value="beacon.temperature.value + ' &deg;C'">
+                        <div slot="label">Temperature</div>
+                      </ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-col>
+            </template>
+            <template v-else-if="beaconType() === 'Eddystone'">
+              
+            </template>
+            <template v-else>
+              
+            </template>
+            <ion-col size="12" v-if="beacon && beacon.position">
+              <ion-input 
+                :readonly="true" 
+                label-placement="stacked" 
+                :value="`${beacon.position.latitude}, ${beacon.position.longitude}`">
+                <div slot="label">Position</div>
               </ion-input>
-            </ion-item>
-            <ion-item lines="none">
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="6">
-                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.major">
-                      <div slot="label">Major</div>
-                    </ion-input>
-                  </ion-col>
-                  <ion-col size="6">
-                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.minor">
-                      <div slot="label">Minor</div>
-                    </ion-input>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-          </template>
-          <template v-else-if="beaconType() === 'Eddystone-URL'">
-            <ion-item lines="none">
-              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.url">
-                <div slot="label">URL</div>
-              </ion-input>
-            </ion-item>
-          </template>
-          <template v-else-if="beaconType() === 'Eddystone-UID'">
-            <ion-item lines="none">
-              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.namespaceId.toString()">
-                <div slot="label">Namespace ID</div>
-              </ion-input>
-            </ion-item>
-            <ion-item lines="none">
-              <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.instanceId.toString()">
-                <div slot="label">Instance ID</div>
-              </ion-input>
-            </ion-item>
-          </template>
-          <template v-else-if="beaconType() === 'Eddystone-TLM'">
-            <ion-item lines="none">
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="6">
-                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.voltage + ' mV'">
-                      <div slot="label">Voltage</div>
-                    </ion-input>
-                  </ion-col>
-                  <ion-col size="6" v-if="beacon.temperature">
-                    <ion-input :readonly="true" size="20" label-placement="stacked" :value="beacon.temperature.value + ' &deg;C'">
-                      <div slot="label">Temperature</div>
-                    </ion-input>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-          </template>
-          <template v-else-if="beaconType() === 'Eddystone'">
-            
-          </template>
-          <template v-else>
-            
-          </template>
-          <ion-item lines="none" v-if="beacon && beacon.position">
-            <ion-input :readonly="true" size="20" label-placement="stacked" :value="`${beacon.position.latitude}, ${beacon.position.longitude}`">
-              <div slot="label">Position</div>
-            </ion-input>
-          </ion-item>
-        </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </template>
             
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">
@@ -196,10 +288,12 @@
   </ion-page>
 </template>
 
-
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
 import { 
+  IonGrid,
+  IonCol,
+  IonRow,
   IonCardContent,
   IonCard,
   IonChip,
@@ -217,7 +311,10 @@ import {
   IonFabButton,
   IonSpinner,
   IonButton,
-  IonIcon
+  IonIcon,
+  IonThumbnail,
+  IonInput,
+  IonText
 } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 import { BLEBeaconObject, BLEEddystoneTLM, BLEEddystoneUID, BLEEddystoneURL } from '@openhps/rf';
@@ -227,12 +324,18 @@ import { BLEiBeacon, BLEEddystone, BLEAltBeacon } from '@openhps/rf';
 import moment from 'moment';
 import { Ref, ref } from 'vue';
 import { TimeService } from '@openhps/core';
+import { maskito } from '@maskito/vue';
 const BLECompanies = require('../models/BLECompanies.json'); // eslint-disable-line
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
   components: {
+    IonInput,
+    IonThumbnail,
+    IonGrid,
+    IonCol,
+    IonRow,
     IonCard,
     IonCardContent,
     IonButtons, 
@@ -250,18 +353,57 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     IonSpinner,
     IonChip,
     IonButton,
-    IonIcon
+    IonIcon,
+    IonText
   },
   data: () => ({
-    BLESemBeacon
-  })
+    BLESemBeacon,
+  }),
+  directives: {
+    maskito
+  }
 })
 export default class BeaconPage extends Vue {
-  loading = false;
+  loading = true;
   route = useRoute();
   beaconStore = useBeaconStore();
-  beacon: (BLEBeaconObject | BLESemBeacon) & Beacon;
+  beacon: (BLEBeaconObject | BLESemBeacon) & Beacon = undefined;
   key: Ref<string> = ref(TimeService.now().toString() + Math.random());
+
+  uuid32Options = {
+    mask: [
+      ...Array(8).fill(/[a-fA-F0-9]/),
+    ],
+    elementPredicate: (el: HTMLIonInputElement) => {
+      return new Promise((resolve) => {
+        requestAnimationFrame(async () => {
+          const input = await el.getInputElement();
+          resolve(input);
+        });
+      });
+    },
+  };
+  uuid128Options = {
+    mask: [
+      ...Array(8).fill(/[a-fA-F0-9]/),
+      '-',
+      ...Array(4).fill(/[a-fA-F0-9]/),
+      '-',
+      ...Array(4).fill(/[a-fA-F0-9]/),
+      '-',
+      ...Array(4).fill(/[a-fA-F0-9]/),
+      '-',
+      ...Array(12).fill(/[a-fA-F0-9]/),
+    ],
+    elementPredicate: (el: HTMLIonInputElement) => {
+      return new Promise((resolve) => {
+        requestAnimationFrame(async () => {
+          const input = await el.getInputElement();
+          resolve(input);
+        });
+      });
+    },
+  };
 
   created(): void {
     const beaconUID = this.route.params.uid as string;
@@ -277,7 +419,8 @@ export default class BeaconPage extends Vue {
       this.beacon.rssi = beaconInfo.rssi;
       this.beacon.lastSeen = beaconInfo.lastSeen;
       this.beacon.distance = beaconInfo.distance;
-      (window as any).beacon = this.beacon; // Debuggin
+      (window as any).beacon = this.beacon; // Debugging
+      this.loading = false;
     }).catch(console.error);
 
     setInterval(() => {
@@ -365,6 +508,11 @@ export default class BeaconPage extends Vue {
     }
     return `${companyName} (${manufacturerIdHex})`
   }
+
+  refresh(): void {
+    this.loading = true;
+
+  }
 }
 </script>
 
@@ -386,18 +534,26 @@ ion-col ion-thumbnail {
   --size: 32px;
 }
 
-ion-grid {
+ion-grid.compact {
   margin: 0;
   padding: 0;
+  width: 100%;
+
+  ion-col {
+    margin: 0;
+    padding: 0;
+  }
 }
 
-ion-col {
+ion-grid ion-grid {
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 ion-col h1,h2,h3,h4 {
   margin: 0;
   padding: 0;
 }
+
 </style>

@@ -15,12 +15,17 @@
     >
     </l-tile-layer>
     
-    <l-marker 
+    <custom-marker-component 
       key="phone"
       v-if="location"
-      :lat-lng="location"
+      :latLng="location"
+      :options="{
+        iconShape: 'doughnut',
+        borderWidth: 5,
+        borderColor: '#00ABDC'
+      }"
     >
-    </l-marker>
+    </custom-marker-component>
 
     <beacon-marker-component
       v-for="beacon in beacons"
@@ -51,6 +56,7 @@ import { computed } from 'vue';
 import { useGeolocationStore } from '../stores/geolocation';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
+import CustomMarkerComponent from './map/CustomMarkerComponent.vue';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -60,7 +66,8 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     LMarker,
     LTileLayer,
     BeaconMarkerComponent,
-    GeoJsonComponent
+    GeoJsonComponent,
+    CustomMarkerComponent
   }
 })
 export default class MapComponent extends Vue {
@@ -89,10 +96,6 @@ export default class MapComponent extends Vue {
   center = computed(() => {
     return this.defaultCenter ? this.defaultCenter : (this.location ? this.location : [0, 0])
   });
-
-  async beforeMount() {
-    // await require('../../public/js/vendor/leaflet/Leaflet.EdgeMarker.js'); // esline-disable-line
-  }
   
   mounted() {
     this.geolocationStore.sourceNode.start();

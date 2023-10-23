@@ -1,13 +1,20 @@
 <template>
   <ion-page>
     <div id="container">
-      <ion-list v-if="beacons.length > 0">
+      <ion-list v-if="beacons.length > 0 || this.beaconStore.state === ControllerState.NO_PERMISSION">
+        <ion-item 
+          button="false" 
+          v-if="this.beaconStore.state === ControllerState.NO_PERMISSION"
+          color="danger">
+          <ion-label class="ion-text-center">
+            <h2>No Bluetooth permission to initiate scanning!</h2>
+          </ion-label>
+        </ion-item>
         <beacon-item-component 
           v-for="beacon in beacons" 
           :key="beacon.uid"
           :beacon="beacon"
-          @clickBeacon="() => $router.push(`/beacon/${beacon.uid}`)"
-        >
+          @clickBeacon="() => $router.push(`/beacon/${beacon.uid}`)">
         </beacon-item-component>
       </ion-list>
 
@@ -22,7 +29,7 @@
       <ion-fab-button 
         @click="toggleScan" 
         :color="this.beaconStore.isScanning ? 'danger' : 'primary'"
-        :disabled="!this.beaconStore.hasPermission"
+        :disabled="this.beaconStore.state !== ControllerState.READY"
       >
         <ion-spinner name="circular" v-if="loading"></ion-spinner>
         <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
@@ -66,6 +73,7 @@ import { useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
 import { Capacitor } from '@capacitor/core';
 import { Toast } from '@capacitor/toast';
+import { ControllerState } from '../stores/types';
 
 @Options({
   components: {
@@ -96,11 +104,12 @@ import { Toast } from '@capacitor/toast';
   },
   data: () => ({
     stop,
-    search
+    search,
+    ControllerState
   })
 })
 export default class BLESimulatorComponent extends Vue {
-    beaconStore = useBeaconStore();
+  beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   loading = false;
   beacons = computed(() => 

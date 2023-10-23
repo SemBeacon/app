@@ -32,6 +32,33 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     }
 
     /**
+     * Resolve SemBeacon information
+     *
+     * @param {BLESemBeacon} object SemBeacon object 
+     * @param {boolean} [resolveAll] Resolve all beacons
+     * @returns {Promise<BLESemBeacon>} Promise of resolved SemBeacon
+     */
+    resolve(object: BLESemBeacon, resolveAll: boolean = true): Promise<BLESemBeacon> {
+        return new Promise((resolve, reject) => {
+            Promise.all([
+                ((!object.shortResourceUri && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
+                this._findByUID(object.uid) as Promise<BLESemBeacon>
+            ]).then((objects: BLESemBeacon[]) => {
+                if ((objects[1] === undefined || TimeService.now() - objects[1].maxAge > objects[1].modifiedTimestamp) && 
+                    (objects[0].resourceUri !== undefined || objects[0].shortResourceUri !== undefined) &&
+                    !this.queue.has(objects[0].uid)
+                ) {
+                    return this.fetchData(objects[0], resolveAll);
+                } else {
+                    return Promise.resolve(this._mergeBeacon(objects[0], objects[1]));
+                }
+            }).then(object => {
+                resolve(object as BLESemBeacon);
+            }).catch(reject);
+        });
+    }
+
+    /**
      * Insert a new BLE beacon object
      *
      * @param {string} uid Unique identifier 
@@ -41,25 +68,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
     insert(uid: string, object: BLEBeaconObject): Promise<BLEBeaconObject> {
         return new Promise((resolve, reject) => {
             if (object instanceof BLESemBeacon) {
-                Promise.all([
-                    ((!object.shortResourceUri && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
-                    this._findByUID(object.uid) as Promise<BLESemBeacon>
-                ]).then((objects: BLESemBeacon[]) => {
-                    if ((objects[1] === undefined || TimeService.now() - objects[1].maxAge > objects[1].modifiedTimestamp) && 
-                        (objects[0].resourceUri !== undefined || objects[0].shortResourceUri !== undefined) &&
-                        !this.queue.has(objects[0].uid)
-                    ) {
-                        return this.fetchData(objects[0]);
-                    } else {
-                        return Promise.resolve(this._mergeBeacon(objects[0], objects[1]))
-                    }
-                }).then((fetchedObject: BLESemBeacon) => {
-                    if (!fetchedObject.resourceData 
-                        && fetchedObject.modifiedTimestamp !== -1) {
-                        // No resource data included
-                        this.emitAsync('beacon', fetchedObject);
-                        return Promise.resolve(undefined);
-                    }
+                this.resolve(object).then((fetchedObject: BLESemBeacon) => {
                     this.emitAsync('beacon', fetchedObject);
                     return super.insert(uid, fetchedObject);
                 }).then(resolve).catch(reject);
@@ -138,7 +147,7 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
         });
     }
     
-    protected fetchData(beacon: BLESemBeacon): Promise<BLESemBeacon> {
+    protected fetchData(beacon: BLESemBeacon, resolveAll: boolean): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
             if (this.queue.has(beacon.uid)) {
                 return resolve(beacon);
@@ -211,7 +220,11 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     return Promise.resolve({store, beacon});
                 }
             }).then((value: { store: Store, beacon: BLESemBeacon }) => {
-                return this.fetchAllBeacons(beacon, value.store);
+                if (resolveAll) {
+                    return this.fetchAllBeacons(beacon, value.store);
+                } else {
+                    return Promise.resolve();
+                }
             }).then(() => resolve(beacon)).catch(reject).finally(() => {
                 this.queue.delete(beacon.uid);
             });
@@ -236,6 +249,10 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
             online.namespaceId = beacon.namespaceId;
             online.instanceId = beacon.instanceId;
             online.flags = beacon.flags;
+            if (online.shortResourceUri !== beacon.shortResourceUri) {
+                online.shortResourceUri = beacon.shortResourceUri;
+                online.resourceUri = beacon.resourceUri;
+            }
         }
         online.uid = online.computeUID();
         return online;

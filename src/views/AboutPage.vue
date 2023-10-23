@@ -30,6 +30,10 @@
                       <img alt="SemBeacon specification" src="/assets/about/sembeacon_specification_v4_2.svg">
                   </picture>
                 </ion-label>
+                <ion-label class="ion-text-wrap">
+                    The application was developed by PhD candidate Maxim Van de Wynckel of the Web & Information Systems Engineering lab
+                    at the Vrije Universiteit Brussel under the supervision of Prof. Dr. Beat Signer.
+                </ion-label>
             </ion-content>
         </div>
       </ion-content>
