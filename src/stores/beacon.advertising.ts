@@ -62,6 +62,9 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
 
     },
     actions: {
+        findByUID(uid: string): Promise<SimulatedBeacon> {
+            return this.beacons.get(uid);
+        },
         populate(): void {
             Promise.all([
                 BLESemBeaconBuilder.create()

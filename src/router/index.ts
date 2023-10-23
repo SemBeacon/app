@@ -36,6 +36,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import ('../views/ProfilePage.vue')
   },
   {
+    path: '/beacon/create',
+    component: () => import ('../views/BeaconPage.vue')
+  },
+  {
+    path: '/beacon/edit/:uid',
+    component: () => import ('../views/BeaconPage.vue')
+  },
+  {
     name: 'beacon',
     path: '/beacon/:uid',
     component: () => import ('../views/BeaconPage.vue')

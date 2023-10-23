@@ -15,10 +15,9 @@
           :key="beacon.uid"
           :beacon="beacon"
           simulator="true"
-          @clickBeacon="console.log"
           @simulateToggle="toggleAdvertising"
           :disabled="this.beaconStore.state === ControllerState.NO_PERMISSION"
-        >
+          @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)">
         </beacon-item-component>
       </ion-list>
     </div>

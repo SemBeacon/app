@@ -21,11 +21,11 @@
       </ion-toolbar>
 
       <ion-toolbar color="primary" class="tab-selector">
-        <ion-segment :value="$route.name" @ionChange="e => $router.push(e.target.value)">
-          <ion-segment-button value="scanner">
+        <ion-segment :value="$route.path" @ionChange="e => $router.push(e.target.value)">
+          <ion-segment-button value="/beacon/scanner">
             <ion-label>Scanner</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="simulator">
+          <ion-segment-button value="/beacon/simulator">
             <ion-label>Simulator</ion-label>
           </ion-segment-button>
         </ion-segment>
