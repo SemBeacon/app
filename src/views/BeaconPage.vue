@@ -10,6 +10,14 @@
           <ion-button 
             icon-only 
             :style="{ color: '#ffffff' }"
+            v-if="beacon && simulated" 
+            @click="enabled = !enabled"
+          >
+            <ion-icon :name="enabled ? 'save-sharp' : 'create-sharp'"></ion-icon>
+          </ion-button>
+          <ion-button 
+            icon-only 
+            :style="{ color: '#ffffff' }"
             v-if="beacon && beacon.position" 
             @click="showOnMap"
           >
@@ -44,16 +52,6 @@
                       <ion-col size='10'>
                         <h1>{{ beaconType() }}</h1>
                       </ion-col>
-                      <!-- <ion-col size="2" v-if="beaconType() === 'SemBeacon'">
-                        <ion-button 
-                          fill="outline" 
-                          icon-only="true"
-                          size="small"
-                          :disabled="!beacon.shortResourceUri && !beacon.resourceUri">
-                          <ion-icon name="refresh">
-                          </ion-icon>
-                        </ion-button>
-                      </ion-col> -->
                     </ion-row>
                     <ion-row :key="key">
                       <ion-col size="12">
@@ -93,7 +91,8 @@
                 <ion-input 
                   :disabled="!enabled"
                   label-placement="floating" 
-                  fill="outline"
+                  fill="solid"
+                  placeholder="-12"
                   :value="beacon.getCalibratedRSSI(0)">
                   <div slot="label">Calibrated RSSI at 0m</div>
                 </ion-input>
@@ -104,7 +103,8 @@
                 <ion-input 
                   :disabled="!enabled" 
                   label-placement="floating" 
-                  fill="outline"
+                  fill="solid"
+                  placeholder="-56"
                   :value="beacon.calibratedRSSI">
                   <div slot="label">Calibrated RSSI at 1m</div>
                 </ion-input>
@@ -113,20 +113,22 @@
             <template v-if="beaconType() === 'SemBeacon'">
                 <ion-col size="12">
                   <ion-input 
-                    fill="outline"
-                    :disabled="!enabled" 
+                    fill="solid"
+                    :disabled="!enabled"
                     label-placement="floating"
                     v-maskito="uuid128Options"
+                    placeholder="00000000-0000-0000-0000-000000000000"
                     :value="beacon.namespaceId.toString()">
                     <div slot="label">Namespace ID</div>
                   </ion-input>
                 </ion-col>
                 <ion-col size="12">
                   <ion-input 
-                    fill="outline"
-                    :disabled="!enabled"
+                    fill="solid"
+                    :disabled="!enabled" 
                     label-placement="floating"
                     v-maskito="uuid32Options" 
+                    placeholder="00000000"
                     :value="beacon.instanceId.toString(false)">
                     <div slot="label">
                       Instance ID
@@ -135,35 +137,58 @@
                 </ion-col>
                 <ion-col size="12">
                   <ion-input 
-                    fill="outline"
+                    fill="solid"
                     :disabled="!enabled" 
                     label-placement="floating"
-                    :value="beacon.shortResourceUri">
+                    placeholder="www.example.com"
+                    @change="() => {
+                      beacon.resourceUri = undefined; // Invalidate
+                      resolveSemBeacon();
+                    }"
+                    v-model="beacon.shortResourceUri">
                     <div slot="label">
                       Short resource URI
                     </div>
                   </ion-input>
                 </ion-col>
-                <ion-col size="12">
+                <ion-col size="12" v-if="beacon.resourceUri">
                   <ion-input 
                     :disabled="!enabled" 
-                    fill="outline"
+                    fill="solid"
                     label-placement="floating" 
-                    :value="beacon.resourceUri">
+                    @ionChange="() => resolveSemBeacon()"
+                    v-model="beacon.resourceUri">
                     <div slot="label">
                       Resource URI
                     </div>
                   </ion-input>
                 </ion-col>
                 <ion-col size="12">
-                  <ion-label position="stacked" class="chip-label">Beacon flags</ion-label>
+                  <ion-label position="floating" class="chip-label">Beacon flags</ion-label>
                   <div class="chip-container">
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">HAS_POSITION</ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">IS_PRIVATE</ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">IS_MOVING</ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">HAS_SYSTEM</ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">HAS_TELEMETRY</ion-chip>
-                    <ion-chip color="danger" v-if="beacon.flags === 0">No SemBeaocn flags</ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">
+                      <ion-label>HAS_POSITION</ion-label>
+                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+                    </ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">
+                      <ion-label>IS_PRIVATE</ion-label>
+                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+                    </ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">
+                      <ion-label>IS_MOVING</ion-label>
+                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+                    </ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">
+                      <ion-label>HAS_SYSTEM</ion-label>
+                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+                    </ion-chip>
+                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">
+                      <ion-label>HAS_TELEMETRY</ion-label>
+                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+                    </ion-chip>
+                    <ion-chip color="danger" v-if="beacon.flags === 0x00">
+                      No SemBeaocn flags
+                    </ion-chip>
                   </div>
                 </ion-col>
             </template>
@@ -172,8 +197,9 @@
                 <ion-input 
                   :disabled="!enabled" 
                   label-placement="floating" 
-                  fill="outline"
+                  fill="solid"
                   v-maskito="uuid128Options"
+                  placeholder="00000000-0000-0000-0000-000000000000"
                   :value="beacon.proximityUUID.toString()">
                   <div slot="label">Proximity UUID</div>
                 </ion-input>
@@ -185,8 +211,8 @@
                       <ion-input 
                         :disabled="!enabled"
                         label-placement="floating" 
-                        fill="outline"
-                        :value="beacon.major">
+                        fill="solid"
+                        :value="beacon.major ?? 0">
                         <div slot="label">Major</div>
                       </ion-input>
                     </ion-col>
@@ -194,8 +220,8 @@
                       <ion-input 
                         :disabled="!enabled"
                         label-placement="floating" 
-                        fill="outline"
-                        :value="beacon.minor">
+                        fill="solid"
+                        :value="beacon.minor ?? 0">
                         <div slot="label">Minor</div>
                       </ion-input>
                     </ion-col>
@@ -208,7 +234,8 @@
                 <ion-input 
                   :disabled="!enabled" 
                   label-placement="floating" 
-                  fill="outline"
+                  fill="solid"
+                  placeholder="www.example.com"
                   :value="beacon.url">
                   <div slot="label">URL</div>
                 </ion-input>
@@ -219,7 +246,9 @@
                 <ion-input 
                   :disabled="!enabled"
                   label-placement="floating" 
-                  fill="outline"
+                  fill="solid"
+                  v-maskito="uuid80Options"
+                  placeholder="0000000000000000000"
                   :value="beacon.namespaceId.toString()">
                   <div slot="label">Namespace ID</div>
                 </ion-input>
@@ -228,7 +257,7 @@
                 <ion-input 
                   :disabled="!enabled"
                   label-placement="floating" 
-                  fill="outline"
+                  fill="solid"
                   :value="beacon.instanceId.toString()">
                   <div slot="label">Instance ID</div>
                 </ion-input>
@@ -242,7 +271,7 @@
                       <ion-input 
                         :disabled="!enabled" 
                         label-placement="floating" 
-                        fill="outline"
+                        fill="solid"
                         :value="beacon.voltage + ' mV'">
                         <div slot="label">Voltage</div>
                       </ion-input>
@@ -251,7 +280,7 @@
                       <ion-input 
                         :disabled="!enabled"
                         label-placement="floating" 
-                        fill="outline"
+                        fill="solid"
                         :value="beacon.temperature.value + ' &deg;C'">
                         <div slot="label">Temperature</div>
                       </ion-input>
@@ -387,6 +416,19 @@ export default class BeaconPage extends Vue {
       });
     },
   };
+  uuid80Options = {
+    mask: [
+      ...Array(10).fill(/[a-fA-F0-9]/),
+    ],
+    elementPredicate: (el: HTMLIonInputElement) => {
+      return new Promise((resolve) => {
+        requestAnimationFrame(async () => {
+          const input = await el.getInputElement();
+          resolve(input);
+        });
+      });
+    },
+  };
   uuid128Options = {
     mask: [
       ...Array(8).fill(/[a-fA-F0-9]/),
@@ -415,15 +457,16 @@ export default class BeaconPage extends Vue {
 
     if (this.route.path.startsWith("/beacon/edit")) {
       // Simulated beacon
-      this.beaconSimulatorStore.findByUID(beaconUID).then(beacon => {
-        if (!beacon) {
-          // Can not find beacon...
-          this.$router.push("/beacon/simulator");
-          return;
-        }
-        this.beacon = beacon as BLEBeaconObject as any;
-        this.loading = false;
-      }).catch(console.error);
+      this.simulated = true;
+      console.log(this.beaconSimulatorStore)
+      const beacon = this.beaconSimulatorStore.findByUID(beaconUID);
+      if (!beacon) {
+        // Can not find beacon...
+        this.$router.push("/beacon/simulator");
+        return;
+      }
+      this.beacon = beacon as BLEBeaconObject as any;
+      this.loading = false;
     } else {
       // Scanned beacon
       this.beaconStore.findByUID(beaconUID).then(beacon => {
@@ -526,9 +569,17 @@ export default class BeaconPage extends Vue {
     return `${companyName} (${manufacturerIdHex})`
   }
 
-  refresh(): void {
+  resolveSemBeacon(): void {
     this.loading = true;
-
+    this.beaconStore.beaconService.resolve(this.beacon as BLESemBeacon, {
+      resolveAll: false,
+      persistance: false
+    })
+      .then((beacon: BLESemBeacon) =>{
+        console.log("resolved", beacon)
+        this.beacon = beacon as any;
+        this.loading = false;
+      }).catch(console.error);
   }
 
   saveBeacon(): void {

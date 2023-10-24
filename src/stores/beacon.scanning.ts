@@ -90,6 +90,9 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         },
         isAdvertising(): boolean {
             return this.advertising;
+        },
+        beaconService(): SemBeaconService {
+            return this.model.findDataService(SemBeaconService);
         }
     },
     actions: {
@@ -274,7 +277,9 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                         });
                         this.model.on('error', console.error);
                         this.state = ControllerState.READY;
-                        this.populate();
+                        if (Capacitor.getPlatform() === 'web') {
+                            this.populate();
+                        }
                         resolve();
                     }).catch((error: Error) => {
                         this.state = ControllerState.NO_PERMISSION;

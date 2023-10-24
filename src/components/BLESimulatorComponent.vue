@@ -17,7 +17,8 @@
           simulator="true"
           @simulateToggle="toggleAdvertising"
           :disabled="this.beaconStore.state === ControllerState.NO_PERMISSION"
-          @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)">
+          @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)"
+          @deleteBeacon="deleteBeacon">
         </beacon-item-component>
       </ion-list>
     </div>
@@ -74,6 +75,8 @@ import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
 import { computed } from 'vue';
 import { ControllerState } from '../stores/types';
+import { BLEAltBeacon, BLEBeaconObject, BLEiBeacon } from '@openhps/rf';
+import { BLESemBeacon } from '../models/BLESemBeacon';
 
 @Options({
   components: {
@@ -125,12 +128,6 @@ export default class BLESimulatorComponent extends Vue {
       },
     },
     {
-      text: 'Create Eddystone',
-      data: {
-        action: 'add-eddystone',
-      },
-    },
-    {
       text: 'Create AltBeacon',
       data: {
         action: 'add-altbeacon',
@@ -149,12 +146,27 @@ export default class BLESimulatorComponent extends Vue {
     this.isOpen = true;
   }
 
+  createBeacon(type: new () => BLEBeaconObject): void {
+    switch (type) {
+      case BLEiBeacon:
+        return;
+      case BLEAltBeacon:
+        return;
+      case BLESemBeacon:
+        return;
+    }
+  }
+
   toggleAdvertising(beacon: SimulatedBeacon, advertising: boolean): void {
     if (advertising) {
       this.beaconStore.startAdvertising(beacon);
     } else {
       this.beaconStore.stopAdvertising(beacon);
     }
+  }
+
+  deleteBeacon(beacon: SimulatedBeacon): void {
+    this.beaconStore.delete(beacon);
   }
 }
 </script>

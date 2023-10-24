@@ -35,20 +35,23 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
      * Resolve SemBeacon information
      *
      * @param {BLESemBeacon} object SemBeacon object 
-     * @param {boolean} [resolveAll] Resolve all beacons
+     * @param {ResolveOptions} [options] Resolve options
      * @returns {Promise<BLESemBeacon>} Promise of resolved SemBeacon
      */
-    resolve(object: BLESemBeacon, resolveAll: boolean = true): Promise<BLESemBeacon> {
+    resolve(object: BLESemBeacon, options: ResolveOptions = {
+        persistance: true,
+        resolveAll: false
+    }): Promise<BLESemBeacon> {
         return new Promise((resolve, reject) => {
             Promise.all([
                 ((!object.shortResourceUri && object.resourceUri) ? this.shortenURL(object) : Promise.resolve(object)),
-                this._findByUID(object.uid) as Promise<BLESemBeacon>
+                options.persistance ? this._findByUID(object.uid) as Promise<BLESemBeacon> : Promise.resolve(undefined)
             ]).then((objects: BLESemBeacon[]) => {
                 if ((objects[1] === undefined || TimeService.now() - objects[1].maxAge > objects[1].modifiedTimestamp) && 
                     (objects[0].resourceUri !== undefined || objects[0].shortResourceUri !== undefined) &&
                     !this.queue.has(objects[0].uid)
                 ) {
-                    return this.fetchData(objects[0], resolveAll);
+                    return this.fetchData(objects[0], options.resolveAll);
                 } else {
                     return Promise.resolve(this._mergeBeacon(objects[0], objects[1]));
                 }
@@ -170,6 +173,10 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
                     deserialized = RDFSerializer.deserializeFromString(resourceUri, result.data);
                 } catch (ex) {
                     // Unable to deserialize
+                    resolve(beacon);
+                    return;
+                }
+                if (deserialized === undefined) {
                     resolve(beacon);
                     return;
                 }
@@ -296,4 +303,9 @@ export class SemBeaconService extends DataObjectService<BLEBeaconObject> {
 export interface SemBeaconServiceOptions extends DataServiceOptions {
     cors?: boolean;
     accessToken?: string;
+}
+
+export interface ResolveOptions {
+    resolveAll?: boolean;
+    persistance?: boolean;
 }

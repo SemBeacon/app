@@ -62,7 +62,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
 
     },
     actions: {
-        findByUID(uid: string): Promise<SimulatedBeacon> {
+        findByUID(uid: string): SimulatedBeacon {
             return this.beacons.get(uid);
         },
         populate(): void {
@@ -243,6 +243,9 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                     text: `Error while stopping advertising! ${error.message}.`,
                 });
             });
+        },
+        delete(beacon: BLEBeaconObject): void {
+            this.beacons.delete(beacon.uid);
         },
         addSimulatedBeacon(beacon: BLEBeaconObject): void {
             beacon.uid = beacon.computeUID();
