@@ -3,13 +3,13 @@
     <ion-item 
       class="beacon-item"
       button 
-      @click="onClick" :detail="false"
+      :detail="false"
       :disabled="disabled"
     >
       <ion-thumbnail v-if="beaconIcon" slot="start">
         <img :alt="beacon.displayName" :src="beaconIcon" />
       </ion-thumbnail>
-      <ion-grid style="width: 100%">
+      <ion-grid style="width: 100%" @click="onClick">
         <ion-row v-if="beacon.displayName">
           <ion-col size="12">
             <ion-label class="key">{{ beacon.displayName }}</ion-label>
@@ -104,13 +104,12 @@
           </template>
         </ion-row>
       </ion-grid>
-      <ion-label slot="end" v-if="simulator">
-        <ion-toggle 
-          aria-label="Toggle advertising of the beacon"
-          :checked="beacon.advertising"
-          @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
-        ></ion-toggle>
-      </ion-label>
+      <ion-toggle
+        slot="end" v-if="simulator" 
+        aria-label="Toggle advertising of the beacon"
+        :checked="beacon.advertising"
+        @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
+      ></ion-toggle>
       <ion-label slot="end" v-else>
           <h2 class="rssi">{{ beacon.rssi }} <small>dBm</small></h2>
           <small :key="key">{{ lastSeen() }}</small>
@@ -145,7 +144,6 @@ import moment from 'moment';
 import { Beacon } from '../../stores/beacon.scanning';
 import { TimeService } from '@openhps/core';
 import { ref, Ref } from 'vue';
-import { SimulatedBeacon } from '../../stores/beacon.advertising';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -157,7 +155,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
   }
 })
 export default class BeaconItemComponent extends Vue {
-  @Prop() beacon: (BLEBeaconObject | BLESemBeacon | BLEiBeacon | BLEAltBeacon | BLEEddystoneURL | BLEEddystoneUID) & (Beacon | SimulatedBeacon);
+  @Prop() beacon: BLEBeaconObject & Beacon;
   key: Ref<string> = ref(TimeService.now().toString() + Math.random());
   @Prop() simulator: boolean;
   @Prop() disabled: boolean;

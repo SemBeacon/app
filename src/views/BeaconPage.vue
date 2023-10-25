@@ -5,8 +5,19 @@
         <ion-buttons slot="start">
           <ion-back-button></ion-back-button>
         </ion-buttons>
-        <ion-title>Beacon details</ion-title>
+
+        <ion-title v-if="!simulated">Beacon details</ion-title>
+        <ion-title v-else-if="simulated">Edit beacon</ion-title>
+
         <ion-buttons slot="end">
+          <ion-button 
+            icon-only 
+            :style="{ color: '#ffffff' }"
+            v-if="beacon && simulated && enabled" 
+            @click="enabled = !enabled"
+          >
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
           <ion-button 
             icon-only 
             :style="{ color: '#ffffff' }"
@@ -28,15 +39,7 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <template v-if="beacon">
-        <!-- <ion-card>
-          <ion-card-content>
-            <ion-input size="20" label-placement="floating" v-model="beacon.displayName">
-              <div slot="label">Name</div>
-            </ion-input>
-          </ion-card-content>
-        </ion-card> -->
-
+      <template v-if="!loading">
         <ion-card>
           <ion-card-content>
             <ion-grid class="compact">
@@ -53,20 +56,34 @@
                         <h1>{{ beaconType() }}</h1>
                       </ion-col>
                     </ion-row>
-                    <ion-row :key="key">
+                    <ion-row class="ion-margin-top">
                       <ion-col size="12">
+                        <ion-input 
+                          :disabled="!enabled" 
+                          label-placement="floating" 
+                          fill="outline"
+                          :value="beacon.displayName">
+                          <div slot="label">Name</div>
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row class="ion-margin-top" :key="key" v-if="!simulated">
+                      <ion-col size="6">
                         <h2>RSSI: {{ beacon.rssi }} <small>dBm</small></h2>
                       </ion-col>
                       <ion-col size="6" v-if="beacon.distance">
-                        <h3>Distance: {{ beacon.distance }} <small>m</small></h3>
+                        <h2>Distance: {{ beacon.distance }} <small>m</small></h2>
                       </ion-col>
                       <ion-col size="6" v-else>
-                        <h3>Distance: -</h3>
+                        <h2>Distance: -</h2>
+                      </ion-col>
+                      <ion-col size="6">
+                        <h3>Created: {{ firstSeen() }}</h3>
                       </ion-col>
                       <ion-col size="6">
                         <h3>Last seen: {{ lastSeen() }}</h3>
                       </ion-col>
-                      </ion-row>
+                    </ion-row>
                   </ion-grid>
                 </ion-col>
               </ion-row>
@@ -77,12 +94,12 @@
         <ion-grid>
           <ion-row>
             <ion-col size='12' v-if="beacon.address">
-              <ion-input :disabled="!enabled" size="20" label-placement="stacked" :value="beacon.address.toString()">
+              <ion-input :disabled="!enabled" label-placement="stacked" :value="beacon.address.toString()">
                 <div slot="label">MAC Address</div>
               </ion-input>
             </ion-col>
-            <ion-col size='12' v-if="beacon.manufacturerData">
-              <ion-input :disabled="!enabled" size="20" label-placement="stacked" :value="manufacturer">
+            <ion-col size='12' v-if="beacon.manufacturerData.size > 0">
+              <ion-input :disabled="!enabled" label-placement="stacked" :value="manufacturer">
                 <div slot="label">Manufacturer</div>
               </ion-input>
             </ion-col>
@@ -162,34 +179,6 @@
                       Resource URI
                     </div>
                   </ion-input>
-                </ion-col>
-                <ion-col size="12">
-                  <ion-label position="floating" class="chip-label">Beacon flags</ion-label>
-                  <div class="chip-container">
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">
-                      <ion-label>HAS_POSITION</ion-label>
-                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
-                    </ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">
-                      <ion-label>IS_PRIVATE</ion-label>
-                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
-                    </ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">
-                      <ion-label>IS_MOVING</ion-label>
-                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
-                    </ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">
-                      <ion-label>HAS_SYSTEM</ion-label>
-                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
-                    </ion-chip>
-                    <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">
-                      <ion-label>HAS_TELEMETRY</ion-label>
-                      <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
-                    </ion-chip>
-                    <ion-chip color="danger" v-if="beacon.flags === 0x00">
-                      No SemBeaocn flags
-                    </ion-chip>
-                  </div>
                 </ion-col>
             </template>
             <template v-else-if="beaconType() === 'iBeacon' || beaconType() === 'AltBeacon'">
@@ -306,6 +295,65 @@
           </ion-row>
         </ion-grid>
       </template>
+
+      <ion-card v-if="beaconType() === 'SemBeacon'">
+        <ion-card-header>
+          <ion-card-title>Beacon flags</ion-card-title>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <div class="chip-container">
+            <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">
+              <ion-label>HAS_POSITION</ion-label>
+              <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+            </ion-chip>
+            <ion-chip color="success" icon-only v-else-if="enabled">
+              <ion-label>HAS_POSITION</ion-label>
+              <ion-icon icon="add-circle-outline"></ion-icon>
+            </ion-chip>
+
+            <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">
+              <ion-label>IS_PRIVATE</ion-label>
+              <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+            </ion-chip>
+            <ion-chip color="success" icon-only v-else-if="enabled">
+              <ion-label>IS_PRIVATE</ion-label>
+              <ion-icon icon="add-circle-outline"></ion-icon>
+            </ion-chip>
+
+            <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">
+              <ion-label>IS_MOVING</ion-label>
+              <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+            </ion-chip>
+            <ion-chip color="success" icon-only v-else-if="enabled">
+              <ion-label>IS_MOVING</ion-label>
+              <ion-icon icon="add-circle-outline"></ion-icon>
+            </ion-chip>
+            
+            <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">
+              <ion-label>HAS_SYSTEM</ion-label>
+              <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+            </ion-chip>
+            <ion-chip color="success" icon-only v-else-if="enabled">
+              <ion-label>HAS_SYSTEM</ion-label>
+              <ion-icon icon="add-circle-outline"></ion-icon>
+            </ion-chip>
+
+            <ion-chip color="primary" v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">
+              <ion-label>HAS_TELEMETRY</ion-label>
+              <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
+            </ion-chip>
+            <ion-chip color="success" icon-only v-else-if="enabled">
+              <ion-label>HAS_TELEMETRY</ion-label>
+              <ion-icon icon="add-circle-outline"></ion-icon>
+            </ion-chip>
+
+            <ion-chip color="danger" v-if="beacon.flags === 0x00 && !enabled">
+              No SemBeacon flags
+            </ion-chip>
+          </div>
+        </ion-card-content>
+      </ion-card>
             
       <ion-fab v-if="!simulated" slot="fixed" horizontal="end" vertical="bottom">
         <ion-fab-button @click="toggleScan" :color="this.beaconStore.isScanning ? 'danger' : 'primary'">
@@ -324,6 +372,9 @@ import {
   IonCol,
   IonRow,
   IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
   IonCard,
   IonChip,
   IonButtons, 
@@ -384,7 +435,10 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     IonChip,
     IonButton,
     IonIcon,
-    IonText
+    IonText,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
   },
   data: () => ({
     BLESemBeacon,
@@ -451,14 +505,13 @@ export default class BeaconPage extends Vue {
     },
   };
 
-  created(): void {
+  ionViewDidEnter(): void {
     const beaconUID = this.route.params.uid as string;
     console.log("Loading beacon details", beaconUID);
 
     if (this.route.path.startsWith("/beacon/edit")) {
       // Simulated beacon
       this.simulated = true;
-      console.log(this.beaconSimulatorStore)
       const beacon = this.beaconSimulatorStore.findByUID(beaconUID);
       if (!beacon) {
         // Can not find beacon...
@@ -481,9 +534,11 @@ export default class BeaconPage extends Vue {
         this.beacon.lastSeen = beaconInfo.lastSeen;
         this.beacon.distance = beaconInfo.distance;
         this.loading = false;
+        console.log("Beacon details loaded", this.beacon);
       }).catch(console.error);
+
       setInterval(() => {
-        if (this.beaconStore.isScanning) {
+        if (this.beaconStore.isScanning && !this.simulated) {
           const beaconInfo = this.beaconStore.findBeaconInfo(beaconUID);
           this.beacon.rssi = beaconInfo.rssi;
           this.beacon.lastSeen = beaconInfo.lastSeen;
@@ -494,7 +549,7 @@ export default class BeaconPage extends Vue {
     }
   }
 
-   beaconType(): string {
+  beaconType(): string {
     if (this.beacon instanceof BLESemBeacon) {
       return "SemBeacon";
     } else if (this.beacon instanceof BLEiBeacon) {
@@ -512,6 +567,13 @@ export default class BeaconPage extends Vue {
     } else {
       return "Bluetooth";
     }
+  }
+
+  firstSeen(): string {
+    if (this.beacon.createdTimestamp === undefined) {
+        return "";
+    }
+    return moment(this.beacon.createdTimestamp).fromNow();
   }
 
   lastSeen(): string {
@@ -600,6 +662,11 @@ ion-item.info h1,h2,h3,h4,h5 {
   align-items: center;
   justify-content: center;
   height: 100%;
+  flex-wrap: wrap;
+
+  ion-chip {
+    flex-basis: auto;
+  }
 }
 
 ion-col ion-thumbnail {

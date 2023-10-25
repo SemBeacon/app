@@ -4,6 +4,7 @@ import router from './router';
 import { createPinia } from 'pinia'
 import * as icons from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
 
 import { IonicVue } from '@ionic/vue';
 
@@ -29,6 +30,7 @@ import './theme/variables.css';
 const app = createApp(App)
   .use(IonicVue)
   .use(createPinia())
+  .use(BootstrapIconsPlugin)
   .use(router);
 
 router.isReady().then(() => {

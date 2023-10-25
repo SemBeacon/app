@@ -167,6 +167,10 @@ export default class BLESimulatorComponent extends Vue {
 
   deleteBeacon(beacon: SimulatedBeacon): void {
     this.beaconStore.delete(beacon);
+  }  
+  
+  stopAdvertising(): void {
+    this.beaconStore.stopAdvertising();
   }
 }
 </script>

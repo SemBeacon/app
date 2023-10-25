@@ -8,15 +8,35 @@
 
         <ion-title>Beacon</ion-title>
 
-        <ion-buttons slot="end">
-          <ion-button 
-            icon-only 
-            :style="{ color: '#ffffff' }"
-            :v-if="beaconStore.cacheSize !== 0" 
-            @click="clearCache"
-          >
-            <ion-icon name="trash"></ion-icon>
-          </ion-button>
+        <ion-buttons slot="end" v-if="!isLoading">
+          <template v-if="$route.path === '/beacon/scanner'">
+            <ion-button 
+              icon-only 
+              :style="{ color: '#ffffff' }"
+              v-if="currentTab().beaconStore.cacheSize !== 0" 
+              @click="currentTab().sort"
+            >
+              <ion-icon name="funnel"></ion-icon>
+            </ion-button>
+            <ion-button 
+              icon-only 
+              :style="{ color: '#ffffff' }"
+              v-if="currentTab().beaconStore.cacheSize !== 0" 
+              @click="currentTab().clearCache"
+            >
+              <ion-icon name="trash-bin"></ion-icon>
+            </ion-button>
+          </template>
+          <template v-else-if="$route.path === '/beacon/simulator'">
+            <ion-button 
+              icon-only 
+              :style="{ color: '#ffffff', fontSize: '1.2em' }"
+              v-if="currentTab().beaconStore.advertisingBeacons.length > 0" 
+              @click="currentTab().stopAdvertising"
+            >
+              <b-icon-wifi-off></b-icon-wifi-off>
+            </ion-button>
+          </template>
         </ion-buttons>
       </ion-toolbar>
 
@@ -34,7 +54,7 @@
 
     <ion-content :fullscreen="true">
       <ion-tabs style="position: none">
-        <ion-router-outlet animated="false"></ion-router-outlet>
+        <ion-router-outlet ref="tab" animated="false"></ion-router-outlet>
         <ion-tab-bar class="tab-selector" slot="bottom">
           <ion-tab-button tab="scanner" href="/beacon/scanner">
             <ion-icon icon="search"/>
@@ -79,12 +99,13 @@ import {
   IonProgressBar,
   IonSegment,
   IonSegmentButton,
-  IonButton
+  IonButton,
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { useBeaconStore } from '../stores/beacon.scanning';
-import { useEnvironmentStore } from '../stores/environment';
+import { useBeaconAdvertisingStore } from '../stores/beacon.advertising';
 import { Capacitor } from '@capacitor/core';
+import { Ref } from 'vue-property-decorator';
 
 @Options({
   components: {
@@ -113,20 +134,25 @@ import { Capacitor } from '@capacitor/core';
     IonTabBar,
     IonTabButton,
     BLEScannerComponent,
-    BLESimulatorComponent
+    BLESimulatorComponent,
   },
   data: () => ({
 
   })
 })
 export default class BeaconsPage extends Vue {
+  isLoading: boolean = true;
   beaconStore = useBeaconStore();
-  environmentStore = useEnvironmentStore();
+  beaconAdvertisingStore = useBeaconAdvertisingStore();
   platform = Capacitor.getPlatform();
+  @Ref("tab") tab: any;
 
-  clearCache(): void {
-    this.beaconStore.clear();
-    this.environmentStore.clear();
+  currentTab(): BLEScannerComponent | BLESimulatorComponent {
+    return this.tab.components.find(c => c.id === this.tab.id).vueComponentRef.value;
+  }
+
+  mounted() {
+    this.isLoading = false;
   }
 }
 </script>

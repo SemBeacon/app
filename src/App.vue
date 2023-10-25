@@ -159,7 +159,7 @@ export default class App extends Vue {
   handlePermissions(): Promise<void> {
     return new Promise((resolve) => {
       if ((this.beaconStore.state !== ControllerState.READY || 
-        this.beaconSimulatorStore.state === ControllerState.READY) && !this.alertOpen) {
+        this.beaconSimulatorStore.state !== ControllerState.READY) && !this.alertOpen) {
         Promise.all([
           this.geolocationStore.initialize(),
           this.beaconStore.initialize(),

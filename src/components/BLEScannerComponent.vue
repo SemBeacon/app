@@ -65,6 +65,7 @@ import {
   IonCardTitle,
   IonCardSubtitle,
   IonToggle,
+  alertController,
 } from '@ionic/vue';
 import { computed } from 'vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
@@ -74,6 +75,12 @@ import { useEnvironmentStore } from '../stores/environment';
 import { Capacitor } from '@capacitor/core';
 import { Toast } from '@capacitor/toast';
 import { ControllerState } from '../stores/types';
+
+enum SortKey {
+  RSSI,
+  CREATED,
+  MODIFIED
+}
 
 @Options({
   components: {
@@ -109,13 +116,24 @@ import { ControllerState } from '../stores/types';
   })
 })
 export default class BLESimulatorComponent extends Vue {
+  sortKey: SortKey = SortKey.CREATED;
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   loading = false;
   beacons = computed(() => 
     Array.from(this.beaconStore.beacons.values())
       .filter(beacon => beacon.lastSeen !== undefined)
-      .sort((a, b) => b.lastSeen - a.lastSeen)
+      .sort((a, b) => {
+        switch (this.sortKey) {
+          case SortKey.CREATED:
+            return b.createdTimestamp - a.createdTimestamp;
+          case SortKey.MODIFIED:
+            return b.lastSeen - a.lastSeen;
+          case SortKey.RSSI:
+          default:
+            return a.rssi - b.rssi;
+        }
+      })
   );
   platform = Capacitor.getPlatform();
 
@@ -149,6 +167,69 @@ export default class BLESimulatorComponent extends Vue {
         });
       }
     }
+  }
+
+  async sort(): Promise<void> {
+    const alert = await alertController.create({
+      header: 'Sort beacons',
+      inputs: [
+        {
+          label: 'First seen',
+          type: 'radio',
+          value: 'created',
+        },
+        {
+          label: 'Last seen',
+          type: 'radio',
+          value: 'modified',
+        },
+        {
+          label: 'RSSI',
+          type: 'radio',
+          value: 'rssi',
+        },
+      ],
+      buttons: [{
+        text: 'OK',
+        role: 'confirm',
+        handler: (value) => {
+          switch (value) {
+            case 'rssi':
+              this.sortKey = SortKey.RSSI;
+              break;
+            case 'created':
+              this.sortKey = SortKey.CREATED;
+              break;
+            case 'modified':
+              this.sortKey = SortKey.MODIFIED;
+              break;
+          }
+        },
+      }],
+    });
+
+    await alert.present();
+  }
+
+  async clearCache(): Promise<void> {
+    const alert = await alertController.create({
+      header: 'Clear cached beacons',
+      message: 'Are you sure you want to clear all beacons and SemBeacon data?',
+      buttons: [{
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: () => {
+            this.beaconStore.clear();
+            this.environmentStore.clear();
+          },
+        }],
+    });
+
+    await alert.present();
   }
 }
 
