@@ -14,7 +14,8 @@ import {
     RelativeRSSIProcessing,
     BLEBeaconClassifierNode,
     PropagationModel,
-    BLEAltBeacon, BLEiBeacon, BLEEddystoneURL, BLEEddystoneUID, BLEEddystoneTLM
+    BLEAltBeacon, BLEiBeacon, BLEEddystoneURL, BLEEddystoneUID, BLEEddystoneTLM,
+    BLEBeaconObject
 } from "/js/vendor/openhps/openhps-rf.es.min.js";
 import {
     BLESemBeacon
@@ -40,7 +41,7 @@ export default ModelBuilder.create()
             propagationModel: PropagationModel.LOG_DISTANCE,
         }),
     )
-    .via(new FrameFilterNode((frame) => {
-        return frame.getObjects(BLEBeaconObject).length > 0;
-    }))
+    // .via(new FrameFilterNode((frame) => {
+    //     return frame.getObjects().filter().length > 0;
+    // }))
     .to();
