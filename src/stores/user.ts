@@ -4,7 +4,7 @@ import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
 import { User } from '@/models/User';
 import { rdfs, RDFSerializer, Thing } from '@openhps/rdf';
-import { BLESemBeacon } from '@/models/BLESemBeacon';
+import { BLESemBeacon } from '@sembeacon/openhps';
 
 const CLIENT_NAME = 'SemBeacon Application';
 

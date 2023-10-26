@@ -109,6 +109,7 @@ export default class App extends Vue {
   userStore = useUserStore();
   logger = useLogger();
   info: AppInfo = {} as any;
+  isLoading: boolean = false;
 
   appPages = [
     {
@@ -161,73 +162,83 @@ export default class App extends Vue {
   handlePermissions(): Promise<void> {
     return new Promise((resolve) => {
       if (
+        !this.isLoading &&
         (this.beaconStore.state !== ControllerState.READY ||
-          this.beaconSimulatorStore.state !== ControllerState.READY) &&
-          this.beaconStore.state !== ControllerState.INITIALIZING &&
-          this.beaconSimulatorStore.state !== ControllerState.INITIALIZING
+          this.beaconSimulatorStore.state !== ControllerState.READY ||
+          this.geolocationStore.state !== ControllerState.READY) &&
+        this.beaconStore.state !== ControllerState.INITIALIZING &&
+        this.beaconSimulatorStore.state !== ControllerState.INITIALIZING &&
+        this.geolocationStore.state !== ControllerState.INITIALIZING
       ) {
+        this.isLoading = true;
         Promise.all([
-          this.geolocationStore.initialize(),
-          this.beaconStore.initialize(),
-          this.beaconSimulatorStore.initialize(),
-        ]).catch((err: Error) => {
+          ...(this.geolocationStore.state !== ControllerState.READY ? [this.geolocationStore.initialize()] : []),
+          ...(this.beaconStore.state !== ControllerState.READY ? [this.beaconStore.initialize()] : []),
+          ...(this.beaconSimulatorStore.state !== ControllerState.READY ? [this.beaconSimulatorStore.initialize()] : []),
+        ])
+          .catch((err: Error) => {
             console.error('Initialization error', err);
           })
           .finally(() => {
-            resolve();
+            setTimeout(() => {
+              this.isLoading = false;
+              resolve();
+            }, 1000);
           });
       }
     });
   }
 
-  mounted(): void {
-      RDFSerializer.initialize('rf');
-      RDFSerializer.initialize('geospatial');
-      this.logger.initialize();
-      moment.updateLocale('en', {
-        relativeTime: {
-          future: 'in %s',
-          past: '%s',
-          s: (number) => number + 's ago',
-          ss: '%ds ago',
-          m: '1m ago',
-          mm: '%dm ago',
-          h: '1h ago',
-          hh: '%dh ago',
-          d: '1d ago',
-          dd: '%dd ago',
-          M: 'a month ago',
-          MM: '%d months ago',
-          y: 'a year ago',
-          yy: '%d years ago',
-        },
-      });
+  created(): void {
+    RDFSerializer.initialize('rf');
+    RDFSerializer.initialize('geospatial');
+    this.logger.initialize();
+    moment.updateLocale('en', {
+      relativeTime: {
+        future: 'in %s',
+        past: '%s',
+        s: (number) => number + 's ago',
+        ss: '%ds ago',
+        m: '1m ago',
+        mm: '%dm ago',
+        h: '1h ago',
+        hh: '%dh ago',
+        d: '1d ago',
+        dd: '%dd ago',
+        M: 'a month ago',
+        MM: '%d months ago',
+        y: 'a year ago',
+        yy: '%d years ago',
+      },
+    });
 
-      CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
-        this.zone.run(() => {
-          const domain = 'sembeacon.org/app';
-          const pathArray = event.url.split(domain);
-          const appPath = pathArray.pop();
-          if (appPath) {
-            this.router.navigateByUrl(appPath);
+    CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
+      this.zone.run(() => {
+        const domain = 'sembeacon.org/app';
+        const pathArray = event.url.split(domain);
+        const appPath = pathArray.pop();
+        if (appPath) {
+          this.router.navigateByUrl(appPath);
+        }
+      });
+    });
+
+    if (Capacitor.getPlatform() !== 'web') {
+      CapacitorApp.getInfo().then((info) => {
+        console.log('Application information', info);
+        this.info = info;
+      });
+    }
+
+    this.handlePermissions().finally(() => {
+      setTimeout(() => {
+        CapacitorApp.addListener('appStateChange', (state) => {
+          if (state.isActive) {
+            this.handlePermissions();
           }
         });
-      });
-
-      if (Capacitor.getPlatform() !== 'web') {
-        CapacitorApp.getInfo().then((info) => {
-          console.log('Application information', info);
-          this.info = info;
-        });
-      }
-
-  this.$nextTick(() => {
-      this.handlePermissions().finally(() => {
-        CapacitorApp.addListener('resume', () => {
-          this.handlePermissions();
-        });
-      });
-  });
+      }, 2000);
+    });
   }
 }
 </script>

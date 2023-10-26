@@ -8,7 +8,7 @@
     >
       <span class="key">{{ beacon.displayName }}</span
       ><br />
-      <div v-if="beacon.lastSeen" :key="key">
+      <div v-if="beacon.lastSeen" :key="key.value">
         <span class="key">Last seen: </span><span class="value">{{ lastSeen() }}</span
         ><br />
         <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }} dBm</span><br />
@@ -27,7 +27,7 @@ import {
   // @ts-ignore
 } from '@vue-leaflet/vue-leaflet';
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
-import { BLESemBeacon } from '../../models/BLESemBeacon';
+import { BLESemBeacon } from '@sembeacon/openhps';
 import { Ref, ref, isProxy, toRaw } from 'vue';
 import { Beacon, useBeaconStore } from '../../stores/beacon.scanning';
 import moment from 'moment';

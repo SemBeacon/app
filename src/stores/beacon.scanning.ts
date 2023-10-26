@@ -1,36 +1,27 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, DataSerializer, Model, ModelBuilder, RelativeDistance } from '@openhps/core';
+import { CallbackSinkNode, DataFrame, DataSerializer, Model, ModelBuilder, RelativeDistance, WorkerNode } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLEiBeaconSourceNode } from '@openhps/cordova-ibeacon';
-import { BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@/models/BLESemBeacon';
+import { BLESemBeaconBuilder, SemBeaconService, BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@sembeacon/openhps';
 import {
   BLEBeaconObject,
-  BLEBeaconClassifierNode,
   BLEAltBeacon,
   BLEiBeacon,
-  BLEEddystoneUID,
-  BLEEddystoneURL,
   RelativeRSSI,
-  RelativeRSSIProcessing,
-  PropagationModel,
-  BLEEddystoneTLM,
-  BLEEddystone,
   BLEEddystoneTLMBuilder,
   BLEEddystoneURLBuilder,
   BLEAltBeaconBuilder,
   BLEUUID,
   BLEiBeaconBuilder,
 } from '@openhps/rf';
-import { SemBeaconService } from '@/services/SemBeaconService';
-import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { Capacitor } from '@capacitor/core';
-import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
 import { ControllerState } from './types';
 import { Preferences } from '@capacitor/preferences';
 import { toRaw } from 'vue';
+import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 
 export interface BeaconScan {
   results: number;
@@ -60,15 +51,15 @@ export interface BeaconState {
 
 export const useBeaconStore = defineStore('beacon.scanning', {
   state: (): BeaconState => ({
-      beaconService: new SemBeaconService(
-        new CapacitorPreferencesDriver(BLESemBeacon, {
-          namespace: 'sembeacon',
-        }),
-        {
-          accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
-          cors: true,
-        },
-      ),
+    beaconService: new SemBeaconService(
+      new CapacitorPreferencesDriver(BLESemBeacon, {
+        namespace: 'sembeacon',
+      }),
+      {
+        accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
+        cors: true,
+      },
+    ),
     state: ControllerState.PENDING,
     proximityUUIDs: [],
     namespaces: {},
@@ -217,18 +208,11 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         ModelBuilder.create()
           .addService(this.beaconService)
           .from(...this.sources)
-          .via(
-            new BLEBeaconClassifierNode({
-              resetUID: true,
-              types: [BLESemBeacon, BLEAltBeacon, BLEiBeacon, BLEEddystoneURL, BLEEddystoneUID, BLEEddystoneTLM],
-            }),
-          )
-          .via(
-            new RelativeRSSIProcessing({
-              environmentFactor: 2.0,
-              propagationModel: PropagationModel.LOG_DISTANCE,
-            }),
-          )
+          .via(new WorkerNode("/js/BLEScannerWorker.js", {
+            poolSize: 1,  // Single background worker
+            type: 'module',
+            worker: '/js/vendor/openhps/worker.openhps-core.es.min.js'
+          }))
           .to(
             new CallbackSinkNode(
               (frame: DataFrame) => {
@@ -249,31 +233,6 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                       distance: relativeDistance ? Math.round(relativeDistance.referenceValue * 100) / 100 : undefined,
                     };
                     this.beaconInfo.set(beacon.uid, beaconInfo);
-                    if (beacon instanceof BLESemBeacon) {
-                      logger.log(
-                        'info',
-                        `Detected SemBeacon ${
-                          beacon.uid
-                        } with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}, RSSI=${
-                          beaconInfo.rssi
-                        }, distance=${beaconInfo.distance}`,
-                      );
-                    } else if (beacon instanceof BLEiBeacon) {
-                      logger.log(
-                        'info',
-                        `Detected iBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}, RSSI=${beaconInfo.rssi}, distance=${beaconInfo.distance}`,
-                      );
-                    } else if (beacon instanceof BLEEddystone) {
-                      logger.log(
-                        'info',
-                        `Detected Eddystone ${beacon.uid} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`,
-                      );
-                    } else {
-                      logger.log(
-                        'info',
-                        `Detected beacon ${beacon.uid} with RSSI=${beaconInfo.rssi} and distance=${beaconInfo.distance}`,
-                      );
-                    }
                     this.addBeacon(beacon);
                   }
                 });
@@ -299,6 +258,8 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 );
               } else if (beacon instanceof BLEiBeacon) {
                 logger.log('info', `Added iBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`);
+              } else if (beacon instanceof BLEAltBeacon) {
+                logger.log('info', `Added AltBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`);
               } else {
                 logger.log('info', `Added beacon ${beacon.uid}`);
               }

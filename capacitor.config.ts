@@ -48,12 +48,12 @@ const config: CapacitorConfig = {
     SplashScreen: {
       backgroundColor: "#363795",
       androidScaleType: "CENTER_CROP",
-      launchShowDuration: 3000,
+      launchShowDuration: 1500,
       launchAutoHide: true,
       androidSplashResourceName: 'splash',
       showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true,
+      splashFullScreen: false,
+      splashImmersive: false,
     },
     LocalNotifications: {
       smallIcon: "ic_stat_icon",

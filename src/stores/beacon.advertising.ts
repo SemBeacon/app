@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia';
-import { BLESemBeacon } from '@/models/BLESemBeacon';
 import { BLEBeaconObject, BLEAltBeaconBuilder, BLEAltBeacon, BLEiBeacon, BLEiBeaconBuilder } from '@openhps/rf';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
-import { BLESemBeaconBuilder } from '@/models/BLESemBeaconBuilder';
+import { BLESemBeaconBuilder, BLESemBeacon } from '@sembeacon/openhps';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { ControllerState } from './types';
@@ -79,7 +78,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             bluetoothle.initialize(
               (result) => {
                 if (result.status !== 'enabled') {
-                    this.state = ControllerState.DISABLED;
+                  this.state = ControllerState.DISABLED;
                   return reject(new Error(`Bluetooth is disabled!`));
                 }
                 if (platform === 'android') {

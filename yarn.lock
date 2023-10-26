@@ -4988,15 +4988,15 @@
   resolved "https://registry.yarnpkg.com/@one-ini/wasm/-/wasm-0.1.1.tgz#6013659736c9dbfccc96e8a9c2b3de317df39323"
   integrity sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==
 
-"@openhps/capacitor-bluetooth@^0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-bluetooth/-/capacitor-bluetooth-0.1.14.tgz#33cf961fde22eef9097264b8d1f8c82807fbbd3c"
-  integrity sha512-as9PR5Dcq1UmOPsx2NyNGetnPRbWnVoVLms10sKE17Ceq7LA1yi29bNLVEh/s2x8o/P16JA3oiRzdDp5Oo7+Tw==
+"@openhps/capacitor-bluetooth@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-bluetooth/-/capacitor-bluetooth-0.1.15.tgz#db0597d3c8de2d50c542b84b908c4ae6d0174b4c"
+  integrity sha512-5FWOO56Z8SR056yftvjejjyqC/iKfAnLJRWOSvc4rZ8GqcU5HuQT9q5K3HWuiykeDByJIY3cvVHanO8nJEQjYQ==
 
-"@openhps/capacitor-geolocation@^0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.14.tgz#71abc9d6100542788c35a39e76ab6627391de3a3"
-  integrity sha512-K+bHS3ZrfOucVddFtV3uN1qENAEMZL7gokjINPX6/PTHPhMp0ojN1wdNxdUpou1E0yVHDRwcj9+5I0FlBiyK1Q==
+"@openhps/capacitor-geolocation@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.15.tgz#7b8aaf2d7134fe4a79b5712c224a2fec14943b85"
+  integrity sha512-YNgUX5MFPxIACxqdGAoJuS0PzlXcouXS138z9ZrXsF1gDgbgOwe/7ejZ1Ct458fb6eXu20M0+Lc94ANkHgscWQ==
 
 "@openhps/capacitor-preferences@^0.1.15":
   version "0.1.15"
@@ -5011,16 +5011,24 @@
   resolved "https://registry.yarnpkg.com/@openhps/cordova-ibeacon/-/cordova-ibeacon-0.1.5.tgz#fb842344c26041a75fa1fe7fc324f60e96c10a49"
   integrity sha512-p1m8QN2z/9KBgrcN3qPCGWd+eQrNvSxwI27iR5TwuLTRqqT4/DZxGIz3SNe3on9+j+55oLi3qP2JYGQqZfneQg==
 
-"@openhps/core@^0.5.12":
-  version "0.5.12"
-  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.5.12.tgz#b94b6568a7a2a6a278126d94bd901a8ed93726d5"
-  integrity sha512-04pzS42j/dMyW8WHcP6n+3UJG4TyHOB6/q2uVyGiXMWhvqMeReyH9G0r+gUi849M7AS9qEAmTUJ6vJzJSbcIqQ==
+"@openhps/core@^0.5.13":
+  version "0.5.13"
+  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.5.13.tgz#936766230412bf38021c7e4349a660e122b04945"
+  integrity sha512-U5rkJ0uMVufKPUiwIoG60+5S8AfpWf2ZBMiIoxf1DKNEv9CIm7yij2udSazmE7dlzWfPk6QrZDgIPG3U6TN9uA==
   dependencies:
     lodash.clonedeep "^4.5.0"
     reflect-metadata ">=0.1.13"
     threads "^1.7.0"
     typedjson "^1.8.0"
     uuid "^9.0.1"
+
+"@openhps/fingerprinting@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@openhps/fingerprinting/-/fingerprinting-0.1.5.tgz#e4e7ae0d47512d4cea7f163bc5c151c0fbafc4e7"
+  integrity sha512-rK077SqAYY605M/8NWptJzW83KW9jb9jXXXQY73czcQyNdxHPPQ7KHLzfJcn9n11shnD6NTXzu5fdP2xN4CLHg==
+  dependencies:
+    cubic-spline "^3.0.3"
+    uuid "^9.0.0"
 
 "@openhps/geospatial@^0.1.27":
   version "0.1.27"
@@ -5039,15 +5047,16 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.18":
-  version "0.4.18"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.18.tgz#d41b8da5b6dddc4c5af76a9f092c08caabf4c0e0"
-  integrity sha512-gvTsZza8UGU6PJOUw0RLIK5enKmAc85TwyMeVZFyyGT+0KFtxYb/PQI5dvf1/JjcrHkB679eam4McwqSB8Wr7g==
+"@openhps/rdf@^0.4.19":
+  version "0.4.19"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.19.tgz#845a9eaf6cc3bf9d787be7fed30ad2113f5aa911"
+  integrity sha512-xod51f3YKa/yVdI53W2IKmQxPY+pmnw1hVIT/hMYhVGbjiMQyR5LwqK2C8DBz27c12g8CRI7sDVw9v+deIGhkg==
   dependencies:
     "@comunica/query-sparql" "^2.9.0"
     "@types/n3" "^1.16.3"
     n3 ">=1.17.1"
     sparqljs "^3.7.1"
+    wkt "^0.1.1"
 
 "@openhps/rf@^0.1.61":
   version "0.1.61"
@@ -5074,6 +5083,11 @@
     express "^4.18.2"
     isomorphic-ws "^5.0.0"
     solid-node-interactive-auth "^1.1.1"
+
+"@openhps/video@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@openhps/video/-/video-0.1.11.tgz#3007a4058944fbd0667a2142938bdd064b871dab"
+  integrity sha512-DTQ83/0wA6HV1z97IRrweYNhZmHkx5ykHa4FREcnBWhIS8AZCyEi/S9bhezsDEoXz628NdM2s0qS7rnTUi1zqA==
 
 "@pkgr/utils@^2.3.1":
   version "2.4.2"
@@ -5136,6 +5150,14 @@
     "@inrupt/solid-client-authn-browser" "^1.12.1"
     "@inrupt/solid-client-authn-core" "^1.12.1"
     "@inrupt/solid-client-authn-node" "^1.12.1"
+
+"@sembeacon/openhps@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.0.4.tgz#ad219e822e171398d7695a090d66de62eb2b9e4f"
+  integrity sha512-vPRmoraXGKGahZXT7dNIta2pkwZ+hjWwzMpfBe8/OTyKGNYeyPnj9Ra6lTyHzddqIbeJSsgcTjIy+6otxtq15Q==
+  dependencies:
+    axios "^1.5.1"
+    wkt "^0.1.1"
 
 "@shexjs/parser@1.0.0-alpha.21":
   version "1.0.0-alpha.21"
@@ -8584,6 +8606,11 @@ csstype@^3.1.1:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
+
+cubic-spline@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/cubic-spline/-/cubic-spline-3.0.3.tgz#c081df05ca4c850ddaac34f5dcb7a8b35521f54d"
+  integrity sha512-yAvcHgrpf/k83pZiO4+R2reWOJlufgjpQhmDD3OXa8YMbjmRgjtUK8pcFOCZvJwqXaMD1isZdL7Z4ghqDPN/yw==
 
 cypress@^13.3.3:
   version "13.3.3"
@@ -15117,10 +15144,10 @@ sass-loader@^13.3.2:
   dependencies:
     neo-async "^2.6.2"
 
-sass@^1.69.4:
-  version "1.69.4"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.69.4.tgz#10c735f55e3ea0b7742c6efa940bce30e07fbca2"
-  integrity sha512-+qEreVhqAy8o++aQfCJwp0sklr2xyEzkm9Pp/Igu9wNPoe7EZEQ8X/MBvvXggI2ql607cxKg/RKOwDj6pp2XDA==
+sass@^1.69.5:
+  version "1.69.5"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.69.5.tgz#23e18d1c757a35f2e52cc81871060b9ad653dfde"
+  integrity sha512-qg2+UCJibLr2LCVOt3OlPhr/dqVHWOa9XtZf2OjbLs/T4VPSJ00udtgJxH3neXZm+QqX8B+3cU7RaLqp1iVfcQ==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"

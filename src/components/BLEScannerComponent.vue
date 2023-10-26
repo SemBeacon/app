@@ -2,7 +2,7 @@
   <ion-content :fullscreen="true">
     <ion-list v-if="beacons.length > 0 || beaconStore.state !== ControllerState.READY">
       <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION">
-        No Bluetooth permission to initiate scanning!
+        No Bluetooth and Location permission to scan!
       </permission-error-component>
       <beacon-item-component
         v-for="beacon in beacons"
@@ -59,20 +59,21 @@ import {
   IonToggle,
   alertController,
 } from '@ionic/vue';
-import { computed } from 'vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { stop, search } from 'ionicons/icons';
-import { useBeaconStore } from '../stores/beacon.scanning';
+import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
 import { Capacitor } from '@capacitor/core';
 import { Toast } from '@capacitor/toast';
 import { ControllerState } from '../stores/types';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
+import { BLEBeaconObject } from '@openhps/rf';
 
 enum SortKey {
   RSSI,
   CREATED,
   MODIFIED,
+  DISTANCE,
 }
 
 @Options({
@@ -104,17 +105,20 @@ enum SortKey {
   },
   data: () => ({
     stop,
-    search,
-    ControllerState,
+    search
   }),
 })
 export default class BLESimulatorComponent extends Vue {
+  ControllerState: any = ControllerState;
+
   sortKey: SortKey = SortKey.CREATED;
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   loading = false;
-  beacons = computed(() =>
-    this.beaconStore.beaconsWithInfo
+  platform = Capacitor.getPlatform();
+
+  get beacons(): (BLEBeaconObject & Beacon)[] {
+    return this.beaconStore.beaconsWithInfo
       .filter((beacon) => beacon.lastSeen !== undefined)
       .sort((a, b) => {
         switch (this.sortKey) {
@@ -122,13 +126,14 @@ export default class BLESimulatorComponent extends Vue {
             return a.createdTimestamp - b.createdTimestamp;
           case SortKey.MODIFIED:
             return b.lastSeen - a.lastSeen;
+          case SortKey.DISTANCE:
+            return (b.distance ?? Number.MAX_SAFE_INTEGER) - (a.distance ?? Number.MAX_SAFE_INTEGER);
           case SortKey.RSSI:
           default:
             return b.rssi - a.rssi;
         }
-      }),
-  );
-  platform = Capacitor.getPlatform();
+      });
+  }
 
   toggleScan(): void {
     if (!this.loading) {
@@ -191,6 +196,12 @@ export default class BLESimulatorComponent extends Vue {
           type: 'radio',
           value: 'rssi',
           checked: this.sortKey === SortKey.RSSI,
+        },
+        {
+          label: 'Distance',
+          type: 'radio',
+          value: 'distance',
+          checked: this.sortKey === SortKey.DISTANCE,
         },
       ],
       buttons: [

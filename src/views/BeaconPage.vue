@@ -127,8 +127,8 @@
             <template v-else>
               <ion-col v-if="beacon.calibratedRSSI || enabled" size="12">
                 <ion-input
-                  type="number"
                   v-model="beacon.calibratedRSSI"
+                  type="number"
                   :disabled="!enabled"
                   label-placement="floating"
                   fill="solid"
@@ -212,16 +212,24 @@
                 <ion-grid>
                   <ion-row>
                     <ion-col size="6">
-                      <ion-input 
+                      <ion-input
+                        v-model="beacon.major"
                         type="number"
-                        v-model="beacon.major" :disabled="!enabled" label-placement="floating" fill="solid">
+                        :disabled="!enabled"
+                        label-placement="floating"
+                        fill="solid"
+                      >
                         <div slot="label">Major</div>
                       </ion-input>
                     </ion-col>
                     <ion-col size="6">
-                      <ion-input 
+                      <ion-input
+                        v-model="beacon.minor"
                         type="number"
-                        v-model="beacon.minor" :disabled="!enabled" label-placement="floating" fill="solid">
+                        :disabled="!enabled"
+                        label-placement="floating"
+                        fill="solid"
+                      >
                         <div slot="label">Minor</div>
                       </ion-input>
                     </ion-col>
@@ -317,13 +325,17 @@
         </ion-card-header>
 
         <ion-card-content>
-          <div class="chip-container" :key="beacon.flags">
+          <div :key="beacon.flags" class="chip-container">
             <ion-chip v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)" color="primary">
               <ion-label>HAS_POSITION</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
             </ion-chip>
-            <ion-chip v-else-if="enabled" color="success" icon-only 
-              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)">
+            <ion-chip
+              v-else-if="enabled"
+              color="success"
+              icon-only
+              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)"
+            >
               <ion-label>HAS_POSITION</ion-label>
               <ion-icon icon="add-circle-outline"></ion-icon>
             </ion-chip>
@@ -332,8 +344,12 @@
               <ion-label>IS_PRIVATE</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
             </ion-chip>
-            <ion-chip v-else-if="enabled" color="success" icon-only
-              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)">
+            <ion-chip
+              v-else-if="enabled"
+              color="success"
+              icon-only
+              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)"
+            >
               <ion-label>IS_PRIVATE</ion-label>
               <ion-icon icon="add-circle-outline"></ion-icon>
             </ion-chip>
@@ -342,8 +358,12 @@
               <ion-label>IS_MOVING</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
             </ion-chip>
-            <ion-chip v-else-if="enabled" color="success" icon-only
-              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)">
+            <ion-chip
+              v-else-if="enabled"
+              color="success"
+              icon-only
+              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)"
+            >
               <ion-label>IS_MOVING</ion-label>
               <ion-icon icon="add-circle-outline"></ion-icon>
             </ion-chip>
@@ -352,8 +372,12 @@
               <ion-label>HAS_SYSTEM</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
             </ion-chip>
-            <ion-chip v-else-if="enabled" color="success" icon-only
-              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)">
+            <ion-chip
+              v-else-if="enabled"
+              color="success"
+              icon-only
+              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)"
+            >
               <ion-label>HAS_SYSTEM</ion-label>
               <ion-icon icon="add-circle-outline"></ion-icon>
             </ion-chip>
@@ -362,8 +386,12 @@
               <ion-label>HAS_TELEMETRY</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
             </ion-chip>
-            <ion-chip v-else-if="enabled" color="success" icon-only
-              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)">
+            <ion-chip
+              v-else-if="enabled"
+              color="success"
+              icon-only
+              @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)"
+            >
               <ion-label>HAS_TELEMETRY</ion-label>
               <ion-icon icon="add-circle-outline"></ion-icon>
             </ion-chip>
@@ -418,7 +446,7 @@ import {
 import { useRoute } from 'vue-router';
 import { BLEBeaconObject, BLEEddystoneTLM, BLEEddystoneUID, BLEEddystoneURL } from '@openhps/rf';
 import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
-import { BLESemBeacon } from '../models/BLESemBeacon';
+import { BLESemBeacon } from '@sembeacon/openhps';
 import { BLEiBeacon, BLEEddystone, BLEAltBeacon, BLEUUID } from '@openhps/rf';
 import moment from 'moment';
 import { Ref, ref } from 'vue';

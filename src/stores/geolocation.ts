@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { CallbackSinkNode, DataFrame, GeographicalPosition, Model, ModelBuilder } from '@openhps/core';
 import { GeolocationSourceNode } from '@openhps/capacitor-geolocation';
 import { Capacitor } from '@capacitor/core';
+import { ControllerState } from './types';
 
 export const useGeolocationStore = defineStore('geolocation', {
   state: () => ({
@@ -10,6 +11,7 @@ export const useGeolocationStore = defineStore('geolocation', {
     source: new GeolocationSourceNode({
       interval: 15000,
     }),
+    state: ControllerState.PENDING
   }),
   getters: {
     sourceNode(): GeolocationSourceNode {
@@ -21,10 +23,8 @@ export const useGeolocationStore = defineStore('geolocation', {
   },
   actions: {
     initialize(): Promise<void> {
+      this.state = ControllerState.INITIALIZING;
       return new Promise((resolve, reject) => {
-        if (this.model !== undefined) {
-          return resolve();
-        }
         ModelBuilder.create()
           .from(this.source)
           .to(
@@ -47,8 +47,14 @@ export const useGeolocationStore = defineStore('geolocation', {
               return GeolocationSourceNode.requestPermissions();
             }
           })
-          .then(() => resolve())
-          .catch(reject);
+          .then(() => {
+            this.state = ControllerState.READY;
+            resolve();
+          })
+          .catch(err => {
+            this.state = ControllerState.NO_PERMISSION;
+            reject(err);
+          });
       });
     },
   },

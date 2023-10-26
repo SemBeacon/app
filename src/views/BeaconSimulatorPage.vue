@@ -72,15 +72,12 @@ import {
   IonSegment,
   IonSegmentButton,
   IonButton,
-  alertController,
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { useBeaconAdvertisingStore } from '../stores/beacon.advertising';
 import { Capacitor } from '@capacitor/core';
 import BLESimulatorComponent from '../components/BLESimulatorComponent.vue';
 import { Ref } from 'vue-property-decorator';
-import { BLESemBeaconBuilder } from '../models/BLESemBeaconBuilder';
-import { BLEUUID } from '@openhps/rf';
 
 @Options({
   components: {
@@ -118,49 +115,6 @@ export default class BeaconSimulatorPage extends Vue {
 
   beforeMount() {
     this.isLoading = true;
-  }
-
-  ionViewDidEnter(): void {
-    setTimeout(async () => {
-      if (this.simulatorComponent.beaconStore.beacons.size === 0) {
-        const alert = await alertController.create({
-          header: 'Load default beacons',
-          subHeader: 'Download IoT 2023 beacons',
-          message:
-            'You currently do not have any beacons to simulate. Do you want to download the IoT 2023 demo beacons?',
-          buttons: [
-            {
-              text: 'No',
-              role: 'cancel',
-            },
-            {
-              text: 'Yes',
-              role: 'confirm',
-              handler: () => {
-                BLESemBeaconBuilder.create()
-                  .namespaceId(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
-                  .instanceId('9c7ce6fc')
-                  .shortResourceUri('https://bit.ly/3JsEnF9')
-                  .build()
-                  .then((dummy) => {
-                    return this.simulatorComponent.beaconScannerStore.beaconService.resolve(dummy, {
-                      resolveAll: true,
-                    });
-                  })
-                  .then((beacons) => {
-                    this.simulatorComponent.beaconStore.addSimulatedBeacon(beacons.result.uid, beacons.result);
-                    beacons.beacons.forEach((beacon) => {
-                      this.simulatorComponent.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
-                    });
-                  });
-              },
-            },
-          ],
-        });
-
-        await alert.present();
-      }
-    }, 1000);
   }
 
   mounted() {

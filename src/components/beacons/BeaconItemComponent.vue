@@ -11,7 +11,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <template v-if="beaconType === 'SemBeacon'">
+          <template v-if="beacon instanceof BeaconType.BLESemBeacon">
             <ion-col size="12" size-md="3">
               <ion-label class="key" color="primary">Namespace</ion-label>
             </ion-col>
@@ -25,7 +25,7 @@
               <ion-label>{{ beacon.instanceId.toString(false) }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="beaconType === 'iBeacon' || beaconType === 'AltBeacon'">
+          <template v-else-if="beacon instanceof BeaconType.BLEiBeacon || beacon instanceof BeaconType.BLEAltBeacon">
             <ion-col size="12" size-md="4">
               <ion-label class="key" color="primary">UUID</ion-label>
             </ion-col>
@@ -45,15 +45,7 @@
               <ion-label>{{ beacon.minor }}</ion-label>
             </ion-col>
           </template>
-          <!-- <template v-else-if="beaconType === 'AltBeacon'">
-            <ion-col size="12" size-md="2">
-              <ion-label class="key" color="primary">ID</ion-label>
-            </ion-col>
-            <ion-col size="12" size-md="10">
-              <ion-label>{{ beacon.beaconId.toString() }}</ion-label>
-            </ion-col>
-          </template> -->
-          <template v-else-if="beaconType === 'Eddystone-URL'">
+          <template v-else-if="(beacon instanceof BeaconType.BLEEddystoneURL)">
             <ion-col size="3">
               <ion-label class="key" color="primary">URL</ion-label>
             </ion-col>
@@ -61,7 +53,7 @@
               <ion-label>{{ beacon.url }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="beaconType === 'Eddystone-UID'">
+          <template v-else-if="(beacon instanceof BeaconType.BLEEddystoneUID)">
             <ion-col size="12" size-md="4">
               <ion-label class="key" color="primary">Namespace</ion-label>
             </ion-col>
@@ -75,7 +67,7 @@
               <ion-label>{{ beacon.instanceId.toString() }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="beaconType === 'Eddystone-TLM'">
+          <template v-else-if="(beacon instanceof BeaconType.BLEEddystoneTLM)">
             <ion-col size="7">
               <ion-label class="key" color="primary">Voltage</ion-label>
             </ion-col>
@@ -109,7 +101,7 @@
       ></ion-toggle>
       <ion-label v-else slot="end">
         <h2 class="rssi">{{ beacon.rssi }} <small>dBm</small></h2>
-        <small :key="key">{{ lastSeen() }}</small>
+        <small :key="key.value">{{ lastSeen() }}</small>
       </ion-label>
     </ion-item>
     <ion-item-options v-if="simulator" @ionSwipe="deleteBeacon">
@@ -144,12 +136,13 @@ import {
   BLEEddystoneUID,
   BLEEddystoneTLM,
 } from '@openhps/rf';
-import { BLESemBeacon } from '../../models/BLESemBeacon';
+import { BLESemBeacon } from '@sembeacon/openhps';
 import moment from 'moment';
 import { Beacon } from '../../stores/beacon.scanning';
 import { TimeService } from '@openhps/core';
 import { ref } from 'vue';
 import { Ref } from 'vue-property-decorator';
+import { SimulatedBeacon } from '@/stores/beacon.advertising';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -166,10 +159,20 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     IonItemOption,
     IonItemOptions,
     IonIcon,
-  },
+  }
 })
 export default class BeaconItemComponent extends Vue {
-  @Prop() beacon: BLEBeaconObject & Beacon;
+  BeaconType: any = {
+    BLESemBeacon,
+    BLEEddystoneTLM,
+    BLEEddystoneUID,
+    BLEEddystone,
+    BLEEddystoneURL,
+    BLEAltBeacon,
+    BLEiBeacon
+  };
+
+  @Prop() beacon: BLEBeaconObject & Beacon & Partial<SimulatedBeacon> & any;
   key = ref(TimeService.now().toString() + Math.random());
   @Prop() simulator: boolean;
   @Prop() disabled: boolean;
@@ -223,7 +226,7 @@ export default class BeaconItemComponent extends Vue {
     this.deleted = true;
     setTimeout(() => {
       this.$emit('deleteBeacon', this.beacon);
-    }, 300);
+    }, 600);
   }
 }
 </script>
@@ -243,8 +246,14 @@ ion-col {
   margin: 0;
   padding: 0;
 }
-.item-delete-animation {
-  opacity: 0;
-  transition: opacity 200ms linear;
+
+ion-item-sliding {
+  height: 100%;
+}
+
+ion-item-sliding.item-delete-animation {
+  transition: opacity 0.2s linear, height 0.15s linear 0.15s;
+  opacity: 0.001;
+  height: 0;
 }
 </style>
