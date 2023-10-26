@@ -16,7 +16,7 @@
     "start:android": "ionic capacitor run android",
     "start:ios": "ionic capacitor run ios -l --external",
     "start:electron": "ionic capacitor open @capacitor-community/electron",
-    "resources": "npx @capacitor/assets generate",
+    "resources": "npx @capacitor/assets generate --splashBackgroundColor #363795 --ios --android --pwa",
     "version": "capacitor-set-version -v 1.3 -b 4"
   },
   "dependencies": {

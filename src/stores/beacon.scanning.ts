@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, DataSerializer, Model, ModelBuilder, RelativeDistance, WorkerNode } from '@openhps/core';
+import { CallbackSinkNode, DataFrame, DataSerializer, FrameMergeNode, Model, ModelBuilder, RelativeDistance, TimeUnit, WorkerNode } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLEiBeaconSourceNode } from '@openhps/cordova-ibeacon';
 import { BLESemBeaconBuilder, SemBeaconService, BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@sembeacon/openhps';
@@ -21,7 +21,7 @@ import { Capacitor } from '@capacitor/core';
 import { ControllerState } from './types';
 import { Preferences } from '@capacitor/preferences';
 import { toRaw } from 'vue';
-import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
+import { LocalStorageDriver } from '@openhps/localstorage';
 
 export interface BeaconScan {
   results: number;
@@ -52,7 +52,7 @@ export interface BeaconState {
 export const useBeaconStore = defineStore('beacon.scanning', {
   state: (): BeaconState => ({
     beaconService: new SemBeaconService(
-      new CapacitorPreferencesDriver(BLESemBeacon, {
+      new LocalStorageDriver(BLESemBeacon, {
         namespace: 'sembeacon',
       }),
       {
@@ -83,6 +83,9 @@ export const useBeaconStore = defineStore('beacon.scanning', {
     beaconInfo: new Map(),
   }),
   getters: {
+    worker(): WorkerNode<any, any> {
+      return this.model.findNodeByUID("worker");
+    },
     cacheSize(): number {
       return (this.beacons as Map<string, BLEBeaconObject>).size;
     },
@@ -208,8 +211,15 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         ModelBuilder.create()
           .addService(this.beaconService)
           .from(...this.sources)
+          .via(new FrameMergeNode((frame) => frame.source.uid, (frame) => frame.uid, {
+            timeout: 500,                      // After 500ms, push the frame
+            timeoutUnit: TimeUnit.MILLISECOND,
+            minCount: 1,                        // Minimum amount of frames to receive
+            maxCount: 50                        // Max count can be as big as you want
+          }))
           .via(new WorkerNode("/js/BLEScannerWorker.js", {
-            poolSize: 1,  // Single background worker
+            uid: "worker",
+            poolSize: 4,
             type: 'module',
             worker: '/js/vendor/openhps/worker.openhps-core.es.min.js'
           }))

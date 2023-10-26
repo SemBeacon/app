@@ -12,6 +12,7 @@ const config: CapacitorConfig = {
   loggingBehavior: "none",
   android: {
     includePlugins: [
+      '@capacitor/splash-screen',
       '@capacitor/preferences',
       'capacitor-native-settings',
       '@capacitor/toast',
@@ -28,6 +29,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     includePlugins: [
+      '@capacitor/splash-screen',
       '@capacitor/preferences',
       'capacitor-native-settings',
       '@capacitor/toast',
@@ -48,12 +50,10 @@ const config: CapacitorConfig = {
     SplashScreen: {
       backgroundColor: "#363795",
       androidScaleType: "CENTER_CROP",
-      launchShowDuration: 1500,
-      launchAutoHide: true,
       androidSplashResourceName: 'splash',
-      showSpinner: false,
-      splashFullScreen: false,
+      splashFullScreen: true,
       splashImmersive: false,
+      launchAutoHide: false
     },
     LocalNotifications: {
       smallIcon: "ic_stat_icon",

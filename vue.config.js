@@ -5,6 +5,7 @@ module.exports = {
       '@openhps/rf': ['OpenHPS', 'rf'],
       '@openhps/geospatial': ['OpenHPS', 'geospatial'],
       '@openhps/rdf': ['OpenHPS', 'rdf'],
+      '@sembeacon/openhps': ['OpenHPS', 'openhps'],
       '@openhps/solid/browser': ['OpenHPS', 'solid'],
     },
   },

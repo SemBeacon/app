@@ -24,15 +24,15 @@ export const useEnvironmentStore = defineStore('environments', {
           engine: DefaultEngine,
         });
         const query = `
-                    PREFIX sembeacon: <http://purl.org/sembeacon/>
-                    PREFIX ssn: <http://www.w3.org/ns/ssn/>
-                    PREFIX sosa: <http://www.w3.org/ns/sosa/>
-                    PREFIX ogc: <http://www.opengis.net/ont/geosparql#>
+          PREFIX sembeacon: <http://purl.org/sembeacon/>
+          PREFIX ssn: <http://www.w3.org/ns/ssn/>
+          PREFIX sosa: <http://www.w3.org/ns/sosa/>
+          PREFIX ogc: <http://www.opengis.net/ont/geosparql#>
 
-                    SELECT ?space {
-                        ?space a ssn:Deployment .
-                        ?space a ogc:SpatialObject .
-                    }`;
+          SELECT ?space {
+              ?space a ssn:Deployment .
+              ?space a ogc:SpatialObject .
+          }`;
         driver
           .queryBindings(query)
           .then((bindings) => {

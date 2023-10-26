@@ -85,6 +85,7 @@ import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
 import { useGeolocationStore } from './stores/geolocation';
 import moment from 'moment';
 import { ControllerState } from './stores/types';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @Options({
   components: {
@@ -148,7 +149,7 @@ export default class App extends Vue {
     },
   ];
 
-  beforeCreate(): void {
+  beforeMount(): void {
     if (Capacitor.getPlatform() !== 'web') {
       StatusBar.setBackgroundColor({
         color: '#363795',
@@ -188,8 +189,8 @@ export default class App extends Vue {
       }
     });
   }
-
-  created(): void {
+  
+  async created() {
     RDFSerializer.initialize('rf');
     RDFSerializer.initialize('geospatial');
     this.logger.initialize();
@@ -230,6 +231,9 @@ export default class App extends Vue {
       });
     }
 
+    await SplashScreen.hide({
+      fadeOutDuration: 150
+    });
     this.handlePermissions().finally(() => {
       setTimeout(() => {
         CapacitorApp.addListener('appStateChange', (state) => {

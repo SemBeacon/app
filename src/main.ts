@@ -27,8 +27,13 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import { SplashScreen } from '@capacitor/splash-screen';
+
 const app = createApp(App).use(IonicVue).use(createPinia()).use(BootstrapIconsPlugin).use(router);
 
+SplashScreen.hide().then(() => {
+  SplashScreen.show();
+});
 router.isReady().then(() => {
   addIcons({ ...icons });
   app.mount('#app');

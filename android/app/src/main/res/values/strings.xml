@@ -3,5 +3,5 @@
     <string name="app_name">SemBeacon</string>
     <string name="title_activity_main">SemBeacon</string>
     <string name="package_name">org.sembeacon</string>
-    <string name="custom_url_scheme">org.sembeacon</string>
+    <string name="custom_url_scheme">sembeacon.org</string>
 </resources>
