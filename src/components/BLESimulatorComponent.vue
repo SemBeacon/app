@@ -1,60 +1,48 @@
 <template>
-  <ion-page>
-    <div id="container">
-      <ion-list :disabled="this.beaconStore.state === ControllerState.NO_PERMISSION">
-        <ion-item 
-          button="false" 
-          v-if="this.beaconStore.state === ControllerState.NO_PERMISSION"
-          color="danger">
-          <ion-label class="ion-text-center">
-            <h2>No Bluetooth permission to initiate advertising!</h2>
-          </ion-label>
-        </ion-item>
-        <beacon-item-component 
-          v-for="beacon in beacons" 
-          :key="beacon.uid"
-          :beacon="beacon"
-          simulator="true"
-          @simulateToggle="toggleAdvertising"
-          :disabled="this.beaconStore.state === ControllerState.NO_PERMISSION"
-          @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)"
-          @deleteBeacon="deleteBeacon">
-        </beacon-item-component>
-      </ion-list>
-    </div>
-
-    <ion-action-sheet
-      :is-open="isOpen"
-      header="Simulate a beacon"
-      :buttons="actionSheetButtons"
-      @didDismiss="this.isOpen = false"
-    ></ion-action-sheet>
+  <ion-content :fullscreen="true">
+    <ion-list>
+      <ion-item v-if="beaconStore.state === ControllerState.NO_PERMISSION" button="false" color="danger">
+        <ion-label class="ion-text-center">
+          <h2>No Bluetooth permission to initiate advertising!</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item v-else-if="beaconStore.state === ControllerState.DISABLED" button="false" color="danger">
+        <ion-label class="ion-text-center">
+          <h2>Bluetooth advertising is not supported!</h2>
+        </ion-label>
+      </ion-item>
+      <beacon-item-component
+        v-for="beacon in beacons"
+        :key="beacon.uid"
+        :beacon="beacon"
+        simulator="true"
+        :disabled="beaconStore.state !== ControllerState.READY"
+        @simulateToggle="toggleAdvertising"
+        @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)"
+        @deleteBeacon="deleteBeacon"
+      >
+      </beacon-item-component>
+    </ion-list>
 
     <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-      <ion-fab-button 
-        @click="addBeacon" 
-        color="primary"
-        :disabled="this.beaconStore.state !== ControllerState.READY"
-      >
+      <ion-fab-button :disabled="beaconStore.state !== ControllerState.READY" @click="addBeacon">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-  </ion-page>
+  </ion-content>
 </template>
-
 
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
-import { 
-  IonButtons, 
-  IonContent, 
-  IonHeader, 
-  IonMenuButton, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar, 
-  IonList, 
-  IonItem, 
+import {
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonMenuButton,
+  IonTitle,
+  IonToolbar,
+  IonList,
+  IonItem,
   IonInput,
   IonLabel,
   IonFab,
@@ -69,27 +57,29 @@ import {
   IonCardTitle,
   IonCardSubtitle,
   IonToggle,
-  IonActionSheet
+  IonActionSheet,
+  actionSheetController,
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
 import { computed } from 'vue';
 import { ControllerState } from '../stores/types';
-import { BLEAltBeacon, BLEBeaconObject, BLEiBeacon } from '@openhps/rf';
+import { BLEAltBeacon, BLEAltBeaconBuilder, BLEBeaconObject, BLEiBeacon, BLEiBeaconBuilder } from '@openhps/rf';
 import { BLESemBeacon } from '../models/BLESemBeacon';
+import { BLESemBeaconBuilder } from '../models/BLESemBeaconBuilder';
+import { useBeaconStore } from '../stores/beacon.scanning';
 
 @Options({
   components: {
     IonActionSheet,
-    IonButtons, 
-    IonContent, 
-    IonHeader, 
-    IonMenuButton, 
-    IonPage, 
-    IonTitle, 
-    IonToolbar, 
-    IonList, 
-    IonItem, 
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonMenuButton,
+    IonTitle,
+    IonToolbar,
+    IonList,
+    IonItem,
     IonLabel,
     BeaconItemComponent,
     IonFab,
@@ -107,52 +97,74 @@ import { BLESemBeacon } from '../models/BLESemBeacon';
     IonToggle,
   },
   data: () => ({
-    ControllerState
-  })
+    ControllerState,
+  }),
 })
 export default class BLESimulatorComponent extends Vue {
   beaconStore = useBeaconAdvertisingStore();
+  beaconScannerStore = useBeaconStore();
   beacons = computed(() => Array.from(this.beaconStore.beacons.values()));
-  isOpen: boolean = false;
-  actionSheetButtons = [
-    {
-      text: 'Create SemBeacon',
-      data: {
-        action: 'add-sembeacon',
-      },
-    },
-    {
-      text: 'Create iBeacon',
-      data: {
-        action: 'add-ibeacon',
-      },
-    },
-    {
-      text: 'Create AltBeacon',
-      data: {
-        action: 'add-altbeacon',
-      },
-    },
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      data: {
-        action: 'cancel',
-      },
-    },
-  ];
 
-  addBeacon(): void {
-    this.isOpen = true;
+  async addBeacon(): Promise<void> {
+    const action = await actionSheetController.create({
+      header: 'Simulate a beacon',
+      buttons: [
+        {
+          text: 'Create SemBeacon',
+          handler: () => {
+            this.createBeacon(BLESemBeacon);
+          },
+        },
+        {
+          text: 'Create iBeacon',
+          handler: () => {
+            this.createBeacon(BLEiBeacon);
+          },
+        },
+        {
+          text: 'Create AltBeacon',
+          handler: () => {
+            this.createBeacon(BLEAltBeacon);
+          },
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          data: {
+            action: 'cancel',
+          },
+        },
+      ],
+    });
+
+    await action.present();
   }
 
   createBeacon(type: new () => BLEBeaconObject): void {
     switch (type) {
       case BLEiBeacon:
+        BLEiBeaconBuilder.create()
+          .build()
+          .then((beacon) => {
+            this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+            this.$router.push(`/beacon/edit/${beacon.uid}`);
+          });
         return;
       case BLEAltBeacon:
+        BLEAltBeaconBuilder.create()
+          .build()
+          .then((beacon) => {
+            this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+            this.$router.push(`/beacon/edit/${beacon.uid}`);
+          });
         return;
       case BLESemBeacon:
+        BLESemBeaconBuilder.create()
+          .build()
+          .then((beacon) => {
+            this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+            this.$router.push(`/beacon/edit/${beacon.uid}`);
+          });
         return;
     }
   }
@@ -167,8 +179,8 @@ export default class BLESimulatorComponent extends Vue {
 
   deleteBeacon(beacon: SimulatedBeacon): void {
     this.beaconStore.delete(beacon);
-  }  
-  
+  }
+
   stopAdvertising(): void {
     this.beaconStore.stopAdvertising();
   }
@@ -180,5 +192,8 @@ export default class BLESimulatorComponent extends Vue {
   margin-top: 3em;
   padding-left: 1em;
   padding-right: 1em;
+}
+ion-list {
+  margin-bottom: 50px;
 }
 </style>

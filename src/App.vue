@@ -6,37 +6,42 @@
           <ion-list id="menu-list">
             <ion-list-header>
               <picture>
-                <source 
-                  srcset="/assets/logo/logo_alpha.svg" 
-                  media="(prefers-color-scheme: dark)">
-                <img alt="SemBeacon Logo" src="/assets/logo/logo.svg">
+                <source srcset="/assets/logo/logo_alpha.svg" media="(prefers-color-scheme: dark)" />
+                <img alt="SemBeacon Logo" src="/assets/logo/logo.svg" />
               </picture>
             </ion-list-header>
 
-            <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item 
-                router-direction="root" 
-                :router-link="p.url" 
-                lines="none" detail="false" class="hydrated" 
-                :class="{ selected: this.$route.name === p.name }"
+            <ion-menu-toggle v-for="(p, i) in appPages" :key="i" auto-hide="false">
+              <ion-item
+                router-direction="root"
+                :router-link="p.url"
+                lines="none"
+                detail="false"
+                class="hydrated"
+                :class="{ selected: $route.name === p.name }"
               >
-                <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
+                <ion-icon slot="start" aria-hidden="true" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
 
             <ion-menu-toggle auto-hide="false">
-              <ion-item lines="none" detail="false" class="hydrated" disabled="true" :key="JSON.stringify(info)" v-if="info.version">
+              <ion-item
+                v-if="info.version"
+                :key="JSON.stringify(info)"
+                lines="none"
+                detail="false"
+                class="hydrated"
+                disabled="true"
+              >
                 <ion-label>v{{ info.version }} build: {{ info.build }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
         </ion-content>
       </ion-menu>
-      
-      <ion-router-outlet 
-        id="main-content"
-      ></ion-router-outlet>
+
+      <ion-router-outlet id="main-content"></ion-router-outlet>
     </ion-split-pane>
   </ion-app>
 </template>
@@ -64,9 +69,9 @@ import {
 import {
   map,
   bluetooth,
-//  logIn,
+  //  logIn,
   help,
-  wifiOutline
+  wifiOutline,
 } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon.scanning';
@@ -97,7 +102,7 @@ import { ControllerState } from './stores/types';
     IonNote,
     IonRouterOutlet,
     IonSplitPane,
-  }
+  },
 })
 export default class App extends Vue {
   beaconStore = useBeaconStore();
@@ -142,37 +147,41 @@ export default class App extends Vue {
       url: '/about',
       iosIcon: help,
       mdIcon: help,
-    }
+    },
   ];
-  
+
   beforeCreate(): void {
     if (Capacitor.getPlatform() !== 'web') {
       StatusBar.setBackgroundColor({
         color: '#363795',
       });
       StatusBar.show({
-        animation: Animation.None
+        animation: Animation.None,
       });
     }
   }
 
   handlePermissions(): Promise<void> {
     return new Promise((resolve) => {
-      if ((this.beaconStore.state !== ControllerState.READY || 
-        this.beaconSimulatorStore.state !== ControllerState.READY) && !this.alertOpen) {
+      if (
+        (this.beaconStore.state !== ControllerState.READY ||
+          this.beaconSimulatorStore.state !== ControllerState.READY) &&
+        !this.alertOpen
+      ) {
         Promise.all([
           this.geolocationStore.initialize(),
           this.beaconStore.initialize(),
           this.beaconSimulatorStore.initialize(),
         ])
           .catch(async (err: Error) => {
-            console.error("Initialization error", err);
-            if (err.message === "Permission denied.") {
-                this.alertOpen = true;
-                const alert = await alertController.create({
-                  header: 'Permissions missing',
-                  message: 'Please enable the location and Bluetooth permissions for this application to work.',
-                  buttons: [{
+            console.error('Initialization error', err);
+            if (err.message === 'Permission denied.') {
+              this.alertOpen = true;
+              const alert = await alertController.create({
+                header: 'Permissions missing',
+                message: 'Please enable the location and Bluetooth permissions for this application to work.',
+                buttons: [
+                  {
                     text: 'Cancel',
                     role: 'cancel',
                     handler: () => {
@@ -184,16 +193,18 @@ export default class App extends Vue {
                     role: 'confirm',
                     handler: () => {
                       NativeSettings.open({
-                        optionAndroid: AndroidSettings.ApplicationDetails, 
-                        optionIOS: IOSSettings.App
+                        optionAndroid: AndroidSettings.ApplicationDetails,
+                        optionIOS: IOSSettings.App,
                       });
                     },
-                  }],
-                });
-                await alert.present();
-                this.alertOpen = false;
+                  },
+                ],
+              });
+              await alert.present();
+              this.alertOpen = false;
             }
-          }).finally(() => {
+          })
+          .finally(() => {
             resolve();
           });
       }
@@ -202,26 +213,26 @@ export default class App extends Vue {
 
   beforeMount(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RDFSerializer.initialize("rf");
-      RDFSerializer.initialize("geospatial");
+      RDFSerializer.initialize('rf');
+      RDFSerializer.initialize('geospatial');
       this.logger.initialize();
       moment.updateLocale('en', {
         relativeTime: {
-            future: "in %s",
-            past: "%s",
-            s: number=>number + "s ago",
-            ss: '%ds ago',
-            m: "1m ago",
-            mm: "%dm ago",
-            h: "1h ago",
-            hh: "%dh ago",
-            d: "1d ago",
-            dd: "%dd ago",
-            M: "a month ago",
-            MM: "%d months ago",
-            y: "a year ago",
-            yy: "%d years ago"
-        }
+          future: 'in %s',
+          past: '%s',
+          s: (number) => number + 's ago',
+          ss: '%ds ago',
+          m: '1m ago',
+          mm: '%dm ago',
+          h: '1h ago',
+          hh: '%dh ago',
+          d: '1d ago',
+          dd: '%dd ago',
+          M: 'a month ago',
+          MM: '%d months ago',
+          y: 'a year ago',
+          yy: '%d years ago',
+        },
       });
 
       CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
@@ -236,8 +247,8 @@ export default class App extends Vue {
       });
 
       if (Capacitor.getPlatform() !== 'web') {
-        CapacitorApp.getInfo().then(info => {
-          console.log("Application information", info);
+        CapacitorApp.getInfo().then((info) => {
+          console.log('Application information', info);
           this.info = info;
         });
       }

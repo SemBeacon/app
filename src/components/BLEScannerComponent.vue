@@ -1,56 +1,50 @@
 <template>
-  <ion-page>
-    <div id="container">
-      <ion-list v-if="beacons.length > 0 || this.beaconStore.state === ControllerState.NO_PERMISSION">
-        <ion-item 
-          button="false" 
-          v-if="this.beaconStore.state === ControllerState.NO_PERMISSION"
-          color="danger">
-          <ion-label class="ion-text-center">
-            <h2>No Bluetooth permission to initiate scanning!</h2>
-          </ion-label>
-        </ion-item>
-        <beacon-item-component 
-          v-for="beacon in beacons" 
-          :key="beacon.uid"
-          :beacon="beacon"
-          @clickBeacon="() => $router.push(`/beacon/${beacon.uid}`)">
-        </beacon-item-component>
-      </ion-list>
-
-      <section class="help-text ion-padding-top ion-text-center" v-else-if="!beaconStore.isScanning">
-        <div>
-          <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
-        </div>
-      </section>
-    </div>
-    
-    <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-      <ion-fab-button 
-        @click="toggleScan" 
-        :color="this.beaconStore.isScanning ? 'danger' : 'primary'"
-        :disabled="this.beaconStore.state !== ControllerState.READY"
+  <ion-content :fullscreen="true">
+    <ion-list v-if="beacons.length > 0 || beaconStore.state !== ControllerState.READY">
+      <ion-item v-if="beaconStore.state === ControllerState.NO_PERMISSION" button="false" color="danger">
+        <ion-label class="ion-text-center">
+          <h2>No Bluetooth permission to initiate scanning!</h2>
+        </ion-label>
+      </ion-item>
+      <beacon-item-component
+        v-for="beacon in beacons"
+        :key="beacon.uid"
+        :beacon="beacon"
+        @clickBeacon="() => $router.push(`/beacon/${beacon.uid}`)"
       >
-        <ion-spinner name="circular" v-if="loading"></ion-spinner>
-        <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'search'" v-if="!loading"></ion-icon>
+      </beacon-item-component>
+    </ion-list>
+
+    <section v-else-if="!beaconStore.isScanning" class="help-text ion-padding-top ion-text-center">
+      <div>
+        <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
+      </div>
+    </section>
+
+    <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+      <ion-fab-button
+        :color="beaconStore.isScanning ? 'danger' : undefined"
+        :disabled="beaconStore.state !== ControllerState.READY"
+        @click="toggleScan"
+      >
+        <ion-spinner v-if="loading" name="circular"></ion-spinner>
+        <ion-icon v-if="!loading" :name="beaconStore.isScanning ? 'stop' : 'search'"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-  </ion-page>
+  </ion-content>
 </template>
-
 
 <script lang="ts">
 import { Vue, Options } from 'vue-property-decorator';
-import { 
-  IonButtons, 
-  IonContent, 
-  IonHeader, 
-  IonMenuButton, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar, 
-  IonList, 
-  IonItem, 
+import {
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonMenuButton,
+  IonTitle,
+  IonToolbar,
+  IonList,
+  IonItem,
   IonInput,
   IonLabel,
   IonFab,
@@ -79,20 +73,19 @@ import { ControllerState } from '../stores/types';
 enum SortKey {
   RSSI,
   CREATED,
-  MODIFIED
+  MODIFIED,
 }
 
 @Options({
   components: {
-    IonButtons, 
-    IonContent, 
-    IonHeader, 
-    IonMenuButton, 
-    IonPage, 
-    IonTitle, 
-    IonToolbar, 
-    IonList, 
-    IonItem, 
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonMenuButton,
+    IonTitle,
+    IonToolbar,
+    IonList,
+    IonItem,
     IonLabel,
     BeaconItemComponent,
     IonFab,
@@ -112,28 +105,28 @@ enum SortKey {
   data: () => ({
     stop,
     search,
-    ControllerState
-  })
+    ControllerState,
+  }),
 })
 export default class BLESimulatorComponent extends Vue {
   sortKey: SortKey = SortKey.CREATED;
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   loading = false;
-  beacons = computed(() => 
-    Array.from(this.beaconStore.beacons.values())
-      .filter(beacon => beacon.lastSeen !== undefined)
+  beacons = computed(() =>
+    this.beaconStore.beaconsWithInfo
+      .filter((beacon) => beacon.lastSeen !== undefined)
       .sort((a, b) => {
         switch (this.sortKey) {
           case SortKey.CREATED:
-            return b.createdTimestamp - a.createdTimestamp;
+            return a.createdTimestamp - b.createdTimestamp;
           case SortKey.MODIFIED:
             return b.lastSeen - a.lastSeen;
           case SortKey.RSSI:
           default:
-            return a.rssi - b.rssi;
+            return b.rssi - a.rssi;
         }
-      })
+      }),
   );
   platform = Capacitor.getPlatform();
 
@@ -141,30 +134,38 @@ export default class BLESimulatorComponent extends Vue {
     if (!this.loading) {
       this.loading = true;
       if (this.beaconStore.isScanning) {
-        this.beaconStore.stopScan().then(() => {
-          //
-        }).catch(err => {
-          //
-          console.error(err);
-          Toast.show({
-            text: `Error while stopping scan! ${err}`,
+        this.beaconStore
+          .stopScan()
+          .then(() => {
+            //
+          })
+          .catch((err) => {
+            //
+            console.error(err);
+            Toast.show({
+              text: `Error while stopping scan! ${err}`,
+            });
+          })
+          .finally(() => {
+            this.loading = false;
           });
-        }).finally(() => {
-          this.loading = false;
-        });
       } else {
         // Start scan
-        this.beaconStore.startScan().then(() => {
-          //
-        }).catch(err => {
-          //
-          console.error(err);
-          Toast.show({
-            text: `Error while starting scan! ${err}`,
+        this.beaconStore
+          .startScan()
+          .then(() => {
+            //
+          })
+          .catch((err) => {
+            //
+            console.error(err);
+            Toast.show({
+              text: `Error while starting scan! ${err}`,
+            });
+          })
+          .finally(() => {
+            this.loading = false;
           });
-        }).finally(() => {
-          this.loading = false;
-        });
       }
     }
   }
@@ -177,35 +178,40 @@ export default class BLESimulatorComponent extends Vue {
           label: 'First seen',
           type: 'radio',
           value: 'created',
+          checked: this.sortKey === SortKey.CREATED,
         },
         {
           label: 'Last seen',
           type: 'radio',
           value: 'modified',
+          checked: this.sortKey === SortKey.MODIFIED,
         },
         {
           label: 'RSSI',
           type: 'radio',
           value: 'rssi',
+          checked: this.sortKey === SortKey.RSSI,
         },
       ],
-      buttons: [{
-        text: 'OK',
-        role: 'confirm',
-        handler: (value) => {
-          switch (value) {
-            case 'rssi':
-              this.sortKey = SortKey.RSSI;
-              break;
-            case 'created':
-              this.sortKey = SortKey.CREATED;
-              break;
-            case 'modified':
-              this.sortKey = SortKey.MODIFIED;
-              break;
-          }
+      buttons: [
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: (value) => {
+            switch (value) {
+              case 'rssi':
+                this.sortKey = SortKey.RSSI;
+                break;
+              case 'created':
+                this.sortKey = SortKey.CREATED;
+                break;
+              case 'modified':
+                this.sortKey = SortKey.MODIFIED;
+                break;
+            }
+          },
         },
-      }],
+      ],
     });
 
     await alert.present();
@@ -215,7 +221,8 @@ export default class BLESimulatorComponent extends Vue {
     const alert = await alertController.create({
       header: 'Clear cached beacons',
       message: 'Are you sure you want to clear all beacons and SemBeacon data?',
-      buttons: [{
+      buttons: [
+        {
           text: 'Cancel',
           role: 'cancel',
         },
@@ -226,13 +233,13 @@ export default class BLESimulatorComponent extends Vue {
             this.beaconStore.clear();
             this.environmentStore.clear();
           },
-        }],
+        },
+      ],
     });
 
     await alert.present();
   }
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -240,5 +247,8 @@ export default class BLESimulatorComponent extends Vue {
   margin-top: 3em;
   padding-left: 1em;
   padding-right: 1em;
+}
+ion-list {
+  margin-bottom: 50px;
 }
 </style>

@@ -1,49 +1,47 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-toolbar color="primary">
+      <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
 
         <ion-title>Beacon Map</ion-title>
-        <ion-progress-bar v-if="this.beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
+        <ion-progress-bar v-if="beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
       <div id="container">
-        <map-component ref="mapComponent">
-        </map-component>
+        <map-component ref="mapComponent"> </map-component>
       </div>
-      
+
       <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-        <ion-fab-button 
-          @click="toggleScan" 
-          :color="this.beaconStore.isScanning ? 'danger' : 'primary'"
-          :disabled="this.beaconStore.state !== ControllerState.READY"
+        <ion-fab-button
+          :color="beaconStore.isScanning ? 'danger' : undefined"
+          :disabled="beaconStore.state !== ControllerState.READY"
+          @click="toggleScan"
         >
-          <ion-spinner name="circular" v-if="loading"></ion-spinner>
-          <ion-icon :name="this.beaconStore.isScanning ? 'stop' : 'play'" v-if="!loading"></ion-icon>
+          <ion-spinner v-if="loading" name="circular"></ion-spinner>
+          <ion-icon v-if="!loading" :name="beaconStore.isScanning ? 'stop' : 'play'"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
   </ion-page>
 </template>
 
-
 <script lang="ts">
 import { Vue, Options, Ref } from 'vue-property-decorator';
-import { 
-  IonButtons, 
-  IonContent, 
-  IonHeader, 
-  IonMenuButton, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar, 
-  IonList, 
-  IonItem, 
+import {
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonList,
+  IonItem,
   IonLabel,
   IonFab,
   IonFabButton,
@@ -62,15 +60,15 @@ import { ControllerState } from '../stores/types';
 
 @Options({
   components: {
-    IonButtons, 
-    IonContent, 
-    IonHeader, 
-    IonMenuButton, 
-    IonPage, 
-    IonTitle, 
-    IonToolbar, 
-    IonList, 
-    IonItem, 
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonMenuButton,
+    IonPage,
+    IonTitle,
+    IonToolbar,
+    IonList,
+    IonItem,
     IonLabel,
     IonFab,
     IonFabButton,
@@ -79,20 +77,20 @@ import { ControllerState } from '../stores/types';
     IonIcon,
     IonSegment,
     IonSegmentButton,
-    MapComponent
+    MapComponent,
   },
   data: () => ({
     stop,
     play,
-    ControllerState
-  })
+    ControllerState,
+  }),
 })
 export default class MapPage extends Vue {
   route = useRoute();
   beaconStore = useBeaconStore();
   beacons = computed(() => this.beaconStore.beacons);
   loading = false;
-  @Ref("mapComponent") map: MapComponent;
+  @Ref('mapComponent') map: MapComponent;
 
   ionViewDidEnter(): void {
     if ((window as any)._leafletMap) {
@@ -108,27 +106,34 @@ export default class MapPage extends Vue {
     if (!this.loading) {
       this.loading = true;
       if (this.beaconStore.isScanning) {
-        this.beaconStore.stopScan().then(() => {
-          //
-        }).catch(err => {
-          //
-          console.error(err);
-        }).finally(() => {
-          this.loading = false;
-        });
+        this.beaconStore
+          .stopScan()
+          .then(() => {
+            //
+          })
+          .catch((err) => {
+            //
+            console.error(err);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
       } else {
         // Start scan
-        this.beaconStore.startScan().then(() => {
-          //
-        }).catch(err => {
-          //
-          console.error(err);
-        }).finally(() => {
-          this.loading = false;
-        });
+        this.beaconStore
+          .startScan()
+          .then(() => {
+            //
+          })
+          .catch((err) => {
+            //
+            console.error(err);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
       }
     }
   }
-
 }
 </script>

@@ -1,18 +1,13 @@
 <template>
-  <ion-item-sliding>
-    <ion-item 
-      class="beacon-item"
-      button 
-      :detail="false"
-      :disabled="disabled"
-    >
-      <ion-thumbnail v-if="beaconIcon" slot="start">
+  <ion-item-sliding :class="deleted ? 'item-delete-animation' : ''">
+    <ion-item ref="item" class="beacon-item" button :detail="false" :disabled="disabled">
+      <ion-thumbnail v-if="beaconIcon" slot="start" @click="onClick">
         <img :alt="beacon.displayName" :src="beaconIcon" />
       </ion-thumbnail>
       <ion-grid style="width: 100%" @click="onClick">
         <ion-row v-if="beacon.displayName">
           <ion-col size="12">
-            <ion-label class="key">{{ beacon.displayName }}</ion-label>
+            <ion-label color="primary-contrast" class="key">{{ beacon.displayName }}</ion-label>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -105,18 +100,20 @@
         </ion-row>
       </ion-grid>
       <ion-toggle
-        slot="end" v-if="simulator" 
+        v-if="simulator"
+        slot="end"
+        :disabled="sliding"
         aria-label="Toggle advertising of the beacon"
         :checked="beacon.advertising"
         @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
       ></ion-toggle>
-      <ion-label slot="end" v-else>
-          <h2 class="rssi">{{ beacon.rssi }} <small>dBm</small></h2>
-          <small :key="key">{{ lastSeen() }}</small>
+      <ion-label v-else slot="end">
+        <h2 class="rssi">{{ beacon.rssi }} <small>dBm</small></h2>
+        <small :key="key">{{ lastSeen() }}</small>
       </ion-label>
     </ion-item>
-    <ion-item-options v-if="simulator">
-      <ion-item-option @click="deleteBeacon" color="danger">
+    <ion-item-options v-if="simulator" @ionSwipe="deleteBeacon">
+      <ion-item-option color="danger" expandable @click="deleteBeacon">
         <ion-icon slot="icon-only" name="trash"></ion-icon>
       </ion-item-option>
     </ion-item-options>
@@ -125,10 +122,10 @@
 
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
-import { 
-  IonItem, 
-  IonLabel, 
-  IonThumbnail, 
+import {
+  IonItem,
+  IonLabel,
+  IonThumbnail,
   IonToggle,
   IonGrid,
   IonCol,
@@ -136,65 +133,85 @@ import {
   IonItemSliding,
   IonItemOption,
   IonItemOptions,
-  IonIcon
+  IonIcon,
 } from '@ionic/vue';
-import { BLEBeaconObject, BLEiBeacon, BLEAltBeacon, BLEEddystone, BLEEddystoneURL, BLEEddystoneUID, BLEEddystoneTLM } from '@openhps/rf';
+import {
+  BLEBeaconObject,
+  BLEiBeacon,
+  BLEAltBeacon,
+  BLEEddystone,
+  BLEEddystoneURL,
+  BLEEddystoneUID,
+  BLEEddystoneTLM,
+} from '@openhps/rf';
 import { BLESemBeacon } from '../../models/BLESemBeacon';
 import moment from 'moment';
 import { Beacon } from '../../stores/beacon.scanning';
 import { TimeService } from '@openhps/core';
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
+import { Ref } from 'vue-property-decorator';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
   components: {
-    IonItem, IonLabel, IonThumbnail, IonToggle,
-    IonGrid, IonCol, IonRow, IonItemSliding,
-    IonItemOption, IonItemOptions, IonIcon
-  }
+    IonItem,
+    IonLabel,
+    IonThumbnail,
+    IonToggle,
+    IonGrid,
+    IonCol,
+    IonRow,
+    IonItemSliding,
+    IonItemOption,
+    IonItemOptions,
+    IonIcon,
+  },
 })
 export default class BeaconItemComponent extends Vue {
   @Prop() beacon: BLEBeaconObject & Beacon;
-  key: Ref<string> = ref(TimeService.now().toString() + Math.random());
+  key = ref(TimeService.now().toString() + Math.random());
   @Prop() simulator: boolean;
   @Prop() disabled: boolean;
+  @Ref() item: any;
+  sliding: boolean = false;
+  deleted: boolean = false;
 
   get beaconType(): string {
     if (this.beacon instanceof BLESemBeacon) {
-      return "SemBeacon";
+      return 'SemBeacon';
     } else if (this.beacon instanceof BLEiBeacon) {
-      return "iBeacon";
+      return 'iBeacon';
     } else if (this.beacon instanceof BLEAltBeacon) {
-      return "AltBeacon";
+      return 'AltBeacon';
     } else if (this.beacon instanceof BLEEddystoneURL) {
-      return "Eddystone-URL";
+      return 'Eddystone-URL';
     } else if (this.beacon instanceof BLEEddystoneUID) {
-      return "Eddystone-UID";
+      return 'Eddystone-UID';
     } else if (this.beacon instanceof BLEEddystoneTLM) {
-      return "Eddystone-TLM";
+      return 'Eddystone-TLM';
     } else if (this.beacon instanceof BLEEddystone) {
-      return "Eddystone";
+      return 'Eddystone';
     } else {
-      return "Bluetooth";
+      return 'Bluetooth';
     }
   }
 
   get beaconIcon(): string {
     const beaconType = this.beaconType;
-    return `/assets/beacons/${beaconType.toLowerCase()}${prefersDark.matches ? "_alpha" : ""}.svg`;
+    return `/assets/beacons/${beaconType.toLowerCase()}${prefersDark.matches ? '_alpha' : ''}.svg`;
   }
 
   lastSeen(): string {
     if (this.beacon.lastSeen === undefined) {
-        return "";
+      return '';
     }
     return moment(this.beacon.lastSeen).fromNow();
   }
 
   mounted() {
     setInterval(() => {
-      (this.key as any) = (this.beacon ? this.beacon.uid : "") + TimeService.now();
+      (this.key as any) = (this.beacon ? this.beacon.uid : '') + TimeService.now();
     }, 500);
   }
 
@@ -203,7 +220,10 @@ export default class BeaconItemComponent extends Vue {
   }
 
   deleteBeacon(): void {
-    this.$emit('deleteBeacon', this.beacon);
+    this.deleted = true;
+    setTimeout(() => {
+      this.$emit('deleteBeacon', this.beacon);
+    }, 300);
   }
 }
 </script>
@@ -223,10 +243,8 @@ ion-col {
   margin: 0;
   padding: 0;
 }
-
-@media (prefers-color-scheme: dark) {
-  ion-item.beacon-item ion-label {
-    color: white;
-  }
+.item-delete-animation {
+  opacity: 0;
+  transition: opacity 200ms linear;
 }
 </style>

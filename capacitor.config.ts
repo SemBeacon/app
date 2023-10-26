@@ -6,12 +6,13 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     iosScheme: "ionic",
-    androidScheme: "http",
-    hostname: "org.sembeacon"
+    androidScheme: "https",
+    hostname: "sembeacon.org"
   },
   loggingBehavior: "none",
   android: {
     includePlugins: [
+      '@capacitor/preferences',
       'capacitor-native-settings',
       '@capacitor/toast',
       '@capacitor/status-bar',
@@ -27,6 +28,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     includePlugins: [
+      '@capacitor/preferences',
       'capacitor-native-settings',
       '@capacitor/toast',
       '@capacitor/status-bar',
