@@ -17,7 +17,8 @@
     "start:ios": "ionic capacitor run ios -l --external",
     "start:electron": "ionic capacitor open @capacitor-community/electron",
     "resources": "npx @capacitor/assets generate --splashBackgroundColor #363795 --ios --android --pwa",
-    "version": "capacitor-set-version -v 1.3 -b 4"
+    "version": "capacitor-set-version -v 1.3 -b 4",
+    "update:dependencies": "ncu -u -x vue"
   },
   "dependencies": {
     "@awesome-cordova-plugins/core": "^6.4.0",
@@ -54,10 +55,10 @@
     "@openhps/rdf": "^0.4.19",
     "@openhps/rf": "^0.1.61",
     "@openhps/solid": "^0.1.13",
-    "@sembeacon/openhps": "^1.0.4",
+    "@sembeacon/openhps": "^1.0.5",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vueuse/core": "^10.5.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "beautifymarker": "^1.0.9",
     "bootstrap-icons-vue": "^1.11.1",
     "capacitor-native-settings": "^5.0.1",

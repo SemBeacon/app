@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { CallbackSinkNode, DataFrame, DataSerializer, FrameMergeNode, Model, ModelBuilder, RelativeDistance, TimeUnit, WorkerNode } from '@openhps/core';
 import { BLESourceNode } from '@openhps/capacitor-bluetooth';
 import { BLEiBeaconSourceNode } from '@openhps/cordova-ibeacon';
-import { BLESemBeaconBuilder, SemBeaconService, BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@sembeacon/openhps';
+import { BLESemBeaconBuilder, SemBeaconService, BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM, ResolveOptions } from '@sembeacon/openhps';
 import {
   BLEBeaconObject,
   BLEAltBeacon,
@@ -21,7 +21,7 @@ import { Capacitor } from '@capacitor/core';
 import { ControllerState } from './types';
 import { Preferences } from '@capacitor/preferences';
 import { toRaw } from 'vue';
-import { LocalStorageDriver } from '@openhps/localstorage';
+import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 
 export interface BeaconScan {
   results: number;
@@ -52,12 +52,13 @@ export interface BeaconState {
 export const useBeaconStore = defineStore('beacon.scanning', {
   state: (): BeaconState => ({
     beaconService: new SemBeaconService(
-      new LocalStorageDriver(BLESemBeacon, {
-        namespace: 'sembeacon',
+      new CapacitorPreferencesDriver(BLESemBeacon, {
+        namespace: "sembeacon"
       }),
       {
         accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
         cors: true,
+        uid: "sembeacon-service"
       },
     ),
     state: ControllerState.PENDING,
@@ -221,7 +222,14 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             uid: "worker",
             poolSize: 4,
             type: 'module',
-            worker: '/js/vendor/openhps/worker.openhps-core.es.min.js'
+            worker: '/js/vendor/openhps/worker.openhps-core.es.min.js',
+            methods: [{
+              name: "resolve",
+              handler: (model: Model, object: BLESemBeacon, options: ResolveOptions) => {
+                const service = model.findDataService(SemBeaconService) as unknown as SemBeaconService;
+                return service.resolve(object, options);
+              }
+            }]
           }))
           .to(
             new CallbackSinkNode(
@@ -276,6 +284,11 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             });
             this.model.on('error', console.error);
             this.state = ControllerState.READY;
+
+            service.resolve = (object: BLESemBeacon, options: ResolveOptions) => {
+              return this.worker.invokeMethod("resolve", object, options);
+            };
+
             return this.load();
           })
           .then(() => {

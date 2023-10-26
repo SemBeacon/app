@@ -1,6 +1,7 @@
 import { 
     ModelBuilder,
     FrameFilterNode,
+    MemoryDataService,
 } from "./vendor/openhps/openhps-core.es.min.js";
 import {
     RelativeRSSIProcessing,
@@ -13,18 +14,14 @@ import {
     BLESemBeacon,
     SemBeaconService
 } from "/js/vendor/openhps/sembeacon-openhps.es.min.js";
-import {
-    LocalStorageDriver
-} from "/js/vendor/openhps/openhps-localstorage.es.min.js";
 
 export default ModelBuilder.create()
     .addService(new SemBeaconService(
-        new LocalStorageDriver(BLESemBeacon, {
-          namespace: 'sembeacon',
-        }),
+        new MemoryDataService(BLESemBeacon),
         {
           accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
           cors: true,
+          uid: "sembeacon-worker-service"
         },
     ))
     .from()
