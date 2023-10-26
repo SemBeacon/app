@@ -1,11 +1,9 @@
 <template>
   <ion-content :fullscreen="true">
     <ion-list v-if="beacons.length > 0 || beaconStore.state !== ControllerState.READY">
-      <ion-item v-if="beaconStore.state === ControllerState.NO_PERMISSION" button="false" color="danger">
-        <ion-label class="ion-text-center">
-          <h2>No Bluetooth permission to initiate scanning!</h2>
-        </ion-label>
-      </ion-item>
+      <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION">
+        No Bluetooth permission to initiate scanning!
+      </permission-error-component>
       <beacon-item-component
         v-for="beacon in beacons"
         :key="beacon.uid"
@@ -69,6 +67,7 @@ import { useEnvironmentStore } from '../stores/environment';
 import { Capacitor } from '@capacitor/core';
 import { Toast } from '@capacitor/toast';
 import { ControllerState } from '../stores/types';
+import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 
 enum SortKey {
   RSSI,
@@ -78,6 +77,7 @@ enum SortKey {
 
 @Options({
   components: {
+    PermissionErrorComponent,
     IonButtons,
     IonContent,
     IonHeader,

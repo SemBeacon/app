@@ -52,7 +52,6 @@ import '@openhps/geospatial';
 import 'reflect-metadata';
 import { Vue, Options } from 'vue-property-decorator';
 import {
-  alertController,
   IonApp,
   IonContent,
   IonIcon,
@@ -83,7 +82,6 @@ import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/a
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
 import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
-import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
 import { useGeolocationStore } from './stores/geolocation';
 import moment from 'moment';
 import { ControllerState } from './stores/types';
@@ -111,7 +109,6 @@ export default class App extends Vue {
   userStore = useUserStore();
   logger = useLogger();
   info: AppInfo = {} as any;
-  alertOpen: boolean = false;
 
   appPages = [
     {
@@ -166,43 +163,15 @@ export default class App extends Vue {
       if (
         (this.beaconStore.state !== ControllerState.READY ||
           this.beaconSimulatorStore.state !== ControllerState.READY) &&
-        !this.alertOpen
+          this.beaconStore.state !== ControllerState.INITIALIZING &&
+          this.beaconSimulatorStore.state !== ControllerState.INITIALIZING
       ) {
         Promise.all([
           this.geolocationStore.initialize(),
           this.beaconStore.initialize(),
           this.beaconSimulatorStore.initialize(),
-        ])
-          .catch(async (err: Error) => {
+        ]).catch((err: Error) => {
             console.error('Initialization error', err);
-            if (err.message === 'Permission denied.') {
-              this.alertOpen = true;
-              const alert = await alertController.create({
-                header: 'Permissions missing',
-                message: 'Please enable the location and Bluetooth permissions for this application to work.',
-                buttons: [
-                  {
-                    text: 'Cancel',
-                    role: 'cancel',
-                    handler: () => {
-                      console.log('Alert canceled');
-                    },
-                  },
-                  {
-                    text: 'Edit permissions',
-                    role: 'confirm',
-                    handler: () => {
-                      NativeSettings.open({
-                        optionAndroid: AndroidSettings.ApplicationDetails,
-                        optionIOS: IOSSettings.App,
-                      });
-                    },
-                  },
-                ],
-              });
-              await alert.present();
-              this.alertOpen = false;
-            }
           })
           .finally(() => {
             resolve();
@@ -211,8 +180,7 @@ export default class App extends Vue {
     });
   }
 
-  beforeMount(): Promise<void> {
-    return new Promise((resolve, reject) => {
+  mounted(): void {
       RDFSerializer.initialize('rf');
       RDFSerializer.initialize('geospatial');
       this.logger.initialize();
@@ -253,12 +221,13 @@ export default class App extends Vue {
         });
       }
 
-      CapacitorApp.addListener('resume', () => {
-        this.handlePermissions();
+  this.$nextTick(() => {
+      this.handlePermissions().finally(() => {
+        CapacitorApp.addListener('resume', () => {
+          this.handlePermissions();
+        });
       });
-
-      this.handlePermissions().then(resolve).catch(reject);
-    });
+  });
   }
 }
 </script>

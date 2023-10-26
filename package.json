@@ -51,7 +51,7 @@
     "@openhps/core": "^0.5.12",
     "@openhps/geospatial": "^0.1.27",
     "@openhps/localstorage": "^1.0.1",
-    "@openhps/rdf": "^0.4.17",
+    "@openhps/rdf": "^0.4.18",
     "@openhps/rf": "^0.1.61",
     "@openhps/solid": "^0.1.13",
     "@vue-leaflet/vue-leaflet": "^0.10.1",

@@ -55,10 +55,20 @@ export interface BeaconState {
   beacons: Map<string, BLEBeaconObject>;
   beaconInfo: Map<string, Beacon>;
   state?: ControllerState;
+  beaconService: SemBeaconService;
 }
 
 export const useBeaconStore = defineStore('beacon.scanning', {
   state: (): BeaconState => ({
+      beaconService: new SemBeaconService(
+        new CapacitorPreferencesDriver(BLESemBeacon, {
+          namespace: 'sembeacon',
+        }),
+        {
+          accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
+          cors: true,
+        },
+      ),
     state: ControllerState.PENDING,
     proximityUUIDs: [],
     namespaces: {},
@@ -90,9 +100,6 @@ export const useBeaconStore = defineStore('beacon.scanning', {
     },
     isAdvertising(): boolean {
       return this.advertising;
-    },
-    beaconService(): SemBeaconService {
-      return this.model.findDataService(SemBeaconService);
     },
     beaconsWithInfo(): Array<BLEBeaconObject & Beacon> {
       return Array.from(this.beacons.values()).map((beacon: BLEBeaconObject & Beacon) => {
@@ -208,17 +215,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         const logger = useLogger();
         logger.log('info', 'Initializing beacon scanner model ...');
         ModelBuilder.create()
-          .addService(
-            new SemBeaconService(
-              new CapacitorPreferencesDriver(BLESemBeacon, {
-                namespace: 'sembeacon',
-              }),
-              {
-                accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
-                cors: true,
-              },
-            ),
-          )
+          .addService(this.beaconService)
           .from(...this.sources)
           .via(
             new BLEBeaconClassifierNode({

@@ -79,6 +79,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             bluetoothle.initialize(
               (result) => {
                 if (result.status !== 'enabled') {
+                    this.state = ControllerState.DISABLED;
                   return reject(new Error(`Bluetooth is disabled!`));
                 }
                 if (platform === 'android') {

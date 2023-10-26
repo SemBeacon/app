@@ -5039,10 +5039,10 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.17":
-  version "0.4.17"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.17.tgz#a3ece456b8f0569aea9e4314767b21f98440aa0a"
-  integrity sha512-wbyx7rNzuQHH0tOLmTdRhL0yhQ5t/oq38AHg3trdyxDzYNoW0a5rq2j8M0MkiCFTccywDLM0DpG/GjeBAcQcew==
+"@openhps/rdf@^0.4.18":
+  version "0.4.18"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.18.tgz#d41b8da5b6dddc4c5af76a9f092c08caabf4c0e0"
+  integrity sha512-gvTsZza8UGU6PJOUw0RLIK5enKmAc85TwyMeVZFyyGT+0KFtxYb/PQI5dvf1/JjcrHkB679eam4McwqSB8Wr7g==
   dependencies:
     "@comunica/query-sparql" "^2.9.0"
     "@types/n3" "^1.16.3"

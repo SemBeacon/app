@@ -1,16 +1,12 @@
 <template>
   <ion-content :fullscreen="true">
     <ion-list>
-      <ion-item v-if="beaconStore.state === ControllerState.NO_PERMISSION" button="false" color="danger">
-        <ion-label class="ion-text-center">
-          <h2>No Bluetooth permission to initiate advertising!</h2>
-        </ion-label>
-      </ion-item>
-      <ion-item v-else-if="beaconStore.state === ControllerState.DISABLED" button="false" color="danger">
-        <ion-label class="ion-text-center">
-          <h2>Bluetooth advertising is not supported!</h2>
-        </ion-label>
-      </ion-item>
+      <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION || beaconAdvertisingStore.state === ControllerState.NO_PERMISSION">
+        No Bluetooth permission to initiate advertising!
+      </permission-error-component>
+      <permission-error-component v-else-if="beaconStore.state === ControllerState.DISABLED">
+        Bluetooth advertising is not supported!
+      </permission-error-component>
       <beacon-item-component
         v-for="beacon in beacons"
         :key="beacon.uid"
@@ -42,7 +38,6 @@ import {
   IonTitle,
   IonToolbar,
   IonList,
-  IonItem,
   IonInput,
   IonLabel,
   IonFab,
@@ -68,9 +63,11 @@ import { BLEAltBeacon, BLEAltBeaconBuilder, BLEBeaconObject, BLEiBeacon, BLEiBea
 import { BLESemBeacon } from '../models/BLESemBeacon';
 import { BLESemBeaconBuilder } from '../models/BLESemBeaconBuilder';
 import { useBeaconStore } from '../stores/beacon.scanning';
+import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 
 @Options({
   components: {
+    PermissionErrorComponent,
     IonActionSheet,
     IonButtons,
     IonContent,
@@ -79,7 +76,6 @@ import { useBeaconStore } from '../stores/beacon.scanning';
     IonTitle,
     IonToolbar,
     IonList,
-    IonItem,
     IonLabel,
     BeaconItemComponent,
     IonFab,
