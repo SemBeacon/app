@@ -19,7 +19,7 @@
         :key="beacon.uid"
         :beacon="beacon"
         simulator="true"
-        :disabled="beaconStore.state !== ControllerState.READY"
+        :disabled="false && beaconStore.state !== ControllerState.READY"
         @simulateToggle="toggleAdvertising"
         @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)"
         @deleteBeacon="deleteBeacon"
@@ -28,7 +28,7 @@
     </ion-list>
 
     <ion-card v-if="beacons.length === 0" :disabled="downloading">
-      <img alt="IoT 2023 demo" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+      <img alt="IoT 2023 demo" src="/assets/iot2023.png" />
       <ion-card-header>
         <ion-card-title>Load example beacons</ion-card-title>
         <ion-card-subtitle>Download IoT 2023 beacons</ion-card-subtitle>
@@ -43,7 +43,9 @@
     </ion-card>
 
     <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-      <ion-fab-button :disabled="beaconStore.state !== ControllerState.READY" @click="addBeacon">
+      <ion-fab-button 
+        :disabled="false && beaconStore.state !== ControllerState.READY" 
+        @click="addBeacon">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -88,7 +90,7 @@ import {
   BLEiBeaconBuilder,
   BLEUUID,
 } from '@openhps/rf';
-import { BLESemBeacon, BLESemBeaconBuilder } from '@sembeacon/openhps';
+import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@sembeacon/openhps';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 import { ControllerState } from '../stores/types';
@@ -219,6 +221,8 @@ export default class BLESimulatorComponent extends Vue {
       .namespaceId(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
       .instanceId('9c7ce6fc')
       .shortResourceUri('https://bit.ly/3JsEnF9')
+      .flag(SEMBEACON_FLAG_HAS_POSITION)
+      .flag(SEMBEACON_FLAG_HAS_SYSTEM)
       .build()
       .then((dummy) => {
         return this.beaconScannerStore.beaconService.resolve(dummy, {
@@ -228,6 +232,10 @@ export default class BLESimulatorComponent extends Vue {
       .then((beacons) => {
         this.beaconStore.addSimulatedBeacon(beacons.result.uid, beacons.result);
         beacons.beacons.forEach((beacon) => {
+          if (beacon instanceof BLESemBeacon) {
+            beacon.setFlag(SEMBEACON_FLAG_HAS_POSITION);
+            beacon.setFlag(SEMBEACON_FLAG_HAS_SYSTEM);
+          }
           this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
         });
       })

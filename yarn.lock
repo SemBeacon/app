@@ -4988,20 +4988,20 @@
   resolved "https://registry.yarnpkg.com/@one-ini/wasm/-/wasm-0.1.1.tgz#6013659736c9dbfccc96e8a9c2b3de317df39323"
   integrity sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==
 
-"@openhps/capacitor-bluetooth@^0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-bluetooth/-/capacitor-bluetooth-0.1.15.tgz#db0597d3c8de2d50c542b84b908c4ae6d0174b4c"
-  integrity sha512-5FWOO56Z8SR056yftvjejjyqC/iKfAnLJRWOSvc4rZ8GqcU5HuQT9q5K3HWuiykeDByJIY3cvVHanO8nJEQjYQ==
+"@openhps/capacitor-bluetooth@^0.1.16":
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-bluetooth/-/capacitor-bluetooth-0.1.16.tgz#8fc87b21a53c9fd781eb053222e34467916b3f86"
+  integrity sha512-1m0wQRRa84ZFz4z7feysR9ipI64mhfsFMAeBOLij/qrv65nB8oJLC6RlojluwEEiNDU64KCOE931SkFynLv1RQ==
 
-"@openhps/capacitor-geolocation@^0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.15.tgz#7b8aaf2d7134fe4a79b5712c224a2fec14943b85"
-  integrity sha512-YNgUX5MFPxIACxqdGAoJuS0PzlXcouXS138z9ZrXsF1gDgbgOwe/7ejZ1Ct458fb6eXu20M0+Lc94ANkHgscWQ==
+"@openhps/capacitor-geolocation@^0.1.16":
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-geolocation/-/capacitor-geolocation-0.1.16.tgz#a74a03f60395ecc90e51fd55ae4be428506c2128"
+  integrity sha512-V40mrg/AIlqLB9Fwks8kMV6iXbXWFuRO4+lEecAQl3EVlbvV/GsMCgwZ0euEDlHDskKEJHRzw6KxuLNl/8wetg==
 
-"@openhps/capacitor-preferences@^0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@openhps/capacitor-preferences/-/capacitor-preferences-0.1.15.tgz#5adee63044d23dca16b219ebfef704996b64aa98"
-  integrity sha512-xTsXfKwhEXdLb7ooxPbg5Luz1THRwrcPraqFbNeiWMJkyiGYk3oh1C1Gq9R+gVZnpLN5ERbvlL5zjYWGnFBAyQ==
+"@openhps/capacitor-preferences@^0.1.16":
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-preferences/-/capacitor-preferences-0.1.16.tgz#03bf642047428edb1ec803caedc67a7a991bffc9"
+  integrity sha512-OAUkqqCC9wDDrmxmJkksJN6FeFrH+Pjx4bB7oi1Js2lZbWbp2Ajq5vRNEylMKAGuSSfSPQPklvLEFVGm4CwL+Q==
   dependencies:
     "@capacitor/preferences" "^5.0.6"
     lz-string "^1.5.0"
@@ -5011,10 +5011,10 @@
   resolved "https://registry.yarnpkg.com/@openhps/cordova-ibeacon/-/cordova-ibeacon-0.1.5.tgz#fb842344c26041a75fa1fe7fc324f60e96c10a49"
   integrity sha512-p1m8QN2z/9KBgrcN3qPCGWd+eQrNvSxwI27iR5TwuLTRqqT4/DZxGIz3SNe3on9+j+55oLi3qP2JYGQqZfneQg==
 
-"@openhps/core@^0.5.13":
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.5.13.tgz#936766230412bf38021c7e4349a660e122b04945"
-  integrity sha512-U5rkJ0uMVufKPUiwIoG60+5S8AfpWf2ZBMiIoxf1DKNEv9CIm7yij2udSazmE7dlzWfPk6QrZDgIPG3U6TN9uA==
+"@openhps/core@^0.5.14":
+  version "0.5.14"
+  resolved "https://registry.yarnpkg.com/@openhps/core/-/core-0.5.14.tgz#f08740940b2f3d06b541f4cbced7c8893aeaaa87"
+  integrity sha512-WvvbOqhHRX/qvGky/OfHft04+QVI9hW13qQ56unr+aOFFE6EpU8p3Fx6eY2L+VvDf3QFnc01R1zTnkHHpM4kdQ==
   dependencies:
     lodash.clonedeep "^4.5.0"
     reflect-metadata ">=0.1.13"
@@ -5151,12 +5151,12 @@
     "@inrupt/solid-client-authn-core" "^1.12.1"
     "@inrupt/solid-client-authn-node" "^1.12.1"
 
-"@sembeacon/openhps@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.0.5.tgz#3a828922efa3cdcb01cc5f096730150c762dd62a"
-  integrity sha512-uVwOnSgpRMKcw6lnyFHVfbjcZhmYvTfARQYMZXK6KGaB0gMp7xzhqFQcBZmSyLuprbbsQOOL5ay2KCCwNQnAKw==
+"@sembeacon/openhps@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.2.1.tgz#d55f128c2a446d5e08714b32fda029ff9b2446e2"
+  integrity sha512-7O5Sblk6z69SLTgRBFvnP+cJRD3dO0k5Qku0odXMExs3OGP3fryNv0f0KfnyoR6PVov3Qurg/obQRGmh6/gVBA==
   dependencies:
-    axios "^1.5.1"
+    axios "^1.6.0"
     wkt "^0.1.1"
 
 "@shexjs/parser@1.0.0-alpha.21":
@@ -7126,15 +7126,6 @@ aws4@^1.8.0:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
-
-axios@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.1.tgz#11fbaa11fc35f431193a9564109c88c1f27b585f"
-  integrity sha512-Q28iYCWzNHjAm+yEAot5QaAMxhMghWLFVf7rRdwhUI+c2jix2DUXjAHXVi+s1ibs3mjPO/cCgbA++3BjD0vP/A==
-  dependencies:
-    follow-redirects "^1.15.0"
-    form-data "^4.0.0"
-    proxy-from-env "^1.1.0"
 
 axios@^1.6.0:
   version "1.6.0"
@@ -9392,10 +9383,10 @@ eslint-plugin-prettier@^5.0.1:
     prettier-linter-helpers "^1.0.0"
     synckit "^0.8.5"
 
-eslint-plugin-vue@^9.18.0:
-  version "9.18.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-9.18.0.tgz#2a2dbb3c67317e8c11ab56cafaa15a3a7eac6282"
-  integrity sha512-yUM8a2OD/7Qs0PiugkRaxgz5KBRvzMvWShity2UvVFAN0yk8029mGpTdg/TNARPiYzp335mEwDHwcAR8tQNe4g==
+eslint-plugin-vue@^9.18.1:
+  version "9.18.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-9.18.1.tgz#73cf29df7450ce5913296465f8d1dc545344920c"
+  integrity sha512-7hZFlrEgg9NIzuVik2I9xSnJA5RsmOfueYgsUGUokEDLJ1LHtxO0Pl4duje1BriZ/jDWb+44tcIlC3yi0tdlZg==
   dependencies:
     "@eslint-community/eslint-utils" "^4.4.0"
     natural-compare "^1.4.0"

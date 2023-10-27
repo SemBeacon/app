@@ -1,8 +1,25 @@
 import { defineStore } from 'pinia';
-import { CallbackSinkNode, DataFrame, DataSerializer, FrameMergeNode, Model, ModelBuilder, RelativeDistance, TimeUnit, WorkerNode } from '@openhps/core';
-import { BLESourceNode } from '@openhps/capacitor-bluetooth';
+import {
+  CallbackSinkNode,
+  DataFrame,
+  DataSerializer,
+  FrameMergeNode,
+  Model,
+  ModelBuilder,
+  RelativeDistance,
+  TimeUnit,
+  WorkerNode,
+} from '@openhps/core';
+import { BLESourceNode, ScanMode } from '@openhps/capacitor-bluetooth';
 import { BLEiBeaconSourceNode } from '@openhps/cordova-ibeacon';
-import { BLESemBeaconBuilder, SemBeaconService, BLESemBeacon, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM, ResolveOptions } from '@sembeacon/openhps';
+import {
+  BLESemBeaconBuilder,
+  SemBeaconService,
+  BLESemBeacon,
+  SEMBEACON_FLAG_HAS_POSITION,
+  SEMBEACON_FLAG_HAS_SYSTEM,
+  ResolveOptions,
+} from '@sembeacon/openhps';
 import {
   BLEBeaconObject,
   BLEAltBeacon,
@@ -53,12 +70,12 @@ export const useBeaconStore = defineStore('beacon.scanning', {
   state: (): BeaconState => ({
     beaconService: new SemBeaconService(
       new CapacitorPreferencesDriver(BLESemBeacon, {
-        namespace: "sembeacon"
+        namespace: 'sembeacon',
       }),
       {
         accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
         cors: true,
-        uid: "sembeacon-service"
+        uid: 'sembeacon-service',
       },
     ),
     state: ControllerState.PENDING,
@@ -67,7 +84,8 @@ export const useBeaconStore = defineStore('beacon.scanning', {
     sources: [
       new BLESourceNode({
         uid: 'ble',
-        debug: false,
+        processRaw: false,
+        scanMode: ScanMode.SCAN_MODE_BALANCED,
       }),
       ...(Capacitor.getPlatform() === 'ios'
         ? [
@@ -85,7 +103,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
   }),
   getters: {
     worker(): WorkerNode<any, any> {
-      return this.model.findNodeByUID("worker");
+      return this.model.findNodeByUID('worker');
     },
     cacheSize(): number {
       return (this.beacons as Map<string, BLEBeaconObject>).size;
@@ -179,7 +197,11 @@ export const useBeaconStore = defineStore('beacon.scanning', {
           this.namespaces[beacon.namespaceId.toString()] = namespace;
           logger.log('info', `Detecting SemBeacon with URI=${beacon.shortResourceUri}`);
           service.insert(beacon.uid, beacon).then((insertedBeacon: BLEBeaconObject) => {
-            if (insertedBeacon && insertedBeacon instanceof BLESemBeacon && insertedBeacon.resourceData) {
+            if (
+              insertedBeacon &&
+              insertedBeacon instanceof BLESemBeacon &&
+              insertedBeacon.resourceData
+            ) {
               namespace.beacons[insertedBeacon.instanceId.toString()] = insertedBeacon;
               environmentStore.fetchEnvironments(insertedBeacon.resourceData);
               if (insertedBeacon.createdTimestamp === insertedBeacon.modifiedTimestamp) {
@@ -212,25 +234,44 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         ModelBuilder.create()
           .addService(this.beaconService)
           .from(...this.sources)
-          .via(new FrameMergeNode((frame) => frame.source.uid, (frame) => frame.uid, {
-            timeout: 500,                      // After 500ms, push the frame
-            timeoutUnit: TimeUnit.MILLISECOND,
-            minCount: 1,                        // Minimum amount of frames to receive
-            maxCount: 50                        // Max count can be as big as you want
-          }))
-          .via(new WorkerNode("/js/BLEScannerWorker.js", {
-            uid: "worker",
-            poolSize: 4,
-            type: 'module',
-            worker: '/js/vendor/openhps/worker.openhps-core.es.min.js',
-            methods: [{
-              name: "resolve",
-              handler: (model: Model, object: BLESemBeacon, options: ResolveOptions) => {
-                const service = model.findDataService(SemBeaconService) as unknown as SemBeaconService;
-                return service.resolve(object, options);
-              }
-            }]
-          }))
+          .via(
+            new FrameMergeNode(
+              (frame) => frame.source.uid,
+              (frame) => frame.uid,
+              {
+                timeout: 500, // After 500ms, push the frame
+                timeoutUnit: TimeUnit.MILLISECOND,
+                minCount: 1, // Minimum amount of frames to receive
+                maxCount: 50, // Max count can be as big as you want
+              },
+            ),
+          )
+          .via(
+            new WorkerNode('/js/BLEScannerWorker.js', {
+              uid: 'worker',
+              poolSize: 4,
+              type: 'module',
+              worker: '/js/vendor/openhps/worker.openhps-core.es.min.js',
+              methods: [
+                {
+                  name: 'resolve',
+                  handler: (model: Model, object: BLESemBeacon, options: ResolveOptions) => {
+                    return new Promise((resolve, reject) => {
+                      const service = model.findDataService(
+                        'sembeacon-worker-service',
+                      ) as unknown as SemBeaconService;
+                      service
+                        .resolve(object, options)
+                        .then((result) => {
+                          resolve(result);
+                        })
+                        .catch(reject);
+                    });
+                  },
+                },
+              ],
+            }),
+          )
           .to(
             new CallbackSinkNode(
               (frame: DataFrame) => {
@@ -248,7 +289,9 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     const beaconInfo = {
                       lastSeen: Date.now(),
                       rssi: relativeRSSI ? relativeRSSI.rssi : undefined,
-                      distance: relativeDistance ? Math.round(relativeDistance.referenceValue * 100) / 100 : undefined,
+                      distance: relativeDistance
+                        ? Math.round(relativeDistance.referenceValue * 100) / 100
+                        : undefined,
                     };
                     this.beaconInfo.set(beacon.uid, beaconInfo);
                     this.addBeacon(beacon);
@@ -275,9 +318,15 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                   } with namespace=${beacon.namespaceId.toString()}, instance=${beacon.instanceId.toString()}`,
                 );
               } else if (beacon instanceof BLEiBeacon) {
-                logger.log('info', `Added iBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`);
+                logger.log(
+                  'info',
+                  `Added iBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`,
+                );
               } else if (beacon instanceof BLEAltBeacon) {
-                logger.log('info', `Added AltBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`);
+                logger.log(
+                  'info',
+                  `Added AltBeacon ${beacon.uid} with major=${beacon.major}, minor=${beacon.minor}`,
+                );
               } else {
                 logger.log('info', `Added beacon ${beacon.uid}`);
               }
@@ -286,7 +335,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             this.state = ControllerState.READY;
 
             service.resolve = (object: BLESemBeacon, options: ResolveOptions) => {
-              return this.worker.invokeMethod("resolve", object, options);
+              return this.worker.invokeMethod('resolve', object, options);
             };
 
             return this.load();
@@ -382,7 +431,9 @@ export const useBeaconStore = defineStore('beacon.scanning', {
     },
     save(): Promise<void> {
       return new Promise((resolve, reject) => {
-        const serialized = DataSerializer.serialize(Object.fromEntries(toRaw(this.beaconInfo).entries()));
+        const serialized = DataSerializer.serialize(
+          Object.fromEntries(toRaw(this.beaconInfo).entries()),
+        );
         Preferences.set({
           key: 'beacon.scanning',
           value: JSON.stringify(serialized),

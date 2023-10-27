@@ -17,8 +17,9 @@
             <img alt="SemBeacon Logo" src="/assets/logo/logo.svg" />
           </picture>
           <ion-label class="ion-text-wrap">
-            This application was developed for the IoT 2023 conference to demonstrate the capabilities for SemBeacon.
-            This application will scan for SemBeacon, iBeacon, AltBeacon, Eddystone beacons using the OpenHPS framework.
+            This application was developed for the IoT 2023 conference to demonstrate the
+            capabilities of SemBeacon. This application will scan for SemBeacon, iBeacon,
+            AltBeacon, Eddystone beacons using the OpenHPS framework.
           </ion-label>
           <ion-label class="ion-text-wrap">
             <picture>
@@ -26,12 +27,16 @@
                 srcset="/assets/about/sembeacon_specification_v4_2_alpha.svg"
                 media="(prefers-color-scheme: dark)"
               />
-              <img alt="SemBeacon specification" src="/assets/about/sembeacon_specification_v4_2.svg" />
+              <img
+                alt="SemBeacon specification"
+                src="/assets/about/sembeacon_specification_v4_2.svg"
+              />
             </picture>
           </ion-label>
           <ion-label class="ion-text-wrap">
-            The application was developed by PhD candidate Maxim Van de Wynckel of the Web & Information Systems
-            Engineering lab at the Vrije Universiteit Brussel under the supervision of Prof. Dr. Beat Signer.
+            The application was developed by PhD candidate Maxim Van de Wynckel of the Web &
+            Information Systems Engineering lab at the Vrije Universiteit Brussel under the
+            supervision of Prof. Dr. Beat Signer.
           </ion-label>
         </ion-content>
       </div>

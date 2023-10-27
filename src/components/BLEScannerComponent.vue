@@ -105,7 +105,7 @@ enum SortKey {
   },
   data: () => ({
     stop,
-    search
+    search,
   }),
 })
 export default class BLESimulatorComponent extends Vue {
@@ -127,7 +127,9 @@ export default class BLESimulatorComponent extends Vue {
           case SortKey.MODIFIED:
             return b.lastSeen - a.lastSeen;
           case SortKey.DISTANCE:
-            return (b.distance ?? Number.MAX_SAFE_INTEGER) - (a.distance ?? Number.MAX_SAFE_INTEGER);
+            return (
+              (b.distance ?? Number.MAX_SAFE_INTEGER) - (a.distance ?? Number.MAX_SAFE_INTEGER)
+            );
           case SortKey.RSSI:
           default:
             return b.rssi - a.rssi;

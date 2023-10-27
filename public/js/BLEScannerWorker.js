@@ -1,7 +1,6 @@
 import { 
     ModelBuilder,
     FrameFilterNode,
-    MemoryDataService,
 } from "./vendor/openhps/openhps-core.es.min.js";
 import {
     RelativeRSSIProcessing,
@@ -14,10 +13,15 @@ import {
     BLESemBeacon,
     SemBeaconService
 } from "/js/vendor/openhps/sembeacon-openhps.es.min.js";
+import {
+    RDFSerializer
+} from "/js/vendor/openhps/openhps-rdf.all.es.min.js";
+
+RDFSerializer.initialize("rf");
+RDFSerializer.initialize("geospatial");
 
 export default ModelBuilder.create()
-    .addService(new SemBeaconService(
-        new MemoryDataService(BLESemBeacon),
+    .addService(new SemBeaconService(null,
         {
           accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
           cors: true,

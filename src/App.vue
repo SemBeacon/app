@@ -20,7 +20,12 @@
                 class="hydrated"
                 :class="{ selected: $route.name === p.name }"
               >
-                <ion-icon slot="start" aria-hidden="true" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
+                <ion-icon
+                  slot="start"
+                  aria-hidden="true"
+                  :ios="p.iosIcon"
+                  :md="p.mdIcon"
+                ></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
@@ -149,12 +154,12 @@ export default class App extends Vue {
     },
   ];
 
-  beforeMount(): void {
+  async mounted(): Promise<void> {
     if (Capacitor.getPlatform() !== 'web') {
-      StatusBar.setBackgroundColor({
+      await StatusBar.setBackgroundColor({
         color: '#363795',
       });
-      StatusBar.show({
+      await StatusBar.show({
         animation: Animation.None,
       });
     }
@@ -173,9 +178,15 @@ export default class App extends Vue {
       ) {
         this.isLoading = true;
         Promise.all([
-          ...(this.geolocationStore.state !== ControllerState.READY ? [this.geolocationStore.initialize()] : []),
-          ...(this.beaconStore.state !== ControllerState.READY ? [this.beaconStore.initialize()] : []),
-          ...(this.beaconSimulatorStore.state !== ControllerState.READY ? [this.beaconSimulatorStore.initialize()] : []),
+          ...(this.geolocationStore.state !== ControllerState.READY
+            ? [this.geolocationStore.initialize()]
+            : []),
+          ...(this.beaconStore.state !== ControllerState.READY
+            ? [this.beaconStore.initialize()]
+            : []),
+          ...(this.beaconSimulatorStore.state !== ControllerState.READY
+            ? [this.beaconSimulatorStore.initialize()]
+            : []),
         ])
           .catch((err: Error) => {
             console.error('Initialization error', err);
@@ -189,7 +200,7 @@ export default class App extends Vue {
       }
     });
   }
-  
+
   async created() {
     RDFSerializer.initialize('rf');
     RDFSerializer.initialize('geospatial');
@@ -232,7 +243,7 @@ export default class App extends Vue {
     }
 
     await SplashScreen.hide({
-      fadeOutDuration: 150
+      fadeOutDuration: 150,
     });
     this.handlePermissions().finally(() => {
       setTimeout(() => {

@@ -1,4 +1,12 @@
-import { DataFactory, DefaultEngine, IriString, NamedNode, RDFSerializer, SPARQLDataDriver, Store } from '@openhps/rdf';
+import {
+  DataFactory,
+  DefaultEngine,
+  IriString,
+  NamedNode,
+  RDFSerializer,
+  SPARQLDataDriver,
+  Store,
+} from '@openhps/rdf';
 import { defineStore } from 'pinia';
 import { SymbolicSpace } from '@openhps/geospatial';
 

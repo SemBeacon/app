@@ -1,5 +1,12 @@
 <template>
-  <l-map id="map" ref="map" :zoom="zoom" :center="center" :options="{ attributionControl: false }" @ready="onMapReady">
+  <l-map
+    id="map"
+    ref="map"
+    :zoom="zoom"
+    :center="center"
+    :options="{ attributionControl: false }"
+    @ready="onMapReady"
+  >
     <l-tile-layer
       :url="url"
       :access-token="accessToken"
@@ -20,9 +27,14 @@
     >
     </custom-marker-component>
 
-    <beacon-marker-component v-for="beacon in beacons" :key="beacon.uid" :beacon="beacon"> </beacon-marker-component>
+    <beacon-marker-component v-for="beacon in beacons" :key="beacon.uid" :beacon="beacon">
+    </beacon-marker-component>
 
-    <geo-json-component v-for="environment in environments.values()" :key="environment.uid" :space="environment">
+    <geo-json-component
+      v-for="environment in environments.values()"
+      :key="environment.uid"
+      :space="environment"
+    >
     </geo-json-component>
   </l-map>
 </template>
@@ -61,7 +73,8 @@ export default class MapComponent extends Vue {
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
   id = prefersDark.matches ? 'mapbox/dark-v11' : 'mapbox/streets-v11';
-  accessToken = 'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
+  accessToken =
+    'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
   url = `https://api.mapbox.com/styles/v1/${this.id}/tiles/{z}/{x}/{y}?access_token=${this.accessToken}`;
   zoom?: number = 18;
   beacons = computed(() => {

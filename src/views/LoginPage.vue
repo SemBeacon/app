@@ -80,7 +80,11 @@ import { useUserStore } from '../stores/user';
 export default class LoginPage extends Vue {
   userStore = useUserStore();
   selectedIssuer?: string;
-  knownIssuers = ['https://solidweb.org/', 'https://login.inrupt.com/', 'https://solidcommunity.net/'];
+  knownIssuers = [
+    'https://solidweb.org/',
+    'https://login.inrupt.com/',
+    'https://solidcommunity.net/',
+  ];
 
   mounted(): void {
     if (this.userStore.isLoggedIn) {

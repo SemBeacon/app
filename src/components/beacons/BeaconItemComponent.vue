@@ -25,7 +25,11 @@
               <ion-label>{{ beacon.instanceId.toString(false) }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="beacon instanceof BeaconType.BLEiBeacon || beacon instanceof BeaconType.BLEAltBeacon">
+          <template
+            v-else-if="
+              beacon instanceof BeaconType.BLEiBeacon || beacon instanceof BeaconType.BLEAltBeacon
+            "
+          >
             <ion-col size="12" size-md="4">
               <ion-label class="key" color="primary">UUID</ion-label>
             </ion-col>
@@ -45,7 +49,7 @@
               <ion-label>{{ beacon.minor }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="(beacon instanceof BeaconType.BLEEddystoneURL)">
+          <template v-else-if="beacon instanceof BeaconType.BLEEddystoneURL">
             <ion-col size="3">
               <ion-label class="key" color="primary">URL</ion-label>
             </ion-col>
@@ -53,7 +57,7 @@
               <ion-label>{{ beacon.url }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="(beacon instanceof BeaconType.BLEEddystoneUID)">
+          <template v-else-if="beacon instanceof BeaconType.BLEEddystoneUID">
             <ion-col size="12" size-md="4">
               <ion-label class="key" color="primary">Namespace</ion-label>
             </ion-col>
@@ -67,7 +71,7 @@
               <ion-label>{{ beacon.instanceId.toString() }}</ion-label>
             </ion-col>
           </template>
-          <template v-else-if="(beacon instanceof BeaconType.BLEEddystoneTLM)">
+          <template v-else-if="beacon instanceof BeaconType.BLEEddystoneTLM">
             <ion-col size="7">
               <ion-label class="key" color="primary">Voltage</ion-label>
             </ion-col>
@@ -159,7 +163,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     IonItemOption,
     IonItemOptions,
     IonIcon,
-  }
+  },
 })
 export default class BeaconItemComponent extends Vue {
   BeaconType: any = {
@@ -169,7 +173,7 @@ export default class BeaconItemComponent extends Vue {
     BLEEddystone,
     BLEEddystoneURL,
     BLEAltBeacon,
-    BLEiBeacon
+    BLEiBeacon,
   };
 
   @Prop() beacon: BLEBeaconObject & Beacon & Partial<SimulatedBeacon> & any;
@@ -252,7 +256,9 @@ ion-item-sliding {
 }
 
 ion-item-sliding.item-delete-animation {
-  transition: opacity 0.2s linear, height 0.15s linear 0.15s;
+  transition:
+    opacity 0.2s linear,
+    height 0.15s linear 0.15s;
   opacity: 0.001;
   height: 0;
 }

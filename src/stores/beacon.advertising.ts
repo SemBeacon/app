@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia';
-import { BLEBeaconObject, BLEAltBeaconBuilder, BLEAltBeacon, BLEiBeacon, BLEiBeaconBuilder } from '@openhps/rf';
+import {
+  BLEBeaconObject,
+  BLEAltBeaconBuilder,
+  BLEAltBeacon,
+  BLEiBeacon,
+  BLEiBeaconBuilder,
+} from '@openhps/rf';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
 import { BLESemBeaconBuilder, BLESemBeacon } from '@sembeacon/openhps';
@@ -28,7 +34,9 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
   }),
   getters: {
     advertisingBeacons(): SimulatedBeacon[] {
-      return Array.from(this.beacons.values()).filter((b: SimulatedBeacon) => b.advertising) as SimulatedBeacon[];
+      return Array.from(this.beacons.values()).filter(
+        (b: SimulatedBeacon) => b.advertising,
+      ) as SimulatedBeacon[];
     },
   },
   actions: {
@@ -137,7 +145,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
       if (manufacturerId) {
         const manufacturerData = beacon.manufacturerData.get(manufacturerId);
         advertisementParams.manufacturerId = manufacturerId;
-        advertisementParams.manufacturerSpecificData = bluetoothle.bytesToEncodedString(manufacturerData);
+        advertisementParams.manufacturerSpecificData =
+          bluetoothle.bytesToEncodedString(manufacturerData);
       }
       if (beacon.services.length > 0) {
         const service = beacon.services[0];
@@ -264,7 +273,9 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
     },
     save(): Promise<void> {
       return new Promise((resolve, reject) => {
-        const serialized = DataSerializer.serialize(Object.fromEntries(toRaw(this.beacons).entries()));
+        const serialized = DataSerializer.serialize(
+          Object.fromEntries(toRaw(this.beacons).entries()),
+        );
         Preferences.set({
           key: 'beacon.advertising',
           value: JSON.stringify(serialized),

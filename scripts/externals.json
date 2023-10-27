@@ -1,0 +1,17 @@
+[
+    ".gitkeep",
+    "openhps-core.min.js",
+    "openhps-rdf.all.min.js",
+    "openhps-rf.min.js",
+    "openhps-geospatial.min.js",
+    "openhps-solid.min.js",
+    "sembeacon-openhps.min.js",
+    "openhps-core.es.min.js",
+    "openhps-rdf.all.es.min.js",
+    "openhps-rf.es.min.js",
+    "openhps-geospatial.es.min.js",
+    "sembeacon-openhps.es.min.js",
+    "openhps-fingerprinting.es.min.js",
+    "openhps-video.es.min.js",
+    "worker.openhps-core.es.min.js"
+]
