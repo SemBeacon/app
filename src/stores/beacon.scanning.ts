@@ -247,7 +247,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             ),
           )
           .via(
-            new WorkerNode('/js/BLEScannerWorker.js', {
+            new WorkerNode('/js/workers/BLEScannerWorker.worker.js', {
               uid: 'worker',
               poolSize: 4,
               type: 'module',

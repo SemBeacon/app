@@ -11,7 +11,5 @@
     "openhps-rf.es.min.js",
     "openhps-geospatial.es.min.js",
     "sembeacon-openhps.es.min.js",
-    "openhps-fingerprinting.es.min.js",
-    "openhps-video.es.min.js",
     "worker.openhps-core.es.min.js"
 ]

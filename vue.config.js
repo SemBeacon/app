@@ -1,18 +1,13 @@
-module.exports = {
-  configureWebpack: {
-    externals: {
-      '@openhps/core': ['OpenHPS', 'core'],
-      '@openhps/rf': ['OpenHPS', 'rf'],
-      '@openhps/geospatial': ['OpenHPS', 'geospatial'],
-      '@openhps/rdf': ['OpenHPS', 'rdf'],
-      '@sembeacon/openhps': ['SemBeacon', 'openhps'],
-      '@openhps/solid/browser': ['OpenHPS', 'solid'],
+// eslint-disable-next-line
+const isTsRegistered = require.extensions['.ts'];
+
+if (!isTsRegistered) {
+  require('ts-node').register({
+    project: './tsconfig.json',
+    compilerOptions: {
+      module: 'commonjs',
     },
-  },
-  devServer: {
-    open: process.platform === 'darwin',
-    host: '0.0.0.0',
-    port: 8085,
-    https: true,
-  },
-};
+  });
+}
+
+module.exports = require('./vue.config.ts').default;

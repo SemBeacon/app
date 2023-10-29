@@ -1,7 +1,12 @@
 <template>
   <ion-content :fullscreen="true">
-    <ion-list v-if="(beaconStore.state !== ControllerState.READY || 
-        beaconScannerStore.state !== ControllerState.READY) || beacons.length !== 0">
+    <ion-list
+      v-if="
+        beaconStore.state !== ControllerState.READY ||
+        beaconScannerStore.state !== ControllerState.READY ||
+        beacons.length !== 0
+      "
+    >
       <permission-error-component
         v-if="
           beaconStore.state === ControllerState.NO_PERMISSION ||
@@ -10,8 +15,12 @@
       >
         No Bluetooth and Location permission to broadcast!
       </permission-error-component>
-      <permission-error-component v-else-if="beaconStore.state === ControllerState.DISABLED ||
-        beaconScannerStore.state === ControllerState.DISABLED">
+      <permission-error-component
+        v-else-if="
+          beaconStore.state === ControllerState.DISABLED ||
+          beaconScannerStore.state === ControllerState.DISABLED
+        "
+      >
         Bluetooth advertising is not supported!
       </permission-error-component>
       <beacon-item-component
@@ -33,19 +42,20 @@
         <ion-card-title>Load example beacons</ion-card-title>
         <ion-card-subtitle>Download IoT 2023 beacons</ion-card-subtitle>
       </ion-card-header>
-      
+
       <ion-card-content>
-        You currently do not have any beacons to simulate. Do you want to load the IoT 2023 demo beacons? An additional
-        device is required to detect the beacons.
+        You currently do not have any beacons to simulate. Do you want to load the IoT 2023 demo
+        beacons? An additional device is required to detect the beacons.
       </ion-card-content>
 
       <ion-button fill="clear" @click="downloadDemo">Load beacons</ion-button>
     </ion-card>
 
     <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-      <ion-fab-button 
-        :disabled="false && beaconStore.state !== ControllerState.READY" 
-        @click="addBeacon">
+      <ion-fab-button
+        :disabled="false && beaconStore.state !== ControllerState.READY"
+        @click="addBeacon"
+      >
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -90,7 +100,12 @@ import {
   BLEiBeaconBuilder,
   BLEUUID,
 } from '@openhps/rf';
-import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_HAS_POSITION, SEMBEACON_FLAG_HAS_SYSTEM } from '@sembeacon/openhps';
+import {
+  BLESemBeacon,
+  BLESemBeaconBuilder,
+  SEMBEACON_FLAG_HAS_POSITION,
+  SEMBEACON_FLAG_HAS_SYSTEM,
+} from '@sembeacon/openhps';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 import { ControllerState } from '../stores/types';
@@ -132,7 +147,7 @@ export default class BLESimulatorComponent extends Vue {
   downloading: boolean = false;
 
   get beacons(): SimulatedBeacon[] {
-    return Array.from(this.beaconStore.beacons.values())
+    return Array.from(this.beaconStore.beacons.values());
   }
 
   async addBeacon(): Promise<void> {

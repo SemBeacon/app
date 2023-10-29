@@ -82,7 +82,7 @@ import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';
 import { useLogger } from './stores/logger';
 
-import { Animation, StatusBar } from '@capacitor/status-bar';
+import { Animation, StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
@@ -156,6 +156,7 @@ export default class App extends Vue {
 
   async mounted(): Promise<void> {
     if (Capacitor.getPlatform() !== 'web') {
+      await StatusBar.setStyle({ style: Style.Light });
       await StatusBar.setBackgroundColor({
         color: '#363795',
       });

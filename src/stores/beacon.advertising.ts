@@ -43,9 +43,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
     findByUID(uid: string): SimulatedBeacon {
       return this.beacons.get(uid);
     },
-    initialize(): Promise<void> {
-      this.state = ControllerState.INITIALIZING;
-      return new Promise((resolve, reject) => {
+    initializeNotifications(): Promise<void> {
+      return new Promise((resolve) => {
         if (Capacitor.getPlatform() !== 'web') {
           LocalNotifications.requestPermissions().then(() => {
             if (Capacitor.getPlatform() === 'android') {
@@ -72,8 +71,18 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 visibility: 1,
               }).catch(console.error);
             }
+            resolve();
+          }).catch(() => {
+            resolve();
           });
+        } else {
+          resolve();
         }
+      });
+    },
+    initialize(): Promise<void> {
+      this.state = ControllerState.INITIALIZING;
+      return new Promise((resolve, reject) => {
         const logger = useLogger();
         const platform = Capacitor.getPlatform();
         this.load()
@@ -83,46 +92,51 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
               return resolve();
             }
 
-            bluetoothle.initialize(
-              (result) => {
-                if (result.status !== 'enabled') {
-                  this.state = ControllerState.DISABLED;
-                  return reject(new Error(`Bluetooth is disabled!`));
-                }
-                if (platform === 'android') {
-                  bluetoothle.requestPermissionBtAdvertise(
-                    () => {
-                      this.state = ControllerState.READY;
-                      resolve();
-                    },
-                    (error: BluetoothlePlugin.Error) => {
-                      this.state = ControllerState.NO_PERMISSION;
-                      logger.log('error', error);
-                      reject(error);
-                    },
-                  );
-                } else if (platform === 'ios') {
-                  bluetoothle.requestPermission(
-                    () => {
-                      this.state = ControllerState.READY;
-                      resolve();
-                    },
-                    (error) => {
-                      logger.log('error', error);
-                      this.state = ControllerState.NO_PERMISSION;
-                      reject(error);
-                    },
-                  );
-                } else {
-                  resolve();
-                }
-              },
-              {
-                request: true,
-                statusReceiver: false,
-                restoreKey: 'sembeacon',
-              },
-            );
+            this.initializeNotifications().then(() => {
+              bluetoothle.initialize(
+                (result) => {
+                  if (result.status !== 'enabled') {
+                    this.state = ControllerState.DISABLED;
+                    return reject(new Error(`Bluetooth is disabled!`));
+                  }
+                  if (platform === 'android') {
+                    bluetoothle.requestPermissionBtAdvertise(
+                      () => {
+                        this.state = ControllerState.READY;
+                        resolve();
+                      },
+                      (error: BluetoothlePlugin.Error) => {
+                        this.state = ControllerState.NO_PERMISSION;
+                        logger.log('error', error);
+                        reject(error);
+                      },
+                    );
+                  } else if (platform === 'ios') {
+                    bluetoothle.requestPermission(
+                      () => {
+                        this.state = ControllerState.READY;
+                        resolve();
+                      },
+                      (error) => {
+                        logger.log('error', error);
+                        this.state = ControllerState.NO_PERMISSION;
+                        reject(error);
+                      },
+                    );
+                  } else {
+                    resolve();
+                  }
+                },
+                {
+                  request: true,
+                  statusReceiver: false,
+                  restoreKey: 'sembeacon',
+                },
+              );
+            }).catch(error => {
+              this.state = ControllerState.NO_PERMISSION;
+              reject(error);
+            });
           })
           .catch(reject);
       });
