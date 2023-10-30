@@ -13,11 +13,12 @@ import {
 import { BLESemBeacon, SemBeaconService } from '/js/vendor/openhps/sembeacon-openhps.es.min.js';
 import { RDFSerializer } from '/js/vendor/openhps/openhps-rdf.all.es.min.js';
 
-// Initialize RDF serializer
-RDFSerializer.initialize('rf');
-RDFSerializer.initialize('geospatial');
-
 export default ModelBuilder.create()
+  .on('ready', () => {
+    // Initialize RDF serializer
+    RDFSerializer.initialize('rf');
+    RDFSerializer.initialize('geospatial');
+  })
   .addService(
     new SemBeaconService(null, {
       accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',

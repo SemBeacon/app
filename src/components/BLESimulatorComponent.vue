@@ -28,7 +28,7 @@
         :key="beacon.uid"
         :beacon="beacon"
         simulator="true"
-        :disabled="false && beaconStore.state !== ControllerState.READY"
+        :disabled="beaconStore.state !== ControllerState.READY"
         @simulateToggle="toggleAdvertising"
         @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)"
         @deleteBeacon="deleteBeacon"
@@ -53,7 +53,7 @@
 
     <ion-fab slot="fixed" horizontal="end" vertical="bottom">
       <ion-fab-button
-        :disabled="false && beaconStore.state !== ControllerState.READY"
+        :disabled="beaconStore.state !== ControllerState.READY"
         @click="addBeacon"
       >
         <ion-icon name="add-outline"></ion-icon>
@@ -96,6 +96,8 @@ import {
   BLEAltBeacon,
   BLEAltBeaconBuilder,
   BLEBeaconObject,
+  BLEEddystoneURL,
+  BLEEddystoneURLBuilder,
   BLEiBeacon,
   BLEiBeaconBuilder,
   BLEUUID,
@@ -173,6 +175,12 @@ export default class BLESimulatorComponent extends Vue {
           },
         },
         {
+          text: 'Create Eddystone-URL',
+          handler: () => {
+            this.createBeacon(BLEEddystoneURL);
+          },
+        },
+        {
           text: 'Cancel',
           role: 'cancel',
           data: {
@@ -205,6 +213,14 @@ export default class BLESimulatorComponent extends Vue {
         return;
       case BLESemBeacon:
         BLESemBeaconBuilder.create()
+          .build()
+          .then((beacon) => {
+            this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+            this.$router.push(`/beacon/edit/${beacon.uid}`);
+          });
+        return;
+      case BLEEddystoneURL:
+        BLEEddystoneURLBuilder.create()
           .build()
           .then((beacon) => {
             this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);

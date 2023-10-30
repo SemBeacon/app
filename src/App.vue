@@ -154,18 +154,6 @@ export default class App extends Vue {
     },
   ];
 
-  async mounted(): Promise<void> {
-    if (Capacitor.getPlatform() !== 'web') {
-      await StatusBar.setStyle({ style: Style.Light });
-      await StatusBar.setBackgroundColor({
-        color: '#363795',
-      });
-      await StatusBar.show({
-        animation: Animation.None,
-      });
-    }
-  }
-
   handlePermissions(): Promise<void> {
     return new Promise((resolve) => {
       if (
@@ -246,6 +234,17 @@ export default class App extends Vue {
     await SplashScreen.hide({
       fadeOutDuration: 150,
     });
+
+    if (Capacitor.getPlatform() !== 'web') {
+      await StatusBar.setStyle({ style: Style.Dark });
+      await StatusBar.setBackgroundColor({
+        color: '#363795',
+      });
+      await StatusBar.show({
+        animation: Animation.None,
+      });
+    }
+
     this.handlePermissions().finally(() => {
       setTimeout(() => {
         CapacitorApp.addListener('appStateChange', (state) => {

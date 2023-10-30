@@ -6992,10 +6992,19 @@
     cubic-spline "^3.0.3"
     uuid "^9.0.0"
 
-"@openhps/geospatial@>=0.1.27", "@openhps/geospatial@^0.1.27":
+"@openhps/geospatial@>=0.1.27":
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.27.tgz#98c0c0e28e17998051f11630849caceeccc0f9a3"
   integrity sha512-Zmc3muVsRJSWCPfshdpqqCp/P57WyEdxjFdcE0MvtjbCc6nsS9Iyqa92iSPJx9svl/vQfeLZfxo7HV/Y7yxO+A==
+  dependencies:
+    robust-point-in-polygon "^1.0.3"
+    robust-predicates "^3.0.2"
+    wkt "^0.1.1"
+
+"@openhps/geospatial@^0.1.28":
+  version "0.1.28"
+  resolved "https://registry.yarnpkg.com/@openhps/geospatial/-/geospatial-0.1.28.tgz#dab898aab5d5779ad8a17d090ae6ba687492034f"
+  integrity sha512-fm/Tw+avUU2u28DiXT2Qz7F84Gx0pqAzxH9Vt2NJRISIWLwapXoIbA3QGd2WGKJE9b1VJ8K/eC6kV5FftZjr1Q==
   dependencies:
     robust-point-in-polygon "^1.0.3"
     robust-predicates "^3.0.2"
@@ -7009,10 +7018,10 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.20":
-  version "0.4.20"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.20.tgz#5ffeb7c90b11100374fab43c4e0dad0cc92ac62e"
-  integrity sha512-vsFG2iIpXP5rGjU7TK+7o061Mvjhnq2yoZ60x9lKq6NhFzwLVJcAscRZFpJH9oq2Trn6TvQ8NVyeULM+dh96yQ==
+"@openhps/rdf@^0.4.21":
+  version "0.4.21"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.21.tgz#31a71a94a24ff88a2eea2917a46e098b0a0d7885"
+  integrity sha512-ZdAFQlJ2pJb41YVWX/p8JwSnCU1nIU/l1mr1bhmwQYygFSpd5nXFAYT7V4TGuO/2Zv60XoGN0Q5ue1cAlr9M0Q==
   dependencies:
     "@comunica/query-sparql" "^2.10.0"
     "@types/n3" "^1.16.3"
