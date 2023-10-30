@@ -57,6 +57,7 @@ import { stop, play } from 'ionicons/icons';
 import MapComponent from '../components/MapComponent.vue';
 import { useRoute } from 'vue-router';
 import { ControllerState } from '../stores/types';
+import { useGeolocationStore } from '@/stores/geolocation';
 
 @Options({
   components: {
@@ -87,6 +88,7 @@ import { ControllerState } from '../stores/types';
 })
 export default class MapPage extends Vue {
   route = useRoute();
+  geolocationStore = useGeolocationStore();
   beaconStore = useBeaconStore();
   beacons = computed(() => this.beaconStore.beacons);
   loading = false;
@@ -100,6 +102,10 @@ export default class MapPage extends Vue {
     if (beaconUID) {
       this.map.highlightBeacon(beaconUID);
     }
+  }
+
+  mounted(): void {
+    this.geolocationStore.initialize().catch(console.error);
   }
 
   toggleScan(): void {

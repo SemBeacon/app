@@ -13,7 +13,7 @@
           beaconScannerStore.state === ControllerState.NO_PERMISSION
         "
       >
-        No Bluetooth and Location permission to broadcast!
+        No Bluetooth advertising permission to broadcast!
       </permission-error-component>
       <permission-error-component
         v-else-if="
@@ -52,10 +52,7 @@
     </ion-card>
 
     <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-      <ion-fab-button
-        :disabled="beaconStore.state !== ControllerState.READY"
-        @click="addBeacon"
-      >
+      <ion-fab-button :disabled="beaconStore.state !== ControllerState.READY" @click="addBeacon">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -96,6 +93,8 @@ import {
   BLEAltBeacon,
   BLEAltBeaconBuilder,
   BLEBeaconObject,
+  BLEEddystoneUID,
+  BLEEddystoneUIDBuilder,
   BLEEddystoneURL,
   BLEEddystoneURLBuilder,
   BLEiBeacon,
@@ -181,6 +180,12 @@ export default class BLESimulatorComponent extends Vue {
           },
         },
         {
+          text: 'Create Eddystone-UID',
+          handler: () => {
+            this.createBeacon(BLEEddystoneUID);
+          },
+        },
+        {
           text: 'Cancel',
           role: 'cancel',
           data: {
@@ -221,6 +226,15 @@ export default class BLESimulatorComponent extends Vue {
         return;
       case BLEEddystoneURL:
         BLEEddystoneURLBuilder.create()
+          .url('https://sembeacon.org')
+          .build()
+          .then((beacon) => {
+            this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+            this.$router.push(`/beacon/edit/${beacon.uid}`);
+          });
+        return;
+      case BLEEddystoneUID:
+        BLEEddystoneUIDBuilder.create()
           .build()
           .then((beacon) => {
             this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
@@ -238,6 +252,9 @@ export default class BLESimulatorComponent extends Vue {
     }
   }
 
+  mounted(): void {
+    this.beaconStore.initializeNotifications().catch(console.error);
+  }
   deleteBeacon(beacon: SimulatedBeacon): void {
     this.beaconStore.delete(beacon);
   }

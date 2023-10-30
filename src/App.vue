@@ -159,32 +159,28 @@ export default class App extends Vue {
       if (
         !this.isLoading &&
         (this.beaconStore.state !== ControllerState.READY ||
-          this.beaconSimulatorStore.state !== ControllerState.READY ||
-          this.geolocationStore.state !== ControllerState.READY) &&
+          this.beaconSimulatorStore.state !== ControllerState.READY) &&
         this.beaconStore.state !== ControllerState.INITIALIZING &&
-        this.beaconSimulatorStore.state !== ControllerState.INITIALIZING &&
-        this.geolocationStore.state !== ControllerState.INITIALIZING
+        this.beaconSimulatorStore.state !== ControllerState.INITIALIZING
       ) {
         this.isLoading = true;
         Promise.all([
-          ...(this.geolocationStore.state !== ControllerState.READY
-            ? [this.geolocationStore.initialize()]
-            : []),
           ...(this.beaconStore.state !== ControllerState.READY
             ? [this.beaconStore.initialize()]
             : []),
-          ...(this.beaconSimulatorStore.state !== ControllerState.READY
-            ? [this.beaconSimulatorStore.initialize()]
-            : []),
-        ])
+        ]).then(() => {
+          return Promise.all([
+            ...(this.beaconSimulatorStore.state !== ControllerState.READY
+              ? [this.beaconSimulatorStore.initialize()]
+              : []),
+          ]);
+        })
           .catch((err: Error) => {
             console.error('Initialization error', err);
           })
           .finally(() => {
-            setTimeout(() => {
-              this.isLoading = false;
-              resolve();
-            }, 1000);
+            this.isLoading = false;
+            resolve();
           });
       }
     });
@@ -246,13 +242,9 @@ export default class App extends Vue {
     }
 
     this.handlePermissions().finally(() => {
-      setTimeout(() => {
-        CapacitorApp.addListener('appStateChange', (state) => {
-          if (state.isActive) {
-            this.handlePermissions();
-          }
-        });
-      }, 2000);
+      CapacitorApp.addListener('resume', () => {
+        this.handlePermissions();
+      });
     });
   }
 }

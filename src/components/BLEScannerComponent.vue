@@ -2,7 +2,7 @@
   <ion-content :fullscreen="true">
     <ion-list v-if="beacons.length > 0 || beaconStore.state !== ControllerState.READY">
       <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION">
-        No Bluetooth and Location permission to scan!
+        No Precise Location permission to scan!
       </permission-error-component>
       <beacon-item-component
         v-for="beacon in beacons"

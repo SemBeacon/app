@@ -300,6 +300,7 @@
                   label-placement="floating"
                   :fill="!simulated && !enabled ? undefined : 'solid'"
                   :value="beacon.instanceId.toString()"
+                  v-maskito="uuid48Options"
                   @change="(e) => (beacon.instanceId = BLEUUID.fromString(e.target.value))"
                 >
                   <div slot="label">Instance ID</div>
@@ -552,6 +553,7 @@ export default class BeaconPage extends Vue {
   beacon: (BLEBeaconObject | BLESemBeacon) & Beacon = undefined;
   key: Ref<string> = ref(TimeService.now().toString() + Math.random());
   enabled: boolean = false;
+  uid: string;
 
   uuid32Options = {
     mask: [...Array(8).fill(/[a-fA-F0-9]/)],
@@ -565,7 +567,18 @@ export default class BeaconPage extends Vue {
     },
   };
   uuid80Options = {
-    mask: [...Array(10).fill(/[a-fA-F0-9]/)],
+    mask: [...Array((80 / 8) * 2).fill(/[a-fA-F0-9]/)],
+    elementPredicate: (el: HTMLIonInputElement) => {
+      return new Promise((resolve) => {
+        requestAnimationFrame(async () => {
+          const input = await el.getInputElement();
+          resolve(input);
+        });
+      });
+    },
+  };
+  uuid48Options = {
+    mask: [...Array((48 / 8) * 2).fill(/[a-fA-F0-9]/)],
     elementPredicate: (el: HTMLIonInputElement) => {
       return new Promise((resolve) => {
         requestAnimationFrame(async () => {
@@ -599,6 +612,7 @@ export default class BeaconPage extends Vue {
 
   ionViewDidEnter(): void {
     const beaconUID = this.route.params.uid as string;
+    this.uid = new String(beaconUID).toString();
     console.log('Loading beacon details', beaconUID);
 
     if (this.route.path.startsWith('/beacon/edit')) {
@@ -607,6 +621,7 @@ export default class BeaconPage extends Vue {
       const beacon = this.beaconSimulatorStore.findByUID(beaconUID);
       if (!beacon) {
         // Can not find beacon...
+        console.error(`Tried to load simulated beacon (${beaconUID}) but it can not be found!`);
         this.$router.replace('/beacon/simulator');
         return;
       }
@@ -774,9 +789,8 @@ export default class BeaconPage extends Vue {
   }
 
   saveBeacon(): void {
-    const beaconUID = this.route.params.uid as string;
     this.beaconSimulatorStore.addSimulatedBeacon(
-      beaconUID,
+      this.uid as string,
       this.beacon as unknown as SimulatedBeacon,
     );
     this.enabled = false;
