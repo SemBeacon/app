@@ -17,11 +17,13 @@ export interface Environment {
 
 export interface EnvironmentState {
   environments: Map<string, Environment>;
+  devices: Map<string, any>;
 }
 
 export const useEnvironmentStore = defineStore('environments', {
   state: (): EnvironmentState => ({
     environments: new Map(),
+    devices: new Map(),
   }),
   getters: {},
   actions: {
@@ -59,6 +61,7 @@ export const useEnvironmentStore = defineStore('environments', {
     },
     clear(): void {
       this.environments = new Map();
+      this.devices = new Map();
     },
   },
 });
