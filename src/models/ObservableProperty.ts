@@ -3,10 +3,8 @@ import { sosa } from '@openhps/rdf/vocab';
 import { Property } from './Property';
 
 @SerializableObject({
-    rdf: {
-        type: sosa.ObservableProperty,
-    },
+  rdf: {
+    type: sosa.ObservableProperty,
+  },
 })
-export class ObservableProperty extends Property {
-    
-}
+export class ObservableProperty extends Property {}

@@ -295,12 +295,12 @@
               </ion-col>
               <ion-col size="12">
                 <ion-input
+                  v-maskito="uuid48Options"
                   :disabled="!enabled && simulated"
                   :readonly="!simulated && !enabled"
                   label-placement="floating"
                   :fill="!simulated && !enabled ? undefined : 'solid'"
                   :value="beacon.instanceId.toString()"
-                  v-maskito="uuid48Options"
                   @change="(e) => (beacon.instanceId = BLEUUID.fromString(e.target.value))"
                 >
                   <div slot="label">Instance ID</div>
@@ -363,7 +363,12 @@
             <ion-chip
               v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION)"
               color="primary"
-              @click="beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION"
+              @click="
+                () => {
+                  if (!enabled) return;
+                  beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION;
+                }
+              "
             >
               <ion-label>HAS_POSITION</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
@@ -380,7 +385,12 @@
             <ion-chip
               v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE)"
               color="primary"
-              @click="beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE"
+              @click="
+                () => {
+                  if (!enabled) return;
+                  beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE;
+                }
+              "
             >
               <ion-label>IS_PRIVATE</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
@@ -397,7 +407,12 @@
             <ion-chip
               v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING)"
               color="primary"
-              @click="beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING"
+              @click="
+                () => {
+                  if (!enabled) return;
+                  beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING;
+                }
+              "
             >
               <ion-label>IS_MOVING</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
@@ -414,7 +429,12 @@
             <ion-chip
               v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM)"
               color="primary"
-              @click="beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM"
+              @click="
+                () => {
+                  if (!enabled) return;
+                  beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM;
+                }
+              "
             >
               <ion-label>HAS_SYSTEM</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>
@@ -431,7 +451,12 @@
             <ion-chip
               v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)"
               color="primary"
-              @click="beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY"
+              @click="
+                () => {
+                  if (!enabled) return;
+                  beacon.flags = beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY;
+                }
+              "
             >
               <ion-label>HAS_TELEMETRY</ion-label>
               <ion-icon v-if="enabled" icon="close-circle-outline"></ion-icon>

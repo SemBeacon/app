@@ -7,7 +7,11 @@
         </ion-buttons>
 
         <ion-title>Beacon Map</ion-title>
-        <ion-progress-bar v-if="beaconStore.isScanning" type="indeterminate"></ion-progress-bar>
+        <ion-progress-bar
+          v-if="beaconStore.isScanning"
+          color="light"
+          type="indeterminate"
+        ></ion-progress-bar>
       </ion-toolbar>
     </ion-header>
 

@@ -10,6 +10,9 @@ export default defineConfig({
       '@openhps/rdf': ['OpenHPS', 'rdf'],
       '@sembeacon/openhps': ['SemBeacon', 'openhps'],
       '@openhps/solid/browser': ['OpenHPS', 'solid'],
+      'leaflet': ['L'],
+      'leaflet-distorableimage': ['L'],
+      'leaflet-toolbar': ['L'],
     },
     plugins: [
       new CopyPlugin({

@@ -168,13 +168,14 @@ export default class App extends Vue {
           ...(this.beaconStore.state !== ControllerState.READY
             ? [this.beaconStore.initialize()]
             : []),
-        ]).then(() => {
-          return Promise.all([
-            ...(this.beaconSimulatorStore.state !== ControllerState.READY
-              ? [this.beaconSimulatorStore.initialize()]
-              : []),
-          ]);
-        })
+        ])
+          .then(() => {
+            return Promise.all([
+              ...(this.beaconSimulatorStore.state !== ControllerState.READY
+                ? [this.beaconSimulatorStore.initialize()]
+                : []),
+            ]);
+          })
           .catch((err: Error) => {
             console.error('Initialization error', err);
           })

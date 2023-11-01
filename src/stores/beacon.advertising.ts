@@ -136,7 +136,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
 
             logger.log('info', 'Checking advertising permissions ...');
             return this.requestPermission();
-          }).then(() => {
+          })
+          .then(() => {
             logger.log('info', 'Initializing Bluetooth advertiser ...');
             bluetoothle.initialize(
               (result) => {
@@ -152,7 +153,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 restoreKey: 'sembeacon',
               },
             );
-          }).catch((error: Error) => {
+          })
+          .catch((error: Error) => {
             this.state = ControllerState.NO_PERMISSION;
             reject(error);
           });

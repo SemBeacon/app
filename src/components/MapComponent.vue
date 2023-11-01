@@ -15,6 +15,8 @@
     >
     </l-tile-layer>
 
+    <!-- <map-image-component :map="map"></map-image-component> -->
+
     <custom-marker-component
       v-if="location"
       key="phone"
@@ -55,6 +57,8 @@ import { useGeolocationStore } from '../stores/geolocation';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
 import CustomMarkerComponent from './map/CustomMarkerComponent.vue';
+import MapImageComponent from './map/MapImageComponent.vue';
+import { MapObject } from '../models/MapObject';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -66,6 +70,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     BeaconMarkerComponent,
     GeoJsonComponent,
     CustomMarkerComponent,
+    MapImageComponent,
   },
 })
 export default class MapComponent extends Vue {
@@ -92,9 +97,22 @@ export default class MapComponent extends Vue {
   center = computed(() => {
     return this.defaultCenter ? this.defaultCenter : this.location ? this.location : [0, 0];
   });
+  map = new MapObject();
 
   mounted() {
     this.geolocationStore.sourceNode.start();
+    // this.map.image = 'https://en.nagoya-u.ac.jp/upload_images/higashiyamaen.jpg';
+    // this.map.coverage = new Place();
+    // this.map.coverage.geometry = new PolygonGeometry();
+    // this.map.coverage.geometry.coords = [
+    //   { latitude: 35.16048583997066, longitude: 136.9623791719176 },
+    //   { latitude: 35.15444220583675, longitude: 136.9770457893308 },
+    //   { latitude: 35.1526614848967, longitude: 136.95776580859618 },
+    //   { latitude: 35.14658217841792, longitude: 136.97261458554803 }
+    // ] as any;
+    // console.log(RDFSerializer.serialize(this.map, {
+    //   baseUri: "https://sembeacon.org/examples/iot2023.ttl#",
+    // }))
   }
 
   onMapReady(map: any) {
