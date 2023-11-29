@@ -1,21 +1,32 @@
 <template>
-  <l-geo-json :geojson="space.toGeoJSON(true)" :v-if="space" :options="options"> </l-geo-json>
+  <ol-vector-layer :v-if="space">
+    <ol-source-vector
+      :features="space.toGeoJSON(true)"
+      :format="GeoJSON"
+    >
+    </ol-source-vector>
+    <ol-style>
+      <ol-style-stroke color="red" :width="2"></ol-style-stroke>
+      <ol-style-fill color="rgba(255,255,255,0.1)"></ol-style-fill>
+      <ol-style-icon :src="markerIcon" :scale="0.1"></ol-style-icon>
+    </ol-style>
+  </ol-vector-layer>
 </template>
 
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
-import {
-  LGeoJson,
-  // @ts-ignore
-} from '@vue-leaflet/vue-leaflet';
 import { Building, Corridor, Floor, Room, SymbolicSpace, Zone } from '@openhps/geospatial';
 import { GeographicalPosition } from '@openhps/core';
 import { isProxy, toRaw } from 'vue';
+import GeoJSON from 'ol/format/GeoJSON';
 
 @Options({
   components: {
-    LGeoJson,
+
   },
+  data: () => ({
+    GeoJSON
+  })
 })
 export default class GeoJsonComponent extends Vue {
   @Prop() space: SymbolicSpace<GeographicalPosition>;

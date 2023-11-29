@@ -58,10 +58,10 @@ import {
 import { useBeaconStore } from '../stores/beacon.scanning';
 import { computed } from 'vue';
 import { stop, play } from 'ionicons/icons';
-import MapComponent from '../components/MapComponent.vue';
+import MapComponent from '../components/map/MapComponent.vue';
 import { useRoute } from 'vue-router';
 import { ControllerState } from '../stores/types';
-import { useGeolocationStore } from '@/stores/geolocation';
+import { useGeolocationStore } from '../stores/geolocation';
 
 @Options({
   components: {
@@ -99,9 +99,6 @@ export default class MapPage extends Vue {
   @Ref('mapComponent') map: MapComponent;
 
   ionViewDidEnter(): void {
-    if ((window as any)._leafletMap) {
-      (window as any)._leafletMap.invalidateSize();
-    }
     const beaconUID = this.route.params.beaconUID as string;
     if (beaconUID) {
       this.map.highlightBeacon(beaconUID);

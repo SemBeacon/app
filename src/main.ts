@@ -5,6 +5,7 @@ import { createPinia } from 'pinia';
 import * as icons from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
+import OpenLayersMap from "vue3-openlayers";
 
 import { IonicVue } from '@ionic/vue';
 
@@ -29,7 +30,12 @@ import './theme/variables.css';
 
 import { SplashScreen } from '@capacitor/splash-screen';
 
-const app = createApp(App).use(IonicVue).use(createPinia()).use(BootstrapIconsPlugin).use(router);
+const app = createApp(App)
+  .use(IonicVue)
+  .use(createPinia())
+  .use(BootstrapIconsPlugin)
+  .use(router)
+  .use(OpenLayersMap);
 
 SplashScreen.hide().then(() => {
   SplashScreen.show();

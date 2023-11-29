@@ -1,7 +1,14 @@
 <template>
-  <l-marker ref="marker" :lat-lng="latLng">
-    <l-icon :icon-size="[40 * 0.88, 40]" :icon-anchor="[13, 39]" :icon-url="markerIcon"> </l-icon>
-    <l-tooltip
+  <ol-feature ref="marker" :properties="{ icon: aircraftIcon }">
+    <ol-geom-point :coordinates="[latLng[1], latLng[0]]" />
+    <ol-style>
+      <ol-style-icon
+        :src="markerIcon"
+        :size="[40 * 0.88, 40]"
+        :anchor="[13, 39]">
+      </ol-style-icon>
+    </ol-style>
+    <!-- <l-tooltip
       :options="{
         offset: [0, -10],
       }"
@@ -14,18 +21,12 @@
         <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }} dBm</span><br />
         <span class="key">Distance: </span><span class="value">{{ beacon.distance }} m</span>
       </div>
-    </l-tooltip>
-  </l-marker>
+    </l-tooltip> -->
+  </ol-feature>
 </template>
 
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
-import {
-  LMarker,
-  LIcon,
-  LTooltip,
-  // @ts-ignore
-} from '@vue-leaflet/vue-leaflet';
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { Ref, ref, isProxy, toRaw } from 'vue';
@@ -35,9 +36,6 @@ import { TimeService } from '@openhps/core';
 
 @Options({
   components: {
-    LMarker,
-    LIcon,
-    LTooltip,
   },
 })
 export default class BeaconMarkerComponent extends Vue {
@@ -59,15 +57,15 @@ export default class BeaconMarkerComponent extends Vue {
   }
 
   mounted() {
-    this.$nextTick(() => {
-      this.marker.leafletObject.setOpacity(this.opacity());
-    });
-    setInterval(async () => {
-      (this.key as any) = (this.beacon ? this.beacon.uid : '') + TimeService.now();
-      if (this.marker) {
-        this.marker.leafletObject.setOpacity(this.opacity());
-      }
-    }, 5000);
+    // this.$nextTick(() => {
+    //   this.marker.leafletObject.setOpacity(this.opacity());
+    // });
+    // setInterval(async () => {
+    //   (this.key as any) = (this.beacon ? this.beacon.uid : '') + TimeService.now();
+    //   if (this.marker) {
+    //     this.marker.leafletObject.setOpacity(this.opacity());
+    //   }
+    // }, 5000);
   }
 
   opacity(): number {

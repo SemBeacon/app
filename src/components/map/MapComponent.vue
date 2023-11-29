@@ -1,22 +1,15 @@
 <template>
-  <l-map
+  <ol-map
     id="map"
-    ref="map"
-    :zoom="zoom"
-    :center="center"
-    :options="{ attributionControl: false }"
-    @ready="onMapReady"
+    ref="mapRef"
+    :loadTilesWhileAnimating="true"
+    :loadTilesWhileInteracting="true"
   >
-    <l-tile-layer
-      :url="url"
-      :access-token="accessToken"
-      layer-type="base"
-      :options="{ maxNativeZoom: 18, maxZoom: 20, minZoom: 4 }"
-    >
-    </l-tile-layer>
+    <ol-view ref="viewRef" :center="center" :zoom="zoom">
+    </ol-view>
 
-    <!-- <map-image-component :map="map"></map-image-component> -->
-
+    <map-image-component :map="mapObject"></map-image-component>
+<!-- 
     <custom-marker-component
       v-if="location"
       key="phone"
@@ -27,7 +20,7 @@
         borderColor: '#00ABDC',
       }"
     >
-    </custom-marker-component>
+    </custom-marker-component> -->
 
     <beacon-marker-component v-for="beacon in beacons" :key="beacon.uid" :beacon="beacon">
     </beacon-marker-component>
@@ -38,38 +31,31 @@
       :space="environment"
     >
     </geo-json-component>
-  </l-map>
+  </ol-map>
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
-import {
-  LMap,
-  LMarker,
-  LTileLayer,
-  // @ts-ignore
-} from '@vue-leaflet/vue-leaflet';
+import { Vue, Options, Ref } from 'vue-property-decorator';
 import { Absolute2DPosition, GeographicalPosition } from '@openhps/core';
-import BeaconMarkerComponent from './map/BeaconMarkerComponent.vue';
-import GeoJsonComponent from './map/GeoJsonComponent.vue';
+import BeaconMarkerComponent from './BeaconMarkerComponent.vue';
+import GeoJsonComponent from './GeoJsonComponent.vue';
 import { computed } from 'vue';
-import { useGeolocationStore } from '../stores/geolocation';
-import { useBeaconStore } from '../stores/beacon.scanning';
-import { useEnvironmentStore } from '../stores/environment';
-import CustomMarkerComponent from './map/CustomMarkerComponent.vue';
-import MapImageComponent from './map/MapImageComponent.vue';
-import { MapObject } from '../models/MapObject';
+import { useGeolocationStore } from '../../stores/geolocation';
+import { useBeaconStore } from '../../stores/beacon.scanning';
+import { useEnvironmentStore } from '../../stores/environment';
+import MapImageComponent from './MapImageComponent.vue';
+import { MapObject } from '../../models/MapObject';
+import { PolygonGeometry, RDFSerializer } from '@openhps/rdf';
+import { Place } from '../../models/Place';
+import { MapboxVectorLayer } from 'ol-mapbox-style';
+import type { Map, View } from 'ol';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
   components: {
-    LMap,
-    LMarker,
-    LTileLayer,
     BeaconMarkerComponent,
     GeoJsonComponent,
-    CustomMarkerComponent,
     MapImageComponent,
   },
 })
@@ -80,7 +66,6 @@ export default class MapComponent extends Vue {
   id = prefersDark.matches ? 'mapbox/dark-v11' : 'mapbox/streets-v11';
   accessToken =
     'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
-  url = `https://api.mapbox.com/styles/v1/${this.id}/tiles/{z}/{x}/{y}?access_token=${this.accessToken}`;
   zoom?: number = 18;
   beacons = computed(() => {
     return this.beaconStore.beaconsWithInfo.filter((b) => {
@@ -97,28 +82,33 @@ export default class MapComponent extends Vue {
   center = computed(() => {
     return this.defaultCenter ? this.defaultCenter : this.location ? this.location : [0, 0];
   });
-  map = new MapObject();
-
+  @Ref("mapRef") mapRef?: { map: Map };
+  @Ref("viewRef") viewRef?: { view: View };
+  mapObject = new MapObject();
+  
   mounted() {
-    this.geolocationStore.sourceNode.start();
-    // this.map.image = 'https://en.nagoya-u.ac.jp/upload_images/higashiyamaen.jpg';
-    // this.map.coverage = new Place();
-    // this.map.coverage.geometry = new PolygonGeometry();
-    // this.map.coverage.geometry.coords = [
-    //   { latitude: 35.16048583997066, longitude: 136.9623791719176 },
-    //   { latitude: 35.15444220583675, longitude: 136.9770457893308 },
-    //   { latitude: 35.1526614848967, longitude: 136.95776580859618 },
-    //   { latitude: 35.14658217841792, longitude: 136.97261458554803 }
-    // ] as any;
-    // console.log(RDFSerializer.serialize(this.map, {
-    //   baseUri: "https://sembeacon.org/examples/iot2023.ttl#",
-    // }))
-  }
+    this.mapRef?.map.addLayer(new MapboxVectorLayer({
+      styleUrl: `mapbox://styles/${this.id}`,
+      accessToken: this.accessToken
+    }));
 
-  onMapReady(map: any) {
-    (window as any)._leafletMap = map;
+    this.geolocationStore.sourceNode.start();
+    this.mapObject.image = 'https://en.nagoya-u.ac.jp/upload_images/higashiyamaen.jpg';
+    this.mapObject.coverage = new Place();
+    this.mapObject.coverage.geometry = new PolygonGeometry();
+    this.mapObject.coverage.geometry.coords = [
+      { latitude: 35.16048583997066, longitude: 136.9623791719176 },
+      { latitude: 35.15444220583675, longitude: 136.9770457893308 },
+      { latitude: 35.1526614848967, longitude: 136.95776580859618 },
+      { latitude: 35.14658217841792, longitude: 136.97261458554803 }
+    ] as any;
+    console.log(RDFSerializer.serialize(this.mapObject, {
+      baseUri: "https://sembeacon.org/examples/iot2023.ttl#",
+    }));
+
     if (this.defaultCenter) {
-      map.setView(this.defaultCenter, 18);
+      this.viewRef.view.setCenter(this.defaultCenter);
+      this.viewRef.view.setZoom(18);
     }
   }
 
@@ -134,7 +124,8 @@ export default class MapComponent extends Vue {
         if (position !== undefined && position.x !== undefined && !Number.isNaN(position.x)) {
           const array = beacon.position.toVector3().toArray();
           this.defaultCenter = [array[1], array[0]];
-          (window as any)._leafletMap.setView(this.defaultCenter, 18);
+          this.viewRef.view.setCenter(this.defaultCenter);
+          this.viewRef.view.setZoom(18);
         }
       })
       .catch(console.error);
@@ -143,20 +134,9 @@ export default class MapComponent extends Vue {
 </script>
 
 <style scoped lang="scss">
-@import 'leaflet/dist/leaflet.css';
-
 #map {
   height: 100%;
   width: 100%;
   background-color: var(--ion-background-color);
-}
-
-img.leaflet-tile,
-img.leaflet-marker-icon,
-img.leaflet-marker-shadow {
-  /* work-around from here: https://github.com/Leaflet/Leaflet/issues/161 */
-  outline: 1px solid transparent;
-  /* work-around from here: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
-  mix-blend-mode: plus-lighter;
 }
 </style>
