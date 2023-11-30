@@ -7,6 +7,9 @@
         </ion-buttons>
 
         <ion-title>Beacon Map</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar :debounce="1000" @ionInput="onSearch($event)"></ion-searchbar>
         <ion-progress-bar
           v-if="beaconStore.isScanning"
           color="light"
@@ -54,6 +57,7 @@ import {
   IonProgressBar,
   IonSegment,
   IonSegmentButton,
+  IonSearchbar,
 } from '@ionic/vue';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import { computed } from 'vue';
@@ -83,6 +87,7 @@ import { useGeolocationStore } from '../stores/geolocation';
     IonSegment,
     IonSegmentButton,
     MapComponent,
+    IonSearchbar,
   },
   data: () => ({
     stop,
@@ -141,6 +146,11 @@ export default class MapPage extends Vue {
           });
       }
     }
+  }
+
+  onSearch(event: any): void {
+    const query = event.target.value.toLowerCase();
+    console.log('test', query);
   }
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
   <ol-image-layer>
     <ol-source-image-static
-      :url="`https://proxy.linkeddatafragments.org/` + this.map.image"
-      :imageExtent="this.coords"
+      :url="`https://proxy.linkeddatafragments.org/` + map.image"
+      :imageExtent="coordinates"
     ></ol-source-image-static>
   </ol-image-layer>
 </template>
@@ -10,6 +10,8 @@
 <script lang="ts">
 import { Vue, Options, Prop } from 'vue-property-decorator';
 import { MapObject } from '../../models/MapObject';
+import { fromLonLat } from 'ol/proj';
+import { Coordinate } from 'ol/coordinate';
 
 @Options({
   components: {},
@@ -17,15 +19,14 @@ import { MapObject } from '../../models/MapObject';
 export default class MapImageComponent extends Vue {
   @Prop() map: MapObject;
 
-  get coords(): [number, number][] {
-    return this.map.coverage.geometry.coords.map((coord) => {
-      return [coord.latitude, coord.longitude];
-    });
-  }
+  mounted(): void {
+    console.log(this.coordinates.reduce((a, b) => ([ ...a, ...b ])));
 
-  get bounds(): [number, number][] {
-    return this.map.coverage.geometry.coords.map((c) => {
-      return [c.latitude, c.longitude];
+  }
+  
+  get coordinates(): Coordinate[] {
+    return this.map.coverage.geometry.coords.map((coord) => {
+      return fromLonLat([coord.longitude, coord.latitude]);
     });
   }
 }

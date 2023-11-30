@@ -5,7 +5,7 @@ import { createPinia } from 'pinia';
 import * as icons from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
-import OpenLayersMap from "vue3-openlayers";
+import OpenLayersMap from 'vue3-openlayers';
 
 import { IonicVue } from '@ionic/vue';
 

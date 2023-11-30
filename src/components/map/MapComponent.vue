@@ -2,14 +2,13 @@
   <ol-map
     id="map"
     ref="mapRef"
-    :loadTilesWhileAnimating="true"
-    :loadTilesWhileInteracting="true"
+    :load-tiles-while-animating="true"
+    :load-tiles-while-interacting="true"
   >
-    <ol-view ref="viewRef" :center="center" :zoom="zoom">
-    </ol-view>
+    <ol-view :center="center" zoom="18" projection="EPSG:3857"> </ol-view>
 
     <map-image-component :map="mapObject"></map-image-component>
-<!-- 
+    <!-- 
     <custom-marker-component
       v-if="location"
       key="phone"
@@ -45,10 +44,11 @@ import { useBeaconStore } from '../../stores/beacon.scanning';
 import { useEnvironmentStore } from '../../stores/environment';
 import MapImageComponent from './MapImageComponent.vue';
 import { MapObject } from '../../models/MapObject';
-import { PolygonGeometry, RDFSerializer } from '@openhps/rdf';
+import { PolygonGeometry } from '@openhps/rdf';
 import { Place } from '../../models/Place';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
-import type { Map, View } from 'ol';
+import type { Map } from 'ol';
+import { fromLonLat } from 'ol/proj';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -63,10 +63,11 @@ export default class MapComponent extends Vue {
   geolocationStore = useGeolocationStore();
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
-  id = prefersDark.matches ? 'mapbox/dark-v11' : 'mapbox/streets-v11';
+
+  id = prefersDark.matches ? 'mapbox/dark-v12' : 'mapbox/streets-v12';
   accessToken =
     'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
-  zoom?: number = 18;
+
   beacons = computed(() => {
     return this.beaconStore.beaconsWithInfo.filter((b) => {
       const position = b.position as unknown as Absolute2DPosition;
@@ -75,41 +76,39 @@ export default class MapComponent extends Vue {
   });
   location = computed(() => {
     const location: GeographicalPosition = this.geolocationStore.location;
-    return location && location.latitude ? [location.latitude, location.longitude] : undefined;
+    return location && location.latitude ? [location.longitude, location.latitude] : undefined;
   });
   environments = computed(() => this.environmentStore.environments);
   defaultCenter: number[] = undefined;
   center = computed(() => {
-    return this.defaultCenter ? this.defaultCenter : this.location ? this.location : [0, 0];
+    return fromLonLat(
+      this.defaultCenter ? this.defaultCenter : this.location ? (this.location as any) : [0, 0],
+    );
   });
-  @Ref("mapRef") mapRef?: { map: Map };
-  @Ref("viewRef") viewRef?: { view: View };
+  @Ref('mapRef') mapRef?: { map: Map };
   mapObject = new MapObject();
-  
-  mounted() {
-    this.mapRef?.map.addLayer(new MapboxVectorLayer({
-      styleUrl: `mapbox://styles/${this.id}`,
-      accessToken: this.accessToken
-    }));
 
-    this.geolocationStore.sourceNode.start();
+  beforeMount(): void {
     this.mapObject.image = 'https://en.nagoya-u.ac.jp/upload_images/higashiyamaen.jpg';
     this.mapObject.coverage = new Place();
     this.mapObject.coverage.geometry = new PolygonGeometry();
     this.mapObject.coverage.geometry.coords = [
       { latitude: 35.16048583997066, longitude: 136.9623791719176 },
-      { latitude: 35.15444220583675, longitude: 136.9770457893308 },
-      { latitude: 35.1526614848967, longitude: 136.95776580859618 },
-      { latitude: 35.14658217841792, longitude: 136.97261458554803 }
+      // { latitude: 35.15444220583675, longitude: 136.9770457893308 },
+      // { latitude: 35.1526614848967, longitude: 136.95776580859618 },
+      { latitude: 35.14658217841792, longitude: 136.97261458554803 },
     ] as any;
-    console.log(RDFSerializer.serialize(this.mapObject, {
-      baseUri: "https://sembeacon.org/examples/iot2023.ttl#",
-    }));
+  }
 
-    if (this.defaultCenter) {
-      this.viewRef.view.setCenter(this.defaultCenter);
-      this.viewRef.view.setZoom(18);
-    }
+  mounted() {
+    this.mapRef?.map.addLayer(
+      new MapboxVectorLayer({
+        styleUrl: `mapbox://styles/${this.id}`,
+        accessToken: this.accessToken,
+      }),
+    );
+    (window as any).map = this.mapRef.map
+    this.geolocationStore.sourceNode.start();
   }
 
   unmounted() {
@@ -124,8 +123,8 @@ export default class MapComponent extends Vue {
         if (position !== undefined && position.x !== undefined && !Number.isNaN(position.x)) {
           const array = beacon.position.toVector3().toArray();
           this.defaultCenter = [array[1], array[0]];
-          this.viewRef.view.setCenter(this.defaultCenter);
-          this.viewRef.view.setZoom(18);
+          this.mapRef.map.getView().setCenter(fromLonLat(this.defaultCenter));
+          this.mapRef.map.getView().setZoom(18);
         }
       })
       .catch(console.error);

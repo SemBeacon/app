@@ -9,21 +9,17 @@ import {
 } from '@openhps/rdf';
 import { defineStore } from 'pinia';
 import { SymbolicSpace } from '@openhps/geospatial';
-
-export interface Environment {
-  id: string;
-  name: string;
-}
+import { DataSerializer, GeographicalPosition } from '@openhps/core';
+import { Preferences } from '@capacitor/preferences';
+import { toRaw } from 'vue';
 
 export interface EnvironmentState {
-  environments: Map<string, Environment>;
-  devices: Map<string, any>;
+  environments: Map<string, SymbolicSpace<GeographicalPosition>>;
 }
 
 export const useEnvironmentStore = defineStore('environments', {
   state: (): EnvironmentState => ({
     environments: new Map(),
-    devices: new Map(),
   }),
   getters: {},
   actions: {
@@ -54,6 +50,9 @@ export const useEnvironmentStore = defineStore('environments', {
               );
               this.environments.set(space.uid, space);
             });
+            return this.save();
+          })
+          .then(() => {
             resolve();
           })
           .catch(reject);
@@ -61,7 +60,38 @@ export const useEnvironmentStore = defineStore('environments', {
     },
     clear(): void {
       this.environments = new Map();
-      this.devices = new Map();
+      this.save();
+    },
+    load(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        Preferences.get({
+          key: 'environments',
+        })
+          .then((result) => {
+            if (result.value && result.value !== 'undefined') {
+              const data = JSON.parse(result.value);
+              if (data) {
+                const environments: { [k: string]: any } = DataSerializer.deserialize(data);
+                this.environments = new Map(Object.entries(environments));
+              }
+            }
+            resolve();
+          })
+          .catch(reject);
+      });
+    },
+    save(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        const serialized = DataSerializer.serialize(
+          Object.fromEntries(toRaw(this.environments).entries()),
+        );
+        Preferences.set({
+          key: 'environments',
+          value: JSON.stringify(serialized),
+        })
+          .then(resolve)
+          .catch(reject);
+      });
     },
   },
 });

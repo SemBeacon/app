@@ -381,6 +381,9 @@ export const useBeaconStore = defineStore('beacon.scanning', {
       });
     },
     clear(): void {
+      const environmentStore = useEnvironmentStore();
+
+      environmentStore.clear();
       this.namespaces = {};
       this.beacons = new Map();
       this.beaconInfo = new Map();
@@ -390,6 +393,8 @@ export const useBeaconStore = defineStore('beacon.scanning', {
     },
     load(): Promise<void> {
       return new Promise((resolve, reject) => {
+        const environmentStore = useEnvironmentStore();
+
         Preferences.get({
           key: 'beacon.scanning',
         })
@@ -405,32 +410,24 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     storedBeacons.forEach((b) => {
                       this.beacons.set(b.uid, b);
                     });
+                    return environmentStore.load();
+                  })
+                  .then(() => {
+                    resolve();
                   })
                   .catch(reject);
               }
             } else {
-              return Promise.resolve();
+              resolve();
             }
-          })
-          .then(() => {
-            return Preferences.get({
-              key: 'environments',
-            });
-          })
-          .then((result) => {
-            if (result.value && result.value !== 'undefined') {
-              const data = JSON.parse(result.value);
-              if (data) {
-                this.environments = data;
-              }
-            }
-            resolve();
           })
           .catch(reject);
       });
     },
     save(): Promise<void> {
       return new Promise((resolve, reject) => {
+        const environmentStore = useEnvironmentStore();
+
         const serialized = DataSerializer.serialize(
           Object.fromEntries(toRaw(this.beaconInfo).entries()),
         );
@@ -439,10 +436,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
           value: JSON.stringify(serialized),
         })
           .then(() => {
-            return Preferences.set({
-              key: 'environments',
-              value: JSON.stringify(this.environments),
-            });
+            return environmentStore.save();
           })
           .then(resolve)
           .catch(reject);

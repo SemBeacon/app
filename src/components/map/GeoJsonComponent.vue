@@ -1,14 +1,14 @@
 <template>
-  <ol-vector-layer :v-if="space">
+  <ol-vector-layer>
     <ol-source-vector
-      :features="space.toGeoJSON(true)"
-      :format="GeoJSON"
+      :features="features"
+      projection="EPSG:4326"
+      @featuresloaderror="console.error"
     >
     </ol-source-vector>
     <ol-style>
-      <ol-style-stroke color="red" :width="2"></ol-style-stroke>
-      <ol-style-fill color="rgba(255,255,255,0.1)"></ol-style-fill>
-      <ol-style-icon :src="markerIcon" :scale="0.1"></ol-style-icon>
+      <ol-style-stroke :color="options.color" :width="1"></ol-style-stroke>
+      <ol-style-fill :color="options.fillColor"></ol-style-fill>
     </ol-style>
   </ol-vector-layer>
 </template>
@@ -19,17 +19,20 @@ import { Building, Corridor, Floor, Room, SymbolicSpace, Zone } from '@openhps/g
 import { GeographicalPosition } from '@openhps/core';
 import { isProxy, toRaw } from 'vue';
 import GeoJSON from 'ol/format/GeoJSON';
+import { FeatureLike } from 'ol/Feature';
 
 @Options({
-  components: {
-
-  },
+  components: {},
   data: () => ({
-    GeoJSON
-  })
+    GeoJSON,
+  }),
 })
 export default class GeoJsonComponent extends Vue {
   @Prop() space: SymbolicSpace<GeographicalPosition>;
+
+  get features(): FeatureLike[] {
+    return new GeoJSON({ featureProjection: 'EPSG:3857' }).readFeatures(this.space.toGeoJSON(true));
+  }
 
   get options() {
     let rawSpace = this.space;
@@ -39,31 +42,29 @@ export default class GeoJsonComponent extends Vue {
 
     if (rawSpace instanceof Building) {
       return {
-        opacity: 0,
-        fillOpacity: 0,
+        fillColor: [0, 0, 0, 0],
+        color: [0, 0, 0, 0],
       };
     } else if (rawSpace instanceof Floor) {
       return {
-        fillColor: '#44b3fc',
-        color: '#205273',
-        fillOpacity: 0.2,
+        fillColor: [68, 179, 252, 0.2],
+        color: [32, 82, 115, 1],
       };
     } else if (rawSpace instanceof Room || rawSpace instanceof Zone) {
       return {
-        fillColor: '#42f54e',
-        color: '#1f7d26',
-        fillOpacity: 0.3,
-        opacity: 0.8,
+        fillColor: [66, 245, 78, 0.3],
+        color: [31, 125, 38, 0.8],
       };
     } else if (rawSpace instanceof Corridor) {
       return {
-        fillColor: '#eb4444',
-        color: '#732020',
-        fillOpacity: 0.3,
-        opacity: 0.8,
+        fillColor: [235, 68, 68, 0.3],
+        color: [115, 32, 32, 0.8],
       };
     }
-    return {};
+    return {
+      fillColor: [66, 245, 78, 0.3],
+      color: [31, 125, 38, 0.8],
+    };
   }
 }
 </script>
