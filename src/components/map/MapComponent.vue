@@ -8,21 +8,6 @@
     <ol-view :center="center" zoom="18" projection="EPSG:3857"> </ol-view>
 
     <map-image-component :map="mapObject"></map-image-component>
-    <!-- 
-    <custom-marker-component
-      v-if="location"
-      key="phone"
-      :lat-lng="location"
-      :options="{
-        iconShape: 'doughnut',
-        borderWidth: 5,
-        borderColor: '#00ABDC',
-      }"
-    >
-    </custom-marker-component> -->
-
-    <beacon-marker-component v-for="beacon in beacons" :key="beacon.uid" :beacon="beacon">
-    </beacon-marker-component>
 
     <geo-json-component
       v-for="environment in environments.values()"
@@ -30,6 +15,26 @@
       :space="environment"
     >
     </geo-json-component>
+    
+    <ol-vector-layer v-if="location" key="phone">
+      <ol-source-vector>
+        <ol-feature>
+          <ol-geom-point :coordinates="location"></ol-geom-point>
+          <ol-style>
+            <ol-style-circle radius="6">
+              <ol-style-fill color="white"></ol-style-fill>
+              <ol-style-stroke
+                color="blue"
+                width="3"
+              ></ol-style-stroke>
+            </ol-style-circle>
+          </ol-style>
+        </ol-feature>
+      </ol-source-vector>
+    </ol-vector-layer>
+
+    <beacon-marker-component v-for="beacon in beacons" :key="beacon.uid" :beacon="beacon">
+    </beacon-marker-component>
   </ol-map>
 </template>
 
@@ -64,7 +69,7 @@ export default class MapComponent extends Vue {
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
 
-  id = prefersDark.matches ? 'mapbox/dark-v12' : 'mapbox/streets-v12';
+  id = prefersDark.matches ? 'mapbox/dark-v11' : 'mapbox/streets-v12';
   accessToken =
     'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
 
@@ -76,14 +81,12 @@ export default class MapComponent extends Vue {
   });
   location = computed(() => {
     const location: GeographicalPosition = this.geolocationStore.location;
-    return location && location.latitude ? [location.longitude, location.latitude] : undefined;
+    return location && location.latitude ? fromLonLat([location.longitude, location.latitude]) : undefined;
   });
   environments = computed(() => this.environmentStore.environments);
   defaultCenter: number[] = undefined;
   center = computed(() => {
-    return fromLonLat(
-      this.defaultCenter ? this.defaultCenter : this.location ? (this.location as any) : [0, 0],
-    );
+    return this.defaultCenter ? fromLonLat(this.defaultCenter) : this.location ? (this.location as any) : [0, 0];
   });
   @Ref('mapRef') mapRef?: { map: Map };
   mapObject = new MapObject();

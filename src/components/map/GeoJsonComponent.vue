@@ -2,7 +2,6 @@
   <ol-vector-layer>
     <ol-source-vector
       :features="features"
-      projection="EPSG:4326"
       @featuresloaderror="console.error"
     >
     </ol-source-vector>
