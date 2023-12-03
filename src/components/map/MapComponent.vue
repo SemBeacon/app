@@ -21,11 +21,11 @@
         <ol-feature>
           <ol-geom-point :coordinates="location"></ol-geom-point>
           <ol-style>
-            <ol-style-circle radius="6">
+            <ol-style-circle radius="5">
               <ol-style-fill color="white"></ol-style-fill>
               <ol-style-stroke
-                color="blue"
-                width="3"
+                color="#0066ff"
+                width="5"
               ></ol-style-stroke>
             </ol-style-circle>
           </ol-style>
@@ -33,7 +33,7 @@
       </ol-source-vector>
     </ol-vector-layer>
 
-    <beacon-marker-component v-for="beacon in beacons" :key="beacon.uid" :beacon="beacon">
+    <beacon-marker-component :beacons="beacons">
     </beacon-marker-component>
   </ol-map>
 </template>

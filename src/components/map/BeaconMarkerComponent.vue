@@ -1,32 +1,38 @@
 <template>
-  <div v-if="coordinates">
+  <div>
     <ol-vector-layer 
-      ref="marker" :zIndex="100">
-      <ol-source-vector>
-        <ol-feature>
-          <ol-geom-point :coordinates="coordinates" />
+      ref="markerLayer" :zIndex="1000">
+      <ol-source-vector ref="sourceRef">
+        <ol-feature v-for="beacon in beacons" :key="beacon.uid">
+          <ol-geom-point :coordinates="coordinates(beacon)" />
           <ol-style>
             <ol-style-icon 
-              :src="markerIcon" :size="[40 * 0.88, 40]" :scale="40 / 350" :anchor="[13, 39]"
-              anchorXUnits="pixels" anchorYUnits="pixels">
+              :src="markerIcon(beacon)" :scale="[40 / 639.13, 40 / 695.49]" :anchor="[13 / 40, 39 / 40]">
             </ol-style-icon>
           </ol-style>
         </ol-feature>
       </ol-source-vector>
     </ol-vector-layer>
     <ol-overlay
+      v-if="selectedBeacon"
       ref="overlayRef"
-      :position="[coordinates[0], coordinates[1] - 10]"
+      :position="coordinates(selectedBeacon)"
     >
       <div class="ol-popup">
-        <span class="key">{{ beacon.displayName }}</span ><br />
-          <div v-if="beacon.lastSeen" :key="key.value">
-          <span class="key">Last seen: </span><span class="value">{{ lastSeen() }}</span><br />
-          <span class="key">RSSI: </span><span class="value">{{ beacon.rssi }} dBm</span><br />
-          <span class="key">Distance: </span><span class="value">{{ beacon.distance }} m</span>
+        <span class="key">{{ selectedBeacon.displayName }}</span ><br />
+          <div v-if="selectedBeacon.lastSeen" :key="key.value">
+          <span class="key">Last seen: </span><span class="value">{{ lastSeen(selectedBeacon) }}</span><br />
+          <span class="key">RSSI: </span><span class="value">{{ selectedBeacon.rssi }} dBm</span><br />
+          <span class="key">Distance: </span><span class="value">{{ selectedBeacon.distance }} m</span>
         </div>
       </div>
     </ol-overlay>
+    <ol-interaction-select
+      @select="onClick"
+      :condition="click"
+      :filter="selectInteractionFilter"
+    >
+    </ol-interaction-select>
   </div>
 </template>
 
@@ -37,27 +43,40 @@ import { BLESemBeacon } from '@sembeacon/openhps';
 import { isProxy, toRaw } from 'vue';
 import { Beacon, useBeaconStore } from '../../stores/beacon.scanning';
 import moment from 'moment';
-import { TimeService } from '@openhps/core';
 import { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
 import type { Vector } from 'ol/layer';
 import type Overlay from "ol/Overlay";
+import { click } from 'ol/events/condition.js';
+import type { Style } from 'ol/style';
+import type { SelectEvent } from 'ol/interaction/Select';
+import VectorSource from 'ol/source/Vector';
 
 @Options({
   components: {},
+  data: () => ({
+    click
+  })
 })
 export default class BeaconMarkerComponent extends Vue {
-  @Prop() beacon: BLEBeaconObject & Beacon;
+  @Prop() beacons: Array<BLEBeaconObject & Beacon>;
   beaconStore = useBeaconStore();
-  @Ref("key") key = TimeService.now().toString() + Math.random();
-  @Ref("marker") marker: { vectorLayer: Vector<any> };
+  @Ref("markerLayer") markerLayer: { vectorLayer: Vector<any> };
   @Ref("overlayRef") overlayRef: { overlay: Overlay };
+  @Ref("sourceRef") sourceRef: { source: VectorSource };
+  selectedBeacon: BLEBeaconObject & Beacon = undefined;
 
-  get coordinates(): Coordinate {
-    if (!this.beacon.position) {
+  selectInteractionFilter(e: any) {
+    return this.sourceRef.source.getFeatures().filter(m => {
+      return (m as any).ol_uid === e.ol_uid;
+    }).length > 0;
+  }
+  
+  coordinates(beacon: BLEBeaconObject): Coordinate {
+    if (!beacon.position) {
       return undefined;
     }
-    const array = this.beacon.position.toVector3().toArray();
+    const array = beacon.position.toVector3().toArray();
     if (array && array[1]) {
       return fromLonLat([array[0], array[1]]);
     } else {
@@ -66,40 +85,55 @@ export default class BeaconMarkerComponent extends Vue {
   }
 
   mounted() {
-    this.$nextTick(() => {
-      this.marker.vectorLayer.setOpacity(this.opacity());
-    });
-    setInterval(async () => {
-      (this.key as any) = (this.beacon ? this.beacon.uid : '') + TimeService.now();
-      if (this.marker) {
-        this.marker.vectorLayer.setOpacity(this.opacity());
-      }
-    }, 5000);
+    setInterval(() => {
+      this.sourceRef.source.getFeatures().forEach((marker, i) => {
+        const image = (marker.getStyle() as Style).getImage();
+        if (image) {  // When hidden
+          image.setOpacity(this.opacity(this.beacons[i]));
+        }
+      });
+    }, 1000);
   }
 
-  opacity(): number {
-    if (this.beacon.lastSeen === undefined) {
+  opacity(beacon: BLEBeaconObject & Beacon): number {
+    if (beacon.lastSeen === undefined) {
       return 0.5;
-    } else if (Date.now() - this.beacon.lastSeen > 30000) {
+    } else if (Date.now() - beacon.lastSeen > 30000) {
       return 0.5;
-    } else if (Date.now() - this.beacon.lastSeen > 15000) {
+    } else if (Date.now() - beacon.lastSeen > 15000) {
       return 0.75;
-    } else if (Date.now() - this.beacon.lastSeen > 5000) {
+    } else if (Date.now() - beacon.lastSeen > 5000) {
       return 0.85;
     } else {
       return 1;
     }
   }
 
-  lastSeen(): string {
-    if (this.beacon.lastSeen === undefined) {
-      return '';
+  onClick(event: SelectEvent) {
+    event.preventDefault();
+    const selectedBeacon = this.sourceRef.source.getFeatures()
+    .map((m, i) => {
+      return {
+        marker: m as any,
+        beacon: this.beacons[i]
+      }
+    }).filter(m => {
+      return m.marker.ol_uid === (event.selected[0] as any).ol_uid;
+    })[0];
+    if (selectedBeacon) {
+      this.selectedBeacon = selectedBeacon.beacon;
     }
-    return moment(this.beacon.lastSeen).fromNow();
   }
 
-  get markerIcon(): string {
-    let rawBeacon = this.beacon;
+  lastSeen(beacon: Beacon): string {
+    if (beacon.lastSeen === undefined) {
+      return '';
+    }
+    return moment(beacon.lastSeen).fromNow();
+  }
+
+  markerIcon(beacon: BLEBeaconObject): string {
+    let rawBeacon = beacon;
     if (isProxy(rawBeacon)) {
       rawBeacon = toRaw(rawBeacon);
     }
@@ -134,7 +168,6 @@ span.key {
   left: -50px;
   min-width: 170px;
   color: black;
-  visibility: hidden;
 }
 .ol-popup:after, .ol-popup:before {
   top: 100%;
