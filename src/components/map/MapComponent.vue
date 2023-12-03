@@ -5,7 +5,8 @@
     :load-tiles-while-animating="true"
     :load-tiles-while-interacting="true"
   >
-    <ol-view :center="center" zoom="18" projection="EPSG:3857"> </ol-view>
+    <!-- Projection view -->
+    <ol-view :center="center" zoom="18" projection="EPSG:3857"></ol-view>
 
     <map-image-component :map="mapObject"></map-image-component>
 
@@ -16,22 +17,8 @@
     >
     </geo-json-component>
     
-    <ol-vector-layer v-if="location" key="phone">
-      <ol-source-vector>
-        <ol-feature>
-          <ol-geom-point :coordinates="location"></ol-geom-point>
-          <ol-style>
-            <ol-style-circle radius="5">
-              <ol-style-fill color="white"></ol-style-fill>
-              <ol-style-stroke
-                color="#0066ff"
-                width="5"
-              ></ol-style-stroke>
-            </ol-style-circle>
-          </ol-style>
-        </ol-feature>
-      </ol-source-vector>
-    </ol-vector-layer>
+    <!-- Your current location -->
+    <location-marker-component></location-marker-component>
 
     <beacon-marker-component :beacons="beacons">
     </beacon-marker-component>
@@ -54,6 +41,8 @@ import { Place } from '../../models/Place';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
 import type { Map } from 'ol';
 import { fromLonLat } from 'ol/proj';
+import LocationMarkerComponent from './LocationMarkerComponent.vue';
+const Geocoder = require('ol-geocoder'); // eslint-disable-line
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -62,6 +51,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     BeaconMarkerComponent,
     GeoJsonComponent,
     MapImageComponent,
+    LocationMarkerComponent
   },
 })
 export default class MapComponent extends Vue {
@@ -110,7 +100,16 @@ export default class MapComponent extends Vue {
         accessToken: this.accessToken,
       }),
     );
-    (window as any).map = this.mapRef.map
+    const geocoder = new Geocoder('nominatim', {
+      provider: 'mapquest',
+      lang: 'en-US',
+      placeholder: 'Search for ...',
+      targetType: 'text-input',
+      limit: 5,
+      keepOpen: true
+    });
+    this.mapRef.map.addControl(geocoder);
+
     this.geolocationStore.sourceNode.start();
   }
 
@@ -136,6 +135,8 @@ export default class MapComponent extends Vue {
 </script>
 
 <style scoped lang="scss">
+@import "ol-geocoder/dist/ol-geocoder.min.css";
+
 #map {
   height: 100%;
   width: 100%;

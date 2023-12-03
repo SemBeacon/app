@@ -14,13 +14,12 @@
       </ol-source-vector>
     </ol-vector-layer>
     <ol-overlay
-      v-if="selectedBeacon"
+      v-if="selectedBeacon.position"
       ref="overlayRef"
-      :position="coordinates(selectedBeacon)"
-    >
+      :position="[coordinates(selectedBeacon)[0], coordinates(selectedBeacon)[1] + 5]">
       <div class="ol-popup">
         <span class="key">{{ selectedBeacon.displayName }}</span ><br />
-          <div v-if="selectedBeacon.lastSeen" :key="key.value">
+          <div v-if="selectedBeacon.lastSeen">
           <span class="key">Last seen: </span><span class="value">{{ lastSeen(selectedBeacon) }}</span><br />
           <span class="key">RSSI: </span><span class="value">{{ selectedBeacon.rssi }} dBm</span><br />
           <span class="key">Distance: </span><span class="value">{{ selectedBeacon.distance }} m</span>
@@ -31,6 +30,7 @@
       @select="onClick"
       :condition="click"
       :filter="selectInteractionFilter"
+      ref="interactionRef"
     >
     </ol-interaction-select>
   </div>
@@ -51,6 +51,8 @@ import { click } from 'ol/events/condition.js';
 import type { Style } from 'ol/style';
 import type { SelectEvent } from 'ol/interaction/Select';
 import VectorSource from 'ol/source/Vector';
+import type { Feature } from 'ol';
+import type { Point } from 'ol/geom';
 
 @Options({
   components: {},
@@ -64,12 +66,31 @@ export default class BeaconMarkerComponent extends Vue {
   @Ref("markerLayer") markerLayer: { vectorLayer: Vector<any> };
   @Ref("overlayRef") overlayRef: { overlay: Overlay };
   @Ref("sourceRef") sourceRef: { source: VectorSource };
-  selectedBeacon: BLEBeaconObject & Beacon = undefined;
+  @Ref("interactionRef") interacitonRef: { select: any };
+  selectedBeacon: BLEBeaconObject & Beacon = {} as any;
+  
+  getBeaconByMarker(marker: Feature<Point>): BLEBeaconObject & Beacon {
+    if (marker === undefined) {
+      return undefined;
+    }
+    const candidates = this.beacons.map(b => {
+      return {
+        beacon: b,
+        coordinates: this.coordinates(b)
+      };
+    }).filter(b => {
+      const coord = marker.getGeometry().getCoordinates();
+      return b.coordinates[0] === coord[0] && b.coordinates[1] === coord[1];
+    });
+    if (candidates.length > 0) {
+      return candidates[0].beacon;
+    } else {
+      return undefined;
+    }
+  }
 
   selectInteractionFilter(e: any) {
-    return this.sourceRef.source.getFeatures().filter(m => {
-      return (m as any).ol_uid === e.ol_uid;
-    }).length > 0;
+    return this.sourceRef.source.getFeatureByUid(e.ol_uid) !== undefined;
   }
   
   coordinates(beacon: BLEBeaconObject): Coordinate {
@@ -85,12 +106,14 @@ export default class BeaconMarkerComponent extends Vue {
   }
 
   mounted() {
+    // Disable modifying the style when clicking a marker
+    this.interacitonRef.select.style_ = null;
+
+    // Modify the opacity of markers when not seen for a while
     setInterval(() => {
-      this.sourceRef.source.getFeatures().forEach((marker, i) => {
+      this.sourceRef.source.getFeatures().forEach((marker: Feature<Point>) => {
         const image = (marker.getStyle() as Style).getImage();
-        if (image) {  // When hidden
-          image.setOpacity(this.opacity(this.beacons[i]));
-        }
+        image.setOpacity(this.opacity(this.getBeaconByMarker(marker)));
       });
     }, 1000);
   }
@@ -110,18 +133,14 @@ export default class BeaconMarkerComponent extends Vue {
   }
 
   onClick(event: SelectEvent) {
-    event.preventDefault();
-    const selectedBeacon = this.sourceRef.source.getFeatures()
-    .map((m, i) => {
-      return {
-        marker: m as any,
-        beacon: this.beacons[i]
-      }
-    }).filter(m => {
-      return m.marker.ol_uid === (event.selected[0] as any).ol_uid;
-    })[0];
+    if (event.selected.length === 0) {
+      this.selectedBeacon = {} as any;
+      return;
+    }
+    const selectedMarker = this.sourceRef.source.getFeatureByUid((event.selected[0] as any).ol_uid);
+    const selectedBeacon = this.getBeaconByMarker(selectedMarker as Feature<Point>);
     if (selectedBeacon) {
-      this.selectedBeacon = selectedBeacon.beacon;
+      this.selectedBeacon = selectedBeacon;
     }
   }
 

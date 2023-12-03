@@ -1,5 +1,6 @@
 import { defineConfig } from '@vue/cli-service';
 import CopyPlugin from "copy-webpack-plugin";
+import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 
 export default defineConfig({
   configureWebpack: {
@@ -15,6 +16,10 @@ export default defineConfig({
       'leaflet-toolbar': ['L'],
     },
     plugins: [
+      new MonacoWebpackPlugin({
+        languages: [],
+        features: ["find"],
+      }),
       new CopyPlugin({
         patterns: [
           { 

@@ -7,9 +7,6 @@
         </ion-buttons>
 
         <ion-title>Beacon Map</ion-title>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-searchbar :debounce="1000" @ionInput="onSearch($event)"></ion-searchbar>
         <ion-progress-bar
           v-if="beaconStore.isScanning"
           color="light"
@@ -146,11 +143,6 @@ export default class MapPage extends Vue {
           });
       }
     }
-  }
-
-  onSearch(event: any): void {
-    const query = event.target.value.toLowerCase();
-    console.log('test', query);
   }
 }
 </script>
