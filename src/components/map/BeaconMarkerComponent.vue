@@ -7,7 +7,7 @@
           <ol-geom-point :coordinates="coordinates(beacon)" />
           <ol-style>
             <ol-style-icon 
-              :src="markerIcon(beacon)" :scale="[40 / 639.13, 40 / 695.49]" :anchor="[13 / 40, 39 / 40]">
+              :src="markerIcon(beacon)" :scale="40 / 639.13" :anchor="[13 / 40, 39 / 40]">
             </ol-style-icon>
           </ol-style>
         </ol-feature>
@@ -70,7 +70,7 @@ export default class BeaconMarkerComponent extends Vue {
   selectedBeacon: BLEBeaconObject & Beacon = {} as any;
   
   getBeaconByMarker(marker: Feature<Point>): BLEBeaconObject & Beacon {
-    if (marker === undefined) {
+    if (marker === undefined || marker === null) {
       return undefined;
     }
     const candidates = this.beacons.map(b => {
@@ -90,7 +90,7 @@ export default class BeaconMarkerComponent extends Vue {
   }
 
   selectInteractionFilter(e: any) {
-    return this.sourceRef.source.getFeatureByUid(e.ol_uid) !== undefined;
+    return this.sourceRef && this.sourceRef.source.getFeatureByUid(e.ol_uid) !== undefined;
   }
   
   coordinates(beacon: BLEBeaconObject): Coordinate {

@@ -7823,6 +7823,13 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.2.tgz#9b0e3e8533fe5024ad32d6637eb9589988b6fdca"
   integrity sha512-lqa4UEhhv/2sjjIQgjX8B+RBjj47eo0mzGasklVJ78UKGQY1r0VpB9XHDaZZO9qzEFDdy4MrXLuEaSmPrPSe/A==
 
+"@types/ol-ext@npm:@siedlerchr/types-ol-ext":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@siedlerchr/types-ol-ext/-/types-ol-ext-3.2.4.tgz#5411370c5cc62db6f5fddbe6c5dba203c19aeba3"
+  integrity sha512-d6auH1slNSyR6v2gP0J2fFPdgvRetAcThASZrcA65lciZmewRgDJaryaCj6/hjvEopokaE4KaMc1OkO8LdRNOw==
+  dependencies:
+    jspdf "^2.5.1"
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -8960,6 +8967,11 @@ address@^1.1.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/address/-/address-1.2.2.tgz#2b5248dac5485a6390532c6a517fda2e3faac89e"
   integrity sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==
+
+affineplane@^2.17.1:
+  version "2.17.1"
+  resolved "https://registry.yarnpkg.com/affineplane/-/affineplane-2.17.1.tgz#9caf87771cef35dd8a5d2dea83187011405641f9"
+  integrity sha512-sb/1uHcNzEcVMoC4RTpn+C60MpJsxY4vxtepVemaYuVltOw/c4DrkQMKuIqutZZIfiTRlniQJraRt1/U58k9mg==
 
 agent-base@6:
   version "6.0.2"
@@ -15994,10 +16006,15 @@ ol-contextmenu@^5.3.0:
   dependencies:
     tiny-emitter "^2.1.0"
 
-ol-ext@^4.0.11, ol-ext@^4.0.12:
+ol-ext@^4.0.11:
   version "4.0.12"
   resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-4.0.12.tgz#c2e69e65567a706c8cab677c4990bbbf70dbcd00"
   integrity sha512-NVUiO90SR0tlS0SOR5mNa46ZW3sOX1X97L5J1uHfO3eyouIfzysuBNGX/ujd1q4xGVNs/aTOz1rLlTpxt7uVYg==
+
+ol-ext@^4.0.13:
+  version "4.0.13"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-4.0.13.tgz#977d20a3d5f40f39ca10b34ca2c8411ef9032c31"
+  integrity sha512-eNUKmPXBp7pOI8lE/qhv+oIbCwFyrqW4gGcILxTlvjhICKyaNkcmXGm3lOvHd2PnsKBtbjwg2knHiJKpEQNDtg==
 
 ol-geocoder@^4.3.1:
   version "4.3.1"

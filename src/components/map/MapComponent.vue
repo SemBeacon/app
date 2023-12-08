@@ -6,9 +6,10 @@
     :load-tiles-while-interacting="true"
   >
     <!-- Projection view -->
-    <ol-view :center="center" zoom="18" projection="EPSG:3857"></ol-view>
+    <ol-view :center="center" @change="handleViewChange" zoom="18" projection="EPSG:3857"></ol-view>
 
-    <map-image-component :map="mapObject"></map-image-component>
+    <!-- Floor map view -->
+    <map-image-component :mapObject="mapObject"></map-image-component>
 
     <geo-json-component
       v-for="environment in environments.values()"
@@ -20,14 +21,16 @@
     <!-- Your current location -->
     <location-marker-component></location-marker-component>
 
-    <beacon-marker-component :beacons="beacons">
+    <beacon-marker-component 
+      v-if="zoom > 10" 
+      :beacons="beacons">
     </beacon-marker-component>
   </ol-map>
 </template>
 
 <script lang="ts">
 import { Vue, Options, Ref } from 'vue-property-decorator';
-import { Absolute2DPosition, GeographicalPosition } from '@openhps/core';
+import { Absolute2DPosition } from '@openhps/core';
 import BeaconMarkerComponent from './BeaconMarkerComponent.vue';
 import GeoJsonComponent from './GeoJsonComponent.vue';
 import { computed } from 'vue';
@@ -42,7 +45,6 @@ import { MapboxVectorLayer } from 'ol-mapbox-style';
 import type { Map } from 'ol';
 import { fromLonLat } from 'ol/proj';
 import LocationMarkerComponent from './LocationMarkerComponent.vue';
-const Geocoder = require('ol-geocoder'); // eslint-disable-line
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -58,7 +60,7 @@ export default class MapComponent extends Vue {
   geolocationStore = useGeolocationStore();
   beaconStore = useBeaconStore();
   environmentStore = useEnvironmentStore();
-
+  zoom = 18;
   id = prefersDark.matches ? 'mapbox/dark-v11' : 'mapbox/streets-v12';
   accessToken =
     'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
@@ -70,8 +72,9 @@ export default class MapComponent extends Vue {
     });
   });
   location = computed(() => {
-    const location: GeographicalPosition = this.geolocationStore.location;
-    return location && location.latitude ? fromLonLat([location.longitude, location.latitude]) : undefined;
+    // const location: GeographicalPosition = this.geolocationStore.location;
+    // return location && location.latitude ? fromLonLat([location.longitude, location.latitude]) : undefined;
+    return [15246068.74999734, 4184646.631400167]
   });
   environments = computed(() => this.environmentStore.environments);
   defaultCenter: number[] = undefined;
@@ -87,9 +90,9 @@ export default class MapComponent extends Vue {
     this.mapObject.coverage.geometry = new PolygonGeometry();
     this.mapObject.coverage.geometry.coords = [
       { latitude: 35.16048583997066, longitude: 136.9623791719176 },
-      // { latitude: 35.15444220583675, longitude: 136.9770457893308 },
-      // { latitude: 35.1526614848967, longitude: 136.95776580859618 },
+      { latitude: 35.15444220583675, longitude: 136.9770457893308 },
       { latitude: 35.14658217841792, longitude: 136.97261458554803 },
+      { latitude: 35.1526614848967, longitude: 136.95776580859618 },
     ] as any;
   }
 
@@ -98,17 +101,9 @@ export default class MapComponent extends Vue {
       new MapboxVectorLayer({
         styleUrl: `mapbox://styles/${this.id}`,
         accessToken: this.accessToken,
+        zIndex: 0
       }),
     );
-    const geocoder = new Geocoder('nominatim', {
-      provider: 'mapquest',
-      lang: 'en-US',
-      placeholder: 'Search for ...',
-      targetType: 'text-input',
-      limit: 5,
-      keepOpen: true
-    });
-    this.mapRef.map.addControl(geocoder);
 
     this.geolocationStore.sourceNode.start();
   }
@@ -130,6 +125,10 @@ export default class MapComponent extends Vue {
         }
       })
       .catch(console.error);
+  }
+
+  handleViewChange(event: any) {
+    this.zoom = event.target.getZoom();
   }
 }
 </script>
