@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia';
 import {
-  BLEBeaconObject,
-  BLEAltBeaconBuilder,
-  BLEAltBeacon,
-  BLEiBeacon,
-  BLEiBeaconBuilder,
-  BLEEddystoneURL,
-  BLEEddystoneURLBuilder,
-  BLEEddystoneUIDBuilder,
-  BLEEddystoneUID,
+    BLEBeaconObject,
+    BLEAltBeaconBuilder,
+    BLEAltBeacon,
+    BLEiBeacon,
+    BLEiBeaconBuilder,
+    BLEEddystoneURL,
+    BLEEddystoneURLBuilder,
+    BLEEddystoneUIDBuilder,
+    BLEEddystoneUID,
 } from '@openhps/rf';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
@@ -23,333 +23,339 @@ import { toRaw } from 'vue';
 const bluetoothle = (window as any).bluetoothle as BluetoothlePlugin.Bluetoothle;
 
 export type SimulatedBeacon = BLEBeaconObject & {
-  advertising: boolean;
+    advertising: boolean;
 };
 
 export interface BeaconAdvertisingState {
-  beacons: Map<string, SimulatedBeacon>;
-  state: ControllerState;
+    beacons: Map<string, SimulatedBeacon>;
+    state: ControllerState;
 }
 
 export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
-  state: (): BeaconAdvertisingState => ({
-    beacons: new Map(),
-    state: ControllerState.PENDING,
-  }),
-  getters: {
-    advertisingBeacons(): SimulatedBeacon[] {
-      return Array.from(this.beacons.values()).filter(
-        (b: SimulatedBeacon) => b.advertising,
-      ) as SimulatedBeacon[];
+    state: (): BeaconAdvertisingState => ({
+        beacons: new Map(),
+        state: ControllerState.PENDING,
+    }),
+    getters: {
+        beacons(): SimulatedBeacon[] {
+            return Array.from(this.beaconStore.beacons.values());
+        },
+        advertisingBeacons(): SimulatedBeacon[] {
+            return Array.from(this.beacons.values()).filter(
+                (b: SimulatedBeacon) => b.advertising,
+            ) as SimulatedBeacon[];
+        },
     },
-  },
-  actions: {
-    findByUID(uid: string): SimulatedBeacon {
-      return this.beacons.get(uid);
-    },
-    initializeNotifications(): Promise<void> {
-      return new Promise((resolve) => {
-        if (Capacitor.getPlatform() !== 'web') {
-          LocalNotifications.requestPermissions()
-            .then(() => {
-              if (Capacitor.getPlatform() === 'android') {
-                LocalNotifications.registerActionTypes({
-                  types: [
-                    {
-                      id: 'sembeacon-1',
-                      actions: [
-                        {
-                          id: 'stop',
-                          title: 'Stop broadcasting',
-                          destructive: true,
-                        },
-                      ],
-                    },
-                  ],
-                }).catch(console.error);
-                LocalNotifications.createChannel({
-                  importance: 3,
-                  id: 'sembeacon-advertising',
-                  name: 'SemBeacon Advertising',
-                  vibration: false,
-                  sound: '',
-                  visibility: 1,
-                }).catch(console.error);
-              }
-              resolve();
-            })
-            .catch(() => {
-              resolve();
-            });
-        } else {
-          resolve();
-        }
-      });
-    },
-    requestPermission(): Promise<void> {
-      return new Promise((resolve, reject) => {
-        const logger = useLogger();
-        const platform = Capacitor.getPlatform();
-        if (platform === 'android') {
-          bluetoothle.requestPermissionBtAdvertise(
-            (result) => {
-              if (!result.requestPermission) {
-                reject(new Error('No permission'));
-              } else {
-                resolve();
-              }
-            },
-            (error: BluetoothlePlugin.Error) => {
-              logger.log('error', error);
-              reject(error);
-            },
-          );
-        } else if (platform === 'ios') {
-          bluetoothle.requestPermission(
-            (result) => {
-              if (!result.requestPermission) {
-                reject(new Error('No permission'));
-              } else {
-                resolve();
-              }
-            },
-            (error) => {
-              logger.log('error', error);
-              reject(error);
-            },
-          );
-        } else {
-          resolve();
-        }
-      });
-    },
-    initialize(): Promise<void> {
-      this.state = ControllerState.INITIALIZING;
-      return new Promise((resolve, reject) => {
-        const logger = useLogger();
-        this.load()
-          .then(() => {
-            if (!bluetoothle) {
-              this.state = ControllerState.DISABLED;
-              return resolve();
-            }
-
-            logger.log('info', 'Checking advertising permissions ...');
-            return this.requestPermission();
-          })
-          .then(() => {
-            logger.log('info', 'Initializing Bluetooth advertiser ...');
-            bluetoothle.initialize(
-              (result) => {
-                if (result.status !== 'enabled') {
-                  this.state = ControllerState.DISABLED;
-                  return reject(new Error(`Bluetooth is disabled!`));
+    actions: {
+        findByUID(uid: string): SimulatedBeacon {
+            return this.beacons.get(uid);
+        },
+        initializeNotifications(): Promise<void> {
+            return new Promise((resolve) => {
+                if (Capacitor.getPlatform() !== 'web') {
+                    LocalNotifications.requestPermissions()
+                        .then(() => {
+                            if (Capacitor.getPlatform() === 'android') {
+                                LocalNotifications.registerActionTypes({
+                                    types: [
+                                        {
+                                            id: 'sembeacon-1',
+                                            actions: [
+                                                {
+                                                    id: 'stop',
+                                                    title: 'Stop broadcasting',
+                                                    destructive: true,
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                }).catch(console.error);
+                                LocalNotifications.createChannel({
+                                    importance: 3,
+                                    id: 'sembeacon-advertising',
+                                    name: 'SemBeacon Advertising',
+                                    vibration: false,
+                                    sound: '',
+                                    visibility: 1,
+                                }).catch(console.error);
+                            }
+                            resolve();
+                        })
+                        .catch(() => {
+                            resolve();
+                        });
+                } else {
+                    resolve();
                 }
-                this.state = ControllerState.READY;
-              },
-              {
-                request: true,
-                statusReceiver: false,
-                restoreKey: 'sembeacon',
-              },
-            );
-          })
-          .catch((error: Error) => {
-            this.state = ControllerState.NO_PERMISSION;
-            reject(error);
-          });
-      });
-    },
-    startAdvertising(beacon: SimulatedBeacon): void {
-      // Extract advertisement and scan response data
-      let advertisementParams: any = {
-        identifier: beacon.computeUID(),
-        includeDeviceName: false,
-        includeTxPowerLevel: false,
-        connectable: false,
-        discoverable: true,
-        mode: 'lowLatency',
-        txPowerLevel: 'high',
-        timeout: 0,
-      };
-      let scanResponseParams: any = undefined;
-      const manufacturerId: number =
-        beacon.manufacturerData.size > 0 ? beacon.manufacturerData.keys().next().value : undefined;
-      if (manufacturerId) {
-        const manufacturerData = beacon.manufacturerData.get(manufacturerId);
-        advertisementParams.manufacturerId = manufacturerId;
-        advertisementParams.manufacturerSpecificData =
-          bluetoothle.bytesToEncodedString(manufacturerData);
-      }
-      if (beacon.services.length > 0) {
-        const service = beacon.services[0];
-        const data = {
-          services: [service.uuid.toString()], // iOS
-          service: service.uuid.toString(), // Android
-          serviceData: bluetoothle.bytesToEncodedString(service.data),
-          includeDeviceName: false,
-          includeTxPowerLevel: false,
-        };
-        if (manufacturerId) {
-          // Use as scan response
-          scanResponseParams = data;
-        } else {
-          advertisementParams = {
-            ...advertisementParams,
-            ...data,
-          };
-        }
-      }
-
-      const logger = useLogger();
-      bluetoothle.startAdvertising(
-        () => {
-          logger.log('info', `${beacon.constructor.name} advertising started!`);
-          beacon.advertising = true;
-          this.updateNotification();
-        },
-        (error: any) => {
-          logger.log('error', error);
-          Toast.show({
-            text: `Error while starting advertising! ${error.message}.`,
-          });
-          beacon.advertising = false;
-        },
-        advertisementParams,
-        scanResponseParams,
-      );
-    },
-    stopAdvertising(beacon?: SimulatedBeacon) {
-      const logger = useLogger();
-      bluetoothle.stopAdvertising(
-        () => {
-          if (beacon) {
-            beacon.advertising = false;
-          } else {
-            (this.beacons as Map<string, SimulatedBeacon>).forEach((beacon) => {
-              beacon.advertising = false;
             });
-          }
-          this.updateNotification();
         },
-        (error: BluetoothlePlugin.Error) => {
-          logger.log('error', error);
-          Toast.show({
-            text: `Error while stopping advertising! ${error.message}.`,
-          });
+        requestPermission(): Promise<void> {
+            return new Promise((resolve, reject) => {
+                const logger = useLogger();
+                const platform = Capacitor.getPlatform();
+                if (platform === 'android') {
+                    bluetoothle.requestPermissionBtAdvertise(
+                        (result) => {
+                            if (!result.requestPermission) {
+                                reject(new Error('No permission'));
+                            } else {
+                                resolve();
+                            }
+                        },
+                        (error: BluetoothlePlugin.Error) => {
+                            logger.log('error', error);
+                            reject(error);
+                        },
+                    );
+                } else if (platform === 'ios') {
+                    bluetoothle.requestPermission(
+                        (result) => {
+                            if (!result.requestPermission) {
+                                reject(new Error('No permission'));
+                            } else {
+                                resolve();
+                            }
+                        },
+                        (error) => {
+                            logger.log('error', error);
+                            reject(error);
+                        },
+                    );
+                } else {
+                    resolve();
+                }
+            });
         },
-        beacon
-          ? {
-              identifier: beacon.uid,
+        initialize(): Promise<void> {
+            this.state = ControllerState.INITIALIZING;
+            return new Promise((resolve, reject) => {
+                const logger = useLogger();
+                this.load()
+                    .then(() => {
+                        if (!bluetoothle) {
+                            this.state = ControllerState.DISABLED;
+                            return resolve();
+                        }
+
+                        logger.log('info', 'Checking advertising permissions ...');
+                        return this.requestPermission();
+                    })
+                    .then(() => {
+                        logger.log('info', 'Initializing Bluetooth advertiser ...');
+                        bluetoothle.initialize(
+                            (result) => {
+                                if (result.status !== 'enabled') {
+                                    this.state = ControllerState.DISABLED;
+                                    return reject(new Error(`Bluetooth is disabled!`));
+                                }
+                                this.state = ControllerState.READY;
+                            },
+                            {
+                                request: true,
+                                statusReceiver: false,
+                                restoreKey: 'sembeacon',
+                            },
+                        );
+                    })
+                    .catch((error: Error) => {
+                        this.state = ControllerState.NO_PERMISSION;
+                        reject(error);
+                    });
+            });
+        },
+        startAdvertising(beacon: SimulatedBeacon): void {
+            // Extract advertisement and scan response data
+            let advertisementParams: any = {
+                identifier: beacon.computeUID(),
+                includeDeviceName: false,
+                includeTxPowerLevel: false,
+                connectable: false,
+                discoverable: true,
+                mode: 'lowLatency',
+                txPowerLevel: 'high',
+                timeout: 0,
+            };
+            let scanResponseParams: any = undefined;
+            const manufacturerId: number =
+                beacon.manufacturerData.size > 0
+                    ? beacon.manufacturerData.keys().next().value
+                    : undefined;
+            if (manufacturerId) {
+                const manufacturerData = beacon.manufacturerData.get(manufacturerId);
+                advertisementParams.manufacturerId = manufacturerId;
+                advertisementParams.manufacturerSpecificData =
+                    bluetoothle.bytesToEncodedString(manufacturerData);
             }
-          : undefined,
-      );
-    },
-    delete(beacon: BLEBeaconObject): void {
-      this.beacons.delete(beacon.uid);
-      this.save();
-    },
-    isAdvertising(beacon: SimulatedBeacon): Promise<boolean> {
-      return new Promise((resolve, reject) => {
-        bluetoothle.isAdvertising(
-          (result) => {
-            resolve(result.isAdvertising);
-          },
-          (error) => {
-            reject(error);
-          },
-          beacon
-            ? {
-                identifier: beacon.uid,
-              }
-            : undefined,
-        );
-      });
-    },
-    buildBeacon(beacon: BLEBeaconObject): Promise<BLEBeaconObject> {
-      return new Promise((resolve, reject) => {
-        if (beacon instanceof BLESemBeacon) {
-          BLESemBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-        } else if (beacon instanceof BLEAltBeacon) {
-          BLEAltBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-        } else if (beacon instanceof BLEiBeacon) {
-          BLEiBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-        } else if (beacon instanceof BLEEddystoneURL) {
-          BLEEddystoneURLBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-        } else if (beacon instanceof BLEEddystoneUID) {
-          BLEEddystoneUIDBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-        }
-      });
-    },
-    addSimulatedBeacon(uid: string, beacon: BLEBeaconObject): void {
-      this.buildBeacon(beacon).then((beacon) => {
-        if (!this.beacons.has(uid)) {
-          (beacon as any).advertising = false;
-        }
-        beacon.uid = uid;
-        this.beacons.set(uid, beacon);
-        this.save();
-      });
-    },
-    load(): Promise<void> {
-      return new Promise((resolve, reject) => {
-        Preferences.get({
-          key: 'beacon.advertising',
-        })
-          .then((result) => {
-            if (result.value && result.value !== 'undefined') {
-              const data = JSON.parse(result.value);
-              if (data) {
-                const beacons: { [k: string]: any } = DataSerializer.deserialize(data);
-                this.beacons = new Map(Object.entries(beacons));
-              }
+            if (beacon.services.length > 0) {
+                const service = beacon.services[0];
+                const data = {
+                    services: [service.uuid.toString()], // iOS
+                    service: service.uuid.toString(), // Android
+                    serviceData: bluetoothle.bytesToEncodedString(service.data),
+                    includeDeviceName: false,
+                    includeTxPowerLevel: false,
+                };
+                if (manufacturerId) {
+                    // Use as scan response
+                    scanResponseParams = data;
+                } else {
+                    advertisementParams = {
+                        ...advertisementParams,
+                        ...data,
+                    };
+                }
             }
-            resolve();
-          })
-          .catch(reject);
-      });
+
+            const logger = useLogger();
+            bluetoothle.startAdvertising(
+                () => {
+                    logger.log('info', `${beacon.constructor.name} advertising started!`);
+                    beacon.advertising = true;
+                    this.updateNotification();
+                },
+                (error: any) => {
+                    logger.log('error', error);
+                    Toast.show({
+                        text: `Error while starting advertising! ${error.message}.`,
+                    });
+                    beacon.advertising = false;
+                },
+                advertisementParams,
+                scanResponseParams,
+            );
+        },
+        stopAdvertising(beacon?: SimulatedBeacon) {
+            const logger = useLogger();
+            bluetoothle.stopAdvertising(
+                () => {
+                    if (beacon) {
+                        beacon.advertising = false;
+                    } else {
+                        (this.beacons as Map<string, SimulatedBeacon>).forEach((beacon) => {
+                            beacon.advertising = false;
+                        });
+                    }
+                    this.updateNotification();
+                },
+                (error: BluetoothlePlugin.Error) => {
+                    logger.log('error', error);
+                    Toast.show({
+                        text: `Error while stopping advertising! ${error.message}.`,
+                    });
+                },
+                beacon
+                    ? {
+                          identifier: beacon.uid,
+                      }
+                    : undefined,
+            );
+        },
+        delete(beacon: BLEBeaconObject): void {
+            this.beacons.delete(beacon.uid);
+            this.save();
+        },
+        isAdvertising(beacon: SimulatedBeacon): Promise<boolean> {
+            return new Promise((resolve, reject) => {
+                bluetoothle.isAdvertising(
+                    (result) => {
+                        resolve(result.isAdvertising);
+                    },
+                    (error) => {
+                        reject(error);
+                    },
+                    beacon
+                        ? {
+                              identifier: beacon.uid,
+                          }
+                        : undefined,
+                );
+            });
+        },
+        buildBeacon(beacon: BLEBeaconObject): Promise<BLEBeaconObject> {
+            return new Promise((resolve, reject) => {
+                if (beacon instanceof BLESemBeacon) {
+                    BLESemBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
+                } else if (beacon instanceof BLEAltBeacon) {
+                    BLEAltBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
+                } else if (beacon instanceof BLEiBeacon) {
+                    BLEiBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
+                } else if (beacon instanceof BLEEddystoneURL) {
+                    BLEEddystoneURLBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
+                } else if (beacon instanceof BLEEddystoneUID) {
+                    BLEEddystoneUIDBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
+                }
+            });
+        },
+        addSimulatedBeacon(uid: string, beacon: BLEBeaconObject): void {
+            this.buildBeacon(beacon).then((beacon) => {
+                if (!this.beacons.has(uid)) {
+                    (beacon as any).advertising = false;
+                }
+                beacon.uid = uid;
+                this.beacons.set(uid, beacon);
+                this.save();
+            });
+        },
+        load(): Promise<void> {
+            return new Promise((resolve, reject) => {
+                Preferences.get({
+                    key: 'beacon.advertising',
+                })
+                    .then((result) => {
+                        if (result.value && result.value !== 'undefined') {
+                            const data = JSON.parse(result.value);
+                            if (data) {
+                                const beacons: { [k: string]: any } =
+                                    DataSerializer.deserialize(data);
+                                this.beacons = new Map(Object.entries(beacons));
+                            }
+                        }
+                        resolve();
+                    })
+                    .catch(reject);
+            });
+        },
+        save(): Promise<void> {
+            return new Promise((resolve, reject) => {
+                const serialized = DataSerializer.serialize(
+                    Object.fromEntries(toRaw(this.beacons).entries()),
+                );
+                Preferences.set({
+                    key: 'beacon.advertising',
+                    value: JSON.stringify(serialized),
+                })
+                    .then(resolve)
+                    .catch(reject);
+            });
+        },
+        async updateNotification(): Promise<void> {
+            LocalNotifications.removeAllListeners();
+            await LocalNotifications.cancel({
+                notifications: [
+                    {
+                        id: 1,
+                    },
+                ],
+            });
+            if (this.advertisingBeacons.length !== 0) {
+                LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+                    if (action.actionId == 'stop') {
+                        this.stopAdvertising();
+                    }
+                });
+                await LocalNotifications.schedule({
+                    notifications: [
+                        {
+                            title: 'SemBeacon Advertising',
+                            body: `Broadcasting ${this.advertisingBeacons.length} beacons ...`,
+                            id: 1,
+                            channelId: 'sembeacon-advertising',
+                            actionTypeId: 'sembeacon-1',
+                            ongoing: true,
+                        },
+                    ],
+                });
+            }
+        },
     },
-    save(): Promise<void> {
-      return new Promise((resolve, reject) => {
-        const serialized = DataSerializer.serialize(
-          Object.fromEntries(toRaw(this.beacons).entries()),
-        );
-        Preferences.set({
-          key: 'beacon.advertising',
-          value: JSON.stringify(serialized),
-        })
-          .then(resolve)
-          .catch(reject);
-      });
-    },
-    async updateNotification(): Promise<void> {
-      LocalNotifications.removeAllListeners();
-      await LocalNotifications.cancel({
-        notifications: [
-          {
-            id: 1,
-          },
-        ],
-      });
-      if (this.advertisingBeacons.length !== 0) {
-        LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-          if (action.actionId == 'stop') {
-            this.stopAdvertising();
-          }
-        });
-        await LocalNotifications.schedule({
-          notifications: [
-            {
-              title: 'SemBeacon Advertising',
-              body: `Broadcasting ${this.advertisingBeacons.length} beacons ...`,
-              id: 1,
-              channelId: 'sembeacon-advertising',
-              actionTypeId: 'sembeacon-1',
-              ongoing: true,
-            },
-          ],
-        });
-      }
-    },
-  },
 });
