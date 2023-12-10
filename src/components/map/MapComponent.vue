@@ -7,7 +7,7 @@
     >
         <!-- Projection view -->
         <ol-view
-            :center="center"
+            :center="defaultCenter"
             zoom="18"
             projection="EPSG:3857"
             @change="handleViewChange"
@@ -27,14 +27,14 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref } from 'vue-property-decorator';
+import { Vue, Options, Ref, Watch } from 'vue-property-decorator';
 import { Absolute2DPosition, GCS, GeographicalPosition } from '@openhps/core';
 import { computed } from 'vue';
 import { useGeolocationStore } from '../../stores/geolocation';
 import { useBeaconStore } from '../../stores/beacon.scanning';
 import { useEnvironmentStore } from '../../stores/environment';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
-import type { Map as OlMap } from 'ol';
+import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
 import BuildingComponent from './BuildingComponent.vue';
 import { Building } from '@openhps/geospatial';
@@ -66,16 +66,10 @@ export default class MapComponent extends Vue {
             : undefined;
     });
     buildings = computed(() => this.environmentStore.buildings);
-    defaultCenter: number[] = undefined;
-    center = computed(() => {
-        return this.defaultCenter
-            ? fromLonLat(this.defaultCenter)
-            : this.location
-            ? (this.location as any)
-            : [0, 0];
-    });
+    defaultCenter: number[] = [0, 0];
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];
+    following = true;
 
     mounted() {
         this.mapRef.map.addLayer(
@@ -87,11 +81,18 @@ export default class MapComponent extends Vue {
             }),
         );
 
-        this.geolocationStore.sourceNode.start();
+        this.geolocationStore.start();
+    }
+
+    @Watch("geolocationStore.location")
+    onLocationChange(): void {
+      if (this.following) {
+        this.defaultCenter = this.location as unknown as Coordinate;
+      }
     }
 
     unmounted() {
-        this.geolocationStore.sourceNode.stop();
+        this.geolocationStore.stop();
     }
 
     highlightBeacon(uid: string): void {
@@ -105,8 +106,8 @@ export default class MapComponent extends Vue {
                     !Number.isNaN(position.x)
                 ) {
                     const array = beacon.position.toVector3().toArray();
-                    this.defaultCenter = [array[1], array[0]];
-                    this.mapRef.map.getView().setCenter(fromLonLat(this.defaultCenter));
+                    this.defaultCenter = fromLonLat([array[1], array[0]]);
+                    this.mapRef.map.getView().setCenter(this.defaultCenter);
                     this.mapRef.map.getView().setZoom(18);
                 }
             })
@@ -125,6 +126,7 @@ export default class MapComponent extends Vue {
             component.setFocus(false);
           }
         });
+        this.following = false;
     }
 
     _buildingDistances(): { building: Building, distance: number }[] {

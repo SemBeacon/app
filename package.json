@@ -51,6 +51,7 @@
     "@openhps/capacitor-bluetooth": "^0.1.16",
     "@openhps/capacitor-geolocation": "^0.1.16",
     "@openhps/capacitor-preferences": "^0.1.16",
+    "@openhps/capacitor-sensors": "^0.1.16",
     "@openhps/cordova-ibeacon": "^0.1.5",
     "@openhps/core": "^0.6.8",
     "@openhps/geospatial": "^0.1.29",

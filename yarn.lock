@@ -7191,6 +7191,13 @@
     "@capacitor/preferences" "^5.0.6"
     lz-string "^1.5.0"
 
+"@openhps/capacitor-sensors@^0.1.16":
+  version "0.1.16"
+  resolved "https://registry.yarnpkg.com/@openhps/capacitor-sensors/-/capacitor-sensors-0.1.16.tgz#f812a5cbcceb0d6acbb888112635723643a81280"
+  integrity sha512-KyEfaIwe4RLOvcklEkRu1Hl4yXRHfrgijf99rcXDYryxr7izWsQMJgRiq16sHth7oPyhA3WKSEjvCQspDeoWyg==
+  dependencies:
+    "@openhps/web-sensors" ">=0.1.4"
+
 "@openhps/cordova-ibeacon@^0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@openhps/cordova-ibeacon/-/cordova-ibeacon-0.1.5.tgz#fb842344c26041a75fa1fe7fc324f60e96c10a49"
@@ -7289,6 +7296,11 @@
   version "0.1.14"
   resolved "https://registry.yarnpkg.com/@openhps/video/-/video-0.1.14.tgz#146018fbd075b7f7aa627df467ae6424d414933f"
   integrity sha512-BgUDHW0sXwiQHKtaL+oQRaJ+wOe8LfgWEq4n0UYWrv0NEGePP4fQKgWSk6NiR/EEpVPJmBjPMyfC7YUUaBLoHQ==
+
+"@openhps/web-sensors@>=0.1.4":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@openhps/web-sensors/-/web-sensors-0.1.14.tgz#54e73de4b2ef88b2c700e57bdd661985b9117e22"
+  integrity sha512-AgFpeD7ujjR9Z/XxxtjVOTadLAZGgCQ05mH/tYDP3edU3qsaugEJzja/0F9TYFRo2SJQljjtqekIsOMZniPo1A==
 
 "@petamoriken/float16@^3.4.7":
   version "3.8.4"
