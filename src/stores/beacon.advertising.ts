@@ -37,9 +37,6 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
         state: ControllerState.PENDING,
     }),
     getters: {
-        beacons(): SimulatedBeacon[] {
-            return Array.from(this.beaconStore.beacons.values());
-        },
         advertisingBeacons(): SimulatedBeacon[] {
             return Array.from(this.beacons.values()).filter(
                 (b: SimulatedBeacon) => b.advertising,

@@ -151,7 +151,7 @@ export default class BLESimulatorComponent extends Vue {
     downloading: boolean = false;
 
     get beacons(): SimulatedBeacon[] {
-        return this.beaconStore.beacons;
+        return Array.from(this.beaconStore.beacons.values() as any);
     }
 
     async addBeacon(): Promise<void> {

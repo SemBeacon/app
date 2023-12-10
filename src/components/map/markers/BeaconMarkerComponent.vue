@@ -123,7 +123,9 @@ export default class BeaconMarkerComponent extends Vue {
         setInterval(() => {
             this.sourceRef.source.getFeatures().forEach((marker: Feature<Point>) => {
                 const image = (marker.getStyle() as Style).getImage();
-                image.setOpacity(this.opacity(this.getBeaconByMarker(marker)));
+                if (image) {
+                    image.setOpacity(this.opacity(this.getBeaconByMarker(marker)));
+                }
             });
         }, 1000);
     }

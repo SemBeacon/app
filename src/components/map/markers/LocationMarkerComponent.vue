@@ -43,7 +43,6 @@ import { GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './BeaconMarkerComponent.vue';
 import { computed } from 'vue';
 import { useGeolocationStore } from '../../../stores/geolocation';
-import MapImageComponent from '../visualizations/MapImageComponent.vue';
 import { fromLonLat, transform } from 'ol/proj';
 import { circular } from 'ol/geom/Polygon.js';
 import { Coordinate } from 'ol/coordinate';
@@ -51,7 +50,6 @@ import { Coordinate } from 'ol/coordinate';
 @Options({
     components: {
         BeaconMarkerComponent,
-        MapImageComponent,
     },
 })
 export default class LocationMarkerComponent extends Vue {

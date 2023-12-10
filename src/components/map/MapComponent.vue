@@ -1,4 +1,6 @@
 <template>
+  <div class="fullscreen">
+    <map-image-component></map-image-component>
     <ol-map
         id="map"
         ref="mapRef"
@@ -23,7 +25,9 @@
 
         <!-- Your current location -->
         <location-marker-component></location-marker-component>
+        <location-center-component ref="locationCenterRef"></location-center-component>
     </ol-map>
+  </div>
 </template>
 
 <script lang="ts">
@@ -41,13 +45,17 @@ import { Building } from '@openhps/geospatial';
 import { Coordinate } from 'ol/coordinate';
 import { Vector2 } from '@openhps/core';
 import LocationMarkerComponent from './markers/LocationMarkerComponent.vue';
+import MapImageComponent from './editor/MapImageComponent.vue';
+import LocationCenterComponent from './controls/LocationCenterComponent.vue';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
     components: {
         BuildingComponent,
-        LocationMarkerComponent
+        LocationMarkerComponent,
+        MapImageComponent,
+        LocationCenterComponent,
     },
 })
 export default class MapComponent extends Vue {
@@ -69,7 +77,7 @@ export default class MapComponent extends Vue {
     defaultCenter: number[] = [0, 0];
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];
-    following = true;
+    @Ref() locationCenterRef: LocationCenterComponent;
 
     mounted() {
         this.mapRef.map.addLayer(
@@ -89,6 +97,14 @@ export default class MapComponent extends Vue {
       if (this.following) {
         this.defaultCenter = this.location as unknown as Coordinate;
       }
+    }
+
+    get following(): boolean {
+      return this.locationCenterRef.following;
+    }
+
+    set following(following: boolean) {
+      this.locationCenterRef.following = following;
     }
 
     unmounted() {
@@ -114,7 +130,7 @@ export default class MapComponent extends Vue {
             .catch(console.error);
     }
 
-    handleViewChange(event: any) {
+    handleViewChange(event: any) { 
         this.zoom = event.target.getZoom();
         const buildingDistances = this._buildingDistances();
         this.buildingRef.forEach(component => {
@@ -148,9 +164,15 @@ export default class MapComponent extends Vue {
 <style scoped lang="scss">
 @import 'ol-geocoder/dist/ol-geocoder.min.css';
 
+.fullscreen {
+  height: 100%;
+  width: 100%;
+}
+
 #map {
     height: 100%;
     width: 100%;
     background-color: var(--ion-background-color);
+    z-index: 1;
 }
 </style>

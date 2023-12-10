@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop, Inject } from 'vue-property-decorator';
+import { Vue, Options, Prop, Inject, Watch } from 'vue-property-decorator';
 import { MapObject } from '../../../models/MapObject';
 import { fromLonLat } from 'ol/proj';
 import type { Coordinate } from 'ol/coordinate';
@@ -17,9 +17,10 @@ import { HelmertTransformation } from '../../../utils/HelmertTransformation';
 @Options({
     components: {},
 })
-export default class MapImageComponent extends Vue {
+export default class ImageOverlayComponent extends Vue {
     @Prop() mapObject: MapObject;
     @Inject() map: Map;
+    @Prop() edit: boolean = false;
     layer: GeoImageLayer;
 
     mounted(): void {
@@ -29,10 +30,22 @@ export default class MapImageComponent extends Vue {
                 url: this.mapObject.image,
                 imageMask: this.coordinates,
             }),
+            onclick: console.log
         });
         this.layer.setZIndex(1);
         this.calculate();
         this.map.addLayer(this.layer);
+    }
+
+    @Watch("edit")
+    onEdit(edit: boolean): void {
+        if (edit) {
+            this.layer.setZIndex(10);
+            this.layer.setOpacity(1);
+        } else {
+            this.layer.setZIndex(1);
+            this.layer.setOpacity(0.7);
+        }
     }
 
     calculate(): void {
@@ -53,7 +66,6 @@ export default class MapImageComponent extends Vue {
             const a = transformation.getRotation();
             const t = transformation.getTranslation();
 
-            console.log({ sc, a, t });
             source.setScale(sc);
             source.setRotation(a);
             source.setCenter(t);

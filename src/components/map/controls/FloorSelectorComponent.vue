@@ -16,6 +16,7 @@ import { Floor } from '@openhps/geospatial';
 })
 export default class FloorSelectorComponent extends Vue {
     @Inject() map: Map;
+    @Prop() edit: boolean = false;
     mainBar: Bar;
     @Prop() floors: Floor[];
 
@@ -28,6 +29,24 @@ export default class FloorSelectorComponent extends Vue {
         const toggle = this.mainBar.getControls()[0] as Toggle;
         toggle.setActive(true);
         this.$emit("change", floors[0], true);
+    }
+
+    @Watch('edit')
+    onEdit(): void {
+        const addToggle = new Toggle({
+            html: "+",
+            onToggle: () => {
+
+            },
+        });
+        this.mainBar.addControl(addToggle);
+        const removeToggle = new Toggle({
+            html: "-",
+            onToggle: () => {
+
+            },
+        });
+        this.mainBar.addControl(removeToggle);
     }
 
     show(): void {

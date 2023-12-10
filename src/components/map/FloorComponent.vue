@@ -28,7 +28,7 @@ import type { Map } from 'ol';
 import { Floor, SymbolicSpace } from '@openhps/geospatial';
 import { useEnvironmentStore } from '../../stores/environment';
 import GeoJsonComponent from './visualizations/GeoJsonComponent.vue';
-import MapImageComponent from './visualizations/MapImageComponent.vue';
+import MapImageComponent from './visualizations/ImageOverlayComponent.vue';
 import BeaconMarkerComponent from './markers/BeaconMarkerComponent.vue';
 import { useBeaconStore } from '../../stores/beacon.scanning';
 import { Absolute2DPosition } from '@openhps/core';
