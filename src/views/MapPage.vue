@@ -7,6 +7,14 @@
                 </ion-buttons>
 
                 <ion-title>Beacon Map</ion-title>
+
+                <ion-buttons slot="end">
+                    <ion-button
+                        icon-only
+                    >
+                        <ion-icon :name="'create-sharp'"></ion-icon>
+                    </ion-button>
+                </ion-buttons>
                 <ion-progress-bar
                     v-if="beaconStore.isScanning"
                     color="light"
@@ -38,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref } from 'vue-property-decorator';
+import { Vue, Options, Ref, Provide } from 'vue-property-decorator';
 import {
     IonButtons,
     IonContent,
@@ -102,7 +110,10 @@ export default class MapPage extends Vue {
     beacons = computed(() => this.beaconStore.beacons);
     loading = false;
     @Ref('mapComponent') map: MapComponent;
-
+    @Provide({
+      reactive: true
+    }) mapEdit: boolean = true;
+    
     ionViewDidEnter(): void {
         const beaconUID = this.route.params.beaconUID as string;
         if (beaconUID) {

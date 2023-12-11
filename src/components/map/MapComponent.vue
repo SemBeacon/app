@@ -1,6 +1,7 @@
 <template>
   <div class="fullscreen">
-    <map-image-component></map-image-component>
+    <map-image-selector-modal ref="imageSelector"></map-image-selector-modal>
+    <map-image-component ref="imageEditor"></map-image-component>
     <ol-map
         id="map"
         ref="mapRef"
@@ -31,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref, Watch } from 'vue-property-decorator';
+import { Vue, Options, Ref, Watch, Provide } from 'vue-property-decorator';
 import { Absolute2DPosition, GCS, GeographicalPosition } from '@openhps/core';
 import { computed } from 'vue';
 import { useGeolocationStore } from '../../stores/geolocation';
@@ -47,6 +48,7 @@ import { Vector2 } from '@openhps/core';
 import LocationMarkerComponent from './markers/LocationMarkerComponent.vue';
 import MapImageComponent from './editor/MapImageComponent.vue';
 import LocationCenterComponent from './controls/LocationCenterComponent.vue';
+import MapImageSelectorModal from '@/components/modals/MapImageSelectorModal.vue';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -55,6 +57,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
         BuildingComponent,
         LocationMarkerComponent,
         MapImageComponent,
+        MapImageSelectorModal,
         LocationCenterComponent,
     },
 })
@@ -78,8 +81,17 @@ export default class MapComponent extends Vue {
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];
     @Ref() locationCenterRef: LocationCenterComponent;
+    @Provide({
+      reactive: true
+    }) imageSelector: MapImageSelectorModal;
+    @Provide({
+      reactive: true
+    }) imageEditor: MapImageComponent;
 
     mounted() {
+      this.imageSelector = this.$refs.imageSelector as MapImageSelectorModal;
+      this.imageEditor = this.$refs.imageEditor as MapImageComponent;
+
         this.mapRef.map.addLayer(
             new MapboxVectorLayer({
                 styleUrl: `mapbox://styles/${this.id}`,

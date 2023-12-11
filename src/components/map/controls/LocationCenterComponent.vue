@@ -62,35 +62,18 @@ export default class LocationCenterComponent extends Vue {
         }
     }
 
-    flyTo(location: Coordinate, done: (success: boolean) => void = () => {}) {
+    flyTo(location: Coordinate, done: () => void = () => {}) {
         const view =  this.map.getView();
         const duration = 2000;
         const zoom = view.getZoom();
-        let parts = 2;
-        let called = false;
-        function callback(complete: boolean) {
-            --parts;
-            if (called) {
-                return;
-            }
-            if (parts === 0 || !complete) {
-                called = true;
-                done(complete);
-            }
-        }
         view.animate({
                 center: location,
                 duration: duration,
-            },
-            callback);
-        view.animate({
-                zoom: zoom - 1,
-                duration: duration / 2,
             }, {
-                zoom: zoom,
+                zoom: Math.max(18, zoom),
                 duration: duration / 2,
             },
-            callback);
+            done);
     }
 }
 </script>
@@ -103,6 +86,9 @@ export default class LocationCenterComponent extends Vue {
     position: absolute;
 }
 #location-center ion-icon.active.icon-small {
-    font-size: 10%;
+    width: 20%;
+    height: 20%;
+    margin-left: auto;
+    margin-right: auto;
 }
 </style>

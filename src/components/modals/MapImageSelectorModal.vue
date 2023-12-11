@@ -1,13 +1,10 @@
 <template>
-    <ion-modal ref="modal" trigger="open-modal" @willDismiss="onWillDismiss">
+    <ion-modal ref="modal" :isOpen="open" @willDismiss="onWillDismiss">
       <ion-header>
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button @click="cancel()">Cancel</ion-button>
-          </ion-buttons>
-          <ion-title>Welcome</ion-title>
+          <ion-title>Upload floor plan</ion-title>
           <ion-buttons slot="end">
-            <ion-button :strong="true" @click="confirm()">Confirm</ion-button>
+            <ion-button :strong="true" @click="confirm()">Upload</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -36,6 +33,7 @@ import {
     IonToolbar,
     IonInput,
     IonHeader,
+    IonItem,
 } from '@ionic/vue';
 
 @Options({
@@ -48,9 +46,44 @@ import {
         IonToolbar,
         IonInput,
         IonHeader,
+        IonItem,
     },
 })
 export default class MapImageSelectorModal extends Vue {
+  open = false;
 
+  cancel(): void {
+
+  }
+
+  show(): void {
+    this.open = true;
+  }
+  
+  confirm(): void {
+
+  }
+
+  onWillDismiss(): void {
+
+  }
 }
 </script>
+
+<style scoped>
+ion-modal {
+  --max-height: 50%;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+ion-modal::part(backdrop) {
+  background: rgba(209, 213, 219);
+  opacity: 1;
+}
+
+ion-modal ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: white;
+}
+</style>

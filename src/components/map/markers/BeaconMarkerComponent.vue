@@ -1,14 +1,18 @@
 <template>
     <div>
-        <ol-vector-layer ref="markerLayer" :z-index="1000">
+        <ol-vector-layer 
+            ref="markerLayer" 
+            :z-index="1000"
+            updateWhileAnimating="true"
+            updateWhileInteraction="true">
             <ol-source-vector ref="sourceRef">
                 <ol-feature v-for="beacon in beacons" :key="beacon.uid">
                     <ol-geom-point :coordinates="coordinates(beacon)" />
                     <ol-style>
                         <ol-style-icon
                             :src="markerIcon(beacon)"
-                            :scale="40 / 639.13"
-                            :anchor="[13 / 40, 39 / 40]"
+                            :scale="35 / 639.13"
+                            :anchor="[13 / 35, 39 / 35]"
                         >
                         </ol-style-icon>
                     </ol-style>
@@ -21,12 +25,10 @@
             :position="[coordinates(selectedBeacon)[0], coordinates(selectedBeacon)[1]]"
         >
             <div class="ol-popup">
-                <span class="key">{{ selectedBeacon.displayName }}</span
-                ><br />
+                <span class="key">{{ selectedBeacon.displayName }}</span><br />
                 <div v-if="selectedBeacon.lastSeen">
                     <span class="key">Last seen: </span
-                    ><span class="value">{{ lastSeen(selectedBeacon) }}</span
-                    ><br />
+                    ><span class="value">{{ lastSeen(selectedBeacon) }}</span><br />
                     <span class="key">RSSI: </span
                     ><span class="value">{{ selectedBeacon.rssi }} dBm</span><br />
                     <span class="key">Distance: </span

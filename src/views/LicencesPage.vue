@@ -5,7 +5,7 @@
                 <ion-buttons slot="start">
                     <ion-menu-button></ion-menu-button>
                 </ion-buttons>
-                <ion-title>Attributions</ion-title>
+                <ion-title>Licenses</ion-title>
             </ion-toolbar>
         </ion-header>
 
@@ -13,9 +13,18 @@
             <ion-list>
                 <ion-item-group>
                     <ion-item-divider>
-                        <ion-label></ion-label>
+                        <ion-label>Map Licenses</ion-label>
                     </ion-item-divider>
                     <ion-item>
+                        <ion-label></ion-label>
+                    </ion-item>
+                </ion-item-group>
+                <ion-item-group>
+                    <ion-item-divider>
+                        <ion-label>Open Source Licenses</ion-label>
+                    </ion-item-divider>
+                    <ion-item>
+                        <ion-label>OpenHPS</ion-label>
                     </ion-item>
                 </ion-item-group>
             </ion-list>

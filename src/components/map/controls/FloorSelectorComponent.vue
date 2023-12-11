@@ -9,6 +9,7 @@ import { Vue, Options, Inject, Watch, Prop } from 'vue-property-decorator';
 import type { Map } from 'ol';
 import Bar from 'ol-ext/control/Bar';
 import Toggle from 'ol-ext/control/Toggle';
+import Button from 'ol-ext/control/Button';
 import { Floor } from '@openhps/geospatial';
 
 @Options({
@@ -16,8 +17,9 @@ import { Floor } from '@openhps/geospatial';
 })
 export default class FloorSelectorComponent extends Vue {
     @Inject() map: Map;
-    @Prop() edit: boolean = false;
+    @Inject() mapEdit: boolean = false;
     mainBar: Bar;
+    editBar: Bar;
     @Prop() floors: Floor[];
 
     @Watch('floors')
@@ -31,40 +33,49 @@ export default class FloorSelectorComponent extends Vue {
         this.$emit("change", floors[0], true);
     }
 
-    @Watch('edit')
-    onEdit(): void {
-        const addToggle = new Toggle({
-            html: "+",
-            onToggle: () => {
-
-            },
-        });
-        this.mainBar.addControl(addToggle);
-        const removeToggle = new Toggle({
-            html: "-",
-            onToggle: () => {
-
-            },
-        });
-        this.mainBar.addControl(removeToggle);
+    @Watch('mapEdit')
+    onEdit(edit: boolean): void {
+        if (edit) {
+            this.map.addControl(this.editBar);
+        } else {
+            this.map.removeControl(this.editBar);
+        }
     }
 
     show(): void {
+        if (this.mapEdit) {
+            this.map.addControl(this.editBar);
+        }
         this.map.addControl(this.mainBar);
     }
 
     hide(): void {
+        this.map.removeControl(this.editBar);
         this.map.removeControl(this.mainBar);
     }
 
     mounted(): void {
+        this.editBar = new Bar();
+        this.editBar.setPosition('top-left');
+        this.editBar.addControl(new Button({
+            html: `<ion-icon name="layers-outline"></ion-icon>`,
+            title: "Add a floor",
+            className: "add-btn",
+            handleClick: () => {
+
+            }
+        }));
+        if (this.mapEdit) {
+            this.map.addControl(this.editBar);
+        }
+
         this.mainBar = new Bar({ toggleOne: true });
         this.mainBar.setPosition('top-left');
     }
 
     addFloor(floor: Floor): void {
         const toggle = new Toggle({
-            html: floor.displayName.length > 3 ? (floor.floorLevel ?? 0).toString() : floor.displayName,
+            html: floor.displayName.length > 4 ? (floor.floorLevel ?? "?").toString() : floor.displayName,
             onToggle: (isSelected) => {
                 this.$emit("change", floor, isSelected);
             },
@@ -79,3 +90,9 @@ export default class FloorSelectorComponent extends Vue {
     }
 }
 </script>
+
+<style scoped>
+.add-btn {
+
+}
+</style>

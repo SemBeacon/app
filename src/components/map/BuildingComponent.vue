@@ -26,6 +26,7 @@ import { useEnvironmentStore } from '../../stores/environment';
 import FloorComponent from './FloorComponent.vue';
 import { Coordinate } from 'ol/coordinate';
 import { GeographicalPosition } from '@openhps/core';
+import MapImageComponent from './editor/MapImageComponent.vue';
 
 @Options({
     components: {
@@ -42,6 +43,7 @@ export default class BuildingComponent extends Vue {
     environmentStore = useEnvironmentStore();
     floors: Floor[] = [];
     selectedFloor: Floor;
+    @Inject() imageEditor: MapImageComponent;
 
     mounted(): void {
         // Find all floors in the building
@@ -75,8 +77,10 @@ export default class BuildingComponent extends Vue {
             
             if (this.focus) {
                 this.floorSelector.show();
+                this.imageEditor.show();
             } else {
                 this.floorSelector.hide();
+                this.imageEditor.hide();
             }
         }
     }
