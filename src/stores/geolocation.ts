@@ -22,13 +22,13 @@ export const useGeolocationStore = defineStore('geolocation', {
         sources: [
             new GeolocationSourceNode({
                 interval: 15000,
-                source: new DataObject("phone")
+                source: new DataObject('phone'),
             }),
             new SensorSourceNode({
                 interval: 500,
                 sensors: [AbsoluteOrientationSensor],
-                source: new DataObject("phone"),
-            })
+                source: new DataObject('phone'),
+            }),
         ],
         state: ControllerState.PENDING,
     }),
@@ -50,11 +50,13 @@ export const useGeolocationStore = defineStore('geolocation', {
             this.state = ControllerState.INITIALIZING;
             return new Promise((resolve, reject) => {
                 ModelBuilder.create()
-                    .addShape(GraphBuilder.create()
-                        .from(this.sources[1])
-                        .debounce(500, TimeUnit.MILLISECOND)
-                        .to("orientation"))
-                    .from(this.sources[0], "orientation")
+                    .addShape(
+                        GraphBuilder.create()
+                            .from(this.sources[1])
+                            .debounce(500, TimeUnit.MILLISECOND)
+                            .to('orientation'),
+                    )
+                    .from(this.sources[0], 'orientation')
                     .to(
                         new CallbackSinkNode((frame: DataFrame) => {
                             const position = frame.source.position;
@@ -78,8 +80,8 @@ export const useGeolocationStore = defineStore('geolocation', {
                             return resolve();
                         } else {
                             return Promise.all([
-                                GeolocationSourceNode.requestPermissions(), 
-                                SensorSourceNode.requestPermissions([AbsoluteOrientationSensor])
+                                GeolocationSourceNode.requestPermissions(),
+                                SensorSourceNode.requestPermissions([AbsoluteOrientationSensor]),
                             ]);
                         }
                     })

@@ -1,3 +1,1 @@
-export class SystemAction {
-
-}
+export class SystemAction {}

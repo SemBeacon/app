@@ -3,16 +3,10 @@
         <slot></slot>
 
         <!-- Floor -->
-        <floor-component 
-            ref="floorRef"
-            :floor="selectedFloor">
-        </floor-component>
+        <floor-component ref="floorRef" :floor="selectedFloor"> </floor-component>
 
         <!-- Building Controls -->
-        <floor-selector-component 
-            ref="floorSelector"
-            @change="onFloorChange"
-            :floors="floors">
+        <floor-selector-component ref="floorSelector" :floors="floors" @change="onFloorChange">
         </floor-selector-component>
     </div>
 </template>
@@ -31,15 +25,15 @@ import MapImageComponent from './editor/MapImageComponent.vue';
 @Options({
     components: {
         FloorSelectorComponent,
-        FloorComponent
+        FloorComponent,
     },
 })
 export default class BuildingComponent extends Vue {
     @Inject() map: Map;
     @Prop() building: Building;
     focus: boolean = false;
-    @Ref("floorRef") floorRef: FloorComponent;
-    @Ref("floorSelector") floorSelector: FloorSelectorComponent;
+    @Ref('floorRef') floorRef: FloorComponent;
+    @Ref('floorSelector') floorSelector: FloorSelectorComponent;
     environmentStore = useEnvironmentStore();
     floors: Floor[] = [];
     selectedFloor: Floor;
@@ -54,7 +48,7 @@ export default class BuildingComponent extends Vue {
                 },
             })
             .then((floors) => {
-                this.floors = floors.filter(f => f instanceof Floor);
+                this.floors = floors.filter((f) => f instanceof Floor);
                 if (this.floorSelector !== undefined) {
                     this.floorSelector.onFloorsChange(this.floors);
                 }
@@ -74,7 +68,7 @@ export default class BuildingComponent extends Vue {
     setFocus(focus: boolean) {
         if (this.focus !== focus) {
             this.focus = focus;
-            
+
             if (this.focus) {
                 this.floorSelector.show();
                 this.imageEditor.show();

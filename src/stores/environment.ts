@@ -24,15 +24,15 @@ export const useEnvironmentStore = defineStore('environments', {
         service: new SymbolicSpaceService(new MemoryDataService(SymbolicSpace)),
     }),
     getters: {
-      buildings(): Building[] {
-        const buildings: Building[] = [];
-        this.environments.forEach(env => {
-          if (env instanceof Building) {
-            buildings.push(env);
-          }
-        });
-        return buildings;
-      }
+        buildings(): Building[] {
+            const buildings: Building[] = [];
+            this.environments.forEach((env) => {
+                if (env instanceof Building) {
+                    buildings.push(env);
+                }
+            });
+            return buildings;
+        },
     },
     actions: {
         fetchEnvironments(store: Store): Promise<void> {

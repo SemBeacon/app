@@ -30,7 +30,7 @@ export default class FloorSelectorComponent extends Vue {
         });
         const toggle = this.mainBar.getControls()[0] as Toggle;
         toggle.setActive(true);
-        this.$emit("change", floors[0], true);
+        this.$emit('change', floors[0], true);
     }
 
     @Watch('mapEdit')
@@ -57,14 +57,14 @@ export default class FloorSelectorComponent extends Vue {
     mounted(): void {
         this.editBar = new Bar();
         this.editBar.setPosition('top-left');
-        this.editBar.addControl(new Button({
-            html: `<ion-icon name="layers-outline"></ion-icon>`,
-            title: "Add a floor",
-            className: "add-btn",
-            handleClick: () => {
-
-            }
-        }));
+        this.editBar.addControl(
+            new Button({
+                html: `<ion-icon name="layers-outline"></ion-icon>`,
+                title: 'Add a floor',
+                className: 'add-btn',
+                handleClick: () => {},
+            }),
+        );
         if (this.mapEdit) {
             this.map.addControl(this.editBar);
         }
@@ -75,9 +75,12 @@ export default class FloorSelectorComponent extends Vue {
 
     addFloor(floor: Floor): void {
         const toggle = new Toggle({
-            html: floor.displayName.length > 4 ? (floor.floorLevel ?? "?").toString() : floor.displayName,
+            html:
+                floor.displayName.length > 4
+                    ? (floor.floorLevel ?? '?').toString()
+                    : floor.displayName,
             onToggle: (isSelected) => {
-                this.$emit("change", floor, isSelected);
+                this.$emit('change', floor, isSelected);
             },
         });
         this.mainBar.addControl(toggle);
@@ -93,6 +96,5 @@ export default class FloorSelectorComponent extends Vue {
 
 <style scoped>
 .add-btn {
-
 }
 </style>

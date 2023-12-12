@@ -30,14 +30,14 @@ export default class ImageOverlayComponent extends Vue {
                 url: this.mapObject.image,
                 imageMask: this.coordinates,
             }),
-            onclick: console.log
+            onclick: console.log,
         });
         this.layer.setZIndex(1);
         this.calculate();
         this.map.addLayer(this.layer);
     }
 
-    @Watch("edit")
+    @Watch('edit')
     onEdit(edit: boolean): void {
         if (edit) {
             this.layer.setZIndex(10);

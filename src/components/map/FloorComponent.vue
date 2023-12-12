@@ -3,9 +3,7 @@
         <slot></slot>
 
         <!-- Floorplan -->
-        <map-image-component 
-            :mapObject="undefined" v-if="false">
-        </map-image-component>
+        <map-image-component v-if="false" :map-object="undefined"> </map-image-component>
 
         <!-- GeoJSON Spaces -->
         <geo-json-component
@@ -14,11 +12,9 @@
             :space="environment"
         >
         </geo-json-component>
-        
+
         <!-- Beacons on the floor -->
-        <beacon-marker-component
-            :beacons="beacons">
-        </beacon-marker-component>
+        <beacon-marker-component :beacons="beacons"> </beacon-marker-component>
     </div>
 </template>
 
@@ -37,7 +33,7 @@ import { Absolute2DPosition } from '@openhps/core';
     components: {
         GeoJsonComponent,
         MapImageComponent,
-        BeaconMarkerComponent
+        BeaconMarkerComponent,
     },
 })
 export default class FloorComponent extends Vue {
@@ -45,7 +41,7 @@ export default class FloorComponent extends Vue {
     @Prop() floor: Floor;
     environmentStore = useEnvironmentStore();
     beaconStore = useBeaconStore();
-    
+
     spaces: SymbolicSpace<any>[] = [];
 
     @Watch('floor')

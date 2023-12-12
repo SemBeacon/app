@@ -1,3 +1,1 @@
-export class UserAction {
-
-}
+export class UserAction {}

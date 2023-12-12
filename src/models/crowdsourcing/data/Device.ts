@@ -1,10 +1,6 @@
-import { DataObject, SerializableObject } from "@openhps/core";
+import { DataObject, SerializableObject } from '@openhps/core';
 
 @SerializableObject({
-    rdf: {
-        
-    }
+    rdf: {},
 })
-export class Device extends DataObject {
-
-}
+export class Device extends DataObject {}

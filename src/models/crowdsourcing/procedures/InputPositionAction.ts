@@ -1,11 +1,7 @@
-import { SerializableObject } from "@openhps/core";
-import { InputAction } from "./InputAction";
+import { SerializableObject } from '@openhps/core';
+import { InputAction } from './InputAction';
 
 @SerializableObject({
-    rdf: {
-
-    }
+    rdf: {},
 })
-export class InputPositionAction extends InputAction {
-
-}
+export class InputPositionAction extends InputAction {}

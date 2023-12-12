@@ -1,8 +1,9 @@
 <template>
-    <ol-vector-layer 
-        className="geojson"
-        updateWhileAnimating="true"
-        updateWhileInteraction="true">
+    <ol-vector-layer
+        class-name="geojson"
+        update-while-animating="true"
+        update-while-interaction="true"
+    >
         <ol-source-vector :features="features" @featuresloaderror="console.error">
         </ol-source-vector>
         <ol-style>

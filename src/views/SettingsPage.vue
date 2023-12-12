@@ -9,9 +9,7 @@
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true">
-
-        </ion-content>
+        <ion-content :fullscreen="true"> </ion-content>
     </ion-page>
 </template>
 

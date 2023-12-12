@@ -1,14 +1,14 @@
 <template>
-    <ol-vector-layer 
-        v-if="location" className="location-marker"            
-        updateWhileAnimating="true"
-        updateWhileInteraction="true">
+    <ol-vector-layer
+        v-if="location"
+        class-name="location-marker"
+        update-while-animating="true"
+        update-while-interaction="true"
+    >
         <ol-source-vector>
             <!-- Location accuracy -->
             <ol-feature v-if="accuracy > 0 && accuracy < 100">
-                <ol-geom-polygon
-                    :coordinates="accuracyCoordinates"
-                ></ol-geom-polygon>
+                <ol-geom-polygon :coordinates="accuracyCoordinates"></ol-geom-polygon>
                 <ol-style>
                     <ol-style-stroke color="rgba(0, 66, 200, 0.4)" width="1"></ol-style-stroke>
                     <ol-style-fill color="rgba(0, 66, 256, 0.2)"></ol-style-fill>
@@ -68,7 +68,7 @@ export default class LocationMarkerComponent extends Vue {
     rotation = computed(() => {
         const location: GeographicalPosition = this.geolocationStore.location;
         return location && location.orientation ? -location.orientation.toEuler().z : undefined;
-    });    
+    });
 
     get accuracy(): number {
         if (!this.geolocationStore.location) {

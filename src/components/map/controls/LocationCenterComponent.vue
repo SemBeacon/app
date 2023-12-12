@@ -6,23 +6,14 @@
             :disabled="location === undefined"
             @click="toggleFollow"
         >
-            <ion-icon 
-                v-if="following" 
-                class="active"
-                size="small" 
-                name="ellipse-sharp"></ion-icon>
-            <ion-icon
-                name="locate-outline"></ion-icon>
+            <ion-icon v-if="following" class="active" size="small" name="ellipse-sharp"></ion-icon>
+            <ion-icon name="locate-outline"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </template>
 
 <script lang="ts">
-import {
-    IonFab,
-    IonFabButton,
-    IonIcon
-} from '@ionic/vue';
+import { IonFab, IonFabButton, IonIcon } from '@ionic/vue';
 import { Vue, Options, Inject } from 'vue-property-decorator';
 import { GeographicalPosition } from '@openhps/core';
 import { computed } from 'vue';
@@ -35,7 +26,7 @@ import { Coordinate } from 'ol/coordinate';
     components: {
         IonFab,
         IonFabButton,
-        IonIcon
+        IonIcon,
     },
 })
 export default class LocationCenterComponent extends Vue {
@@ -50,9 +41,7 @@ export default class LocationCenterComponent extends Vue {
             : undefined;
     });
 
-    mounted(): void {
-
-    }
+    mounted(): void {}
 
     toggleFollow(): void {
         if (!this.following) {
@@ -63,17 +52,20 @@ export default class LocationCenterComponent extends Vue {
     }
 
     flyTo(location: Coordinate, done: () => void = () => {}) {
-        const view =  this.map.getView();
+        const view = this.map.getView();
         const duration = 2000;
         const zoom = view.getZoom();
-        view.animate({
+        view.animate(
+            {
                 center: location,
                 duration: duration,
-            }, {
+            },
+            {
                 zoom: Math.max(18, zoom),
                 duration: duration / 2,
             },
-            done);
+            done,
+        );
     }
 }
 </script>
