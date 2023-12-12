@@ -2,7 +2,10 @@
     <ion-modal ref="modal" :is-open="open" @willDismiss="onWillDismiss">
         <ion-header>
             <ion-toolbar>
-                <ion-title>Create a new building</ion-title>
+                <ion-buttons slot="start">
+                    <ion-button :strong="true" @click="cancel()">Cancel</ion-button>
+                </ion-buttons>
+                <ion-title>Create building</ion-title>
                 <ion-buttons slot="end">
                     <ion-button :strong="true" @click="confirm()">Create</ion-button>
                 </ion-buttons>
@@ -18,16 +21,8 @@
                 ></ion-input>
             </ion-item>
             <ion-item>
-                <ol-map
-                    ref="mapRef"
-                    :load-tiles-while-interacting="true">
-                    <!-- Projection view -->
-                    <ol-view
-                        :center="defaultCenter"
-                        zoom="18"
-                        projection="EPSG:3857">
-                    </ol-view>
-                </ol-map>
+                <map-component class="map" ref="mapRef">
+                </map-component>
             </ion-item>
         </ion-content>
     </ion-modal>
@@ -46,9 +41,9 @@ import {
     IonHeader,
     IonItem,
 } from '@ionic/vue';
-import { MapboxVectorLayer } from 'ol-mapbox-style';
 import { Map as OlMap } from 'ol';
 import { useSettings } from '../../stores/settings';
+import MapComponent from '../map/MapComponent.vue';
 
 @Options({
     components: {
@@ -61,25 +56,17 @@ import { useSettings } from '../../stores/settings';
         IonInput,
         IonHeader,
         IonItem,
+        MapComponent
     },
 })
 export default class CreateBuildingModal extends Vue {
     settings = useSettings();
     @Ref() mapRef?: { map: OlMap };
-    open = false;
+    open = true;
 
-    mounted() {
-        this.mapRef.map.addLayer(
-            new MapboxVectorLayer({
-                styleUrl: this.settings.mapStyle,
-                accessToken: this.settings.accessToken,
-                zIndex: 0,
-                declutter: true,
-            }),
-        );
+    cancel(): void {
+        this.open = false;
     }
-    
-    cancel(): void {}
 
     show(): void {
         this.open = true;
@@ -106,5 +93,9 @@ ion-modal::part(backdrop) {
 ion-modal ion-toolbar {
     --background: var(--ion-color-primary);
     --color: white;
+}
+
+ion-modal .map {
+    min-height: 300px;
 }
 </style>

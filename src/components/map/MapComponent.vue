@@ -1,7 +1,7 @@
 <template>
     <ol-map
-        class="map"
         ref="mapRef"
+        class="map"
         :load-tiles-while-animating="true"
         :load-tiles-while-interacting="true"
     >
@@ -50,11 +50,11 @@ export default class MapComponent extends Vue {
                 declutter: true,
             }),
         );
-        this.$emit("load", this.map);
+        this.$emit('load', this.map);
     }
 
     handleViewChange(event: any) {
-       this.$emit('change', event);
+        this.$emit('change', event);
     }
 }
 </script>

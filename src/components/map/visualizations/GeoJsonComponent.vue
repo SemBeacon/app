@@ -3,6 +3,7 @@
         class-name="geojson"
         :update-while-animating="true"
         :update-while-interacting="true"
+        :z-index="2"
     >
         <ol-source-vector :features="features" @featuresloaderror="console.error">
         </ol-source-vector>

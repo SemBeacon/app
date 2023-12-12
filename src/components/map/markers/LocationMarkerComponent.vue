@@ -4,6 +4,7 @@
         class-name="location-marker"
         :update-while-animating="true"
         :update-while-interacting="true"
+        :z-index="3"
     >
         <ol-source-vector>
             <!-- Location accuracy -->

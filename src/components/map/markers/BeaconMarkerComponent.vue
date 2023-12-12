@@ -2,7 +2,7 @@
     <div>
         <ol-vector-layer
             ref="markerLayer"
-            :z-index="1000"
+            :z-index="4"
             :update-while-animating="true"
             :update-while-interacting="true"
         >

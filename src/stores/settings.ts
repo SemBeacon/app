@@ -22,23 +22,29 @@ export const useSettings = defineStore('settings', {
             return 'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
         },
         mapStyle(): string {
-            return this.darkMode ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/streets-v12';
+            return this.darkMode
+                ? 'mapbox://styles/mapbox/dark-v11'
+                : 'mapbox://styles/mapbox/streets-v12';
         },
         darkMode(): boolean {
-            return this.data.theme === 'SYSTEM' ? 
-                prefersDark.matches : 
-                    (this.data.theme === 'DARK' ? true : false);
-        }
+            return this.data.theme === 'SYSTEM'
+                ? prefersDark.matches
+                : this.data.theme === 'DARK'
+                  ? true
+                  : false;
+        },
     },
     actions: {
         update(): void {
-            this.load().then(() => {
-                if (this.darkMode) {
-                    document.body.classList.add("dark");
-                } else {
-                    document.body.classList.remove("dark");
-                }
-            }).catch(console.error);
+            this.load()
+                .then(() => {
+                    if (this.darkMode) {
+                        document.body.classList.add('dark');
+                    } else {
+                        document.body.classList.remove('dark');
+                    }
+                })
+                .catch(console.error);
         },
         save(): Promise<void> {
             return new Promise((resolve, reject) => {
@@ -69,7 +75,8 @@ export const useSettings = defineStore('settings', {
                         } catch (err) {
                             reject(err);
                         }
-                    }).then(() => {
+                    })
+                    .then(() => {
                         resolve();
                     })
                     .catch(reject);

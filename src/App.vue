@@ -155,7 +155,7 @@ export default class App extends Vue {
     ];
 
     get logoSrc(): string {
-        return this.settings.darkMode ? "/assets/logo/logo_alpha.svg" : "/assets/logo/logo.svg";
+        return this.settings.darkMode ? '/assets/logo/logo_alpha.svg' : '/assets/logo/logo.svg';
     }
 
     handlePermissions(): Promise<void> {

@@ -95,6 +95,4 @@ export default class FloorSelectorComponent extends Vue {
 </script>
 
 <style scoped>
-.add-btn {
-}
 </style>

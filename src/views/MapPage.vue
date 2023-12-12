@@ -18,14 +18,12 @@
 
         <ion-content :fullscreen="true">
             <div id="container">
-                <!-- Modals -->
-                <map-image-selector-modal ref="imageSelector"></map-image-selector-modal>
-                <!-- <create-building-modal></create-building-modal> -->
+                <create-building-modal></create-building-modal>
 
                 <!-- Map image screen -->
                 <map-image-component ref="imageEditor"></map-image-component>
                 <!-- Map screen -->
-                <map-component ref="mapRef" @change="handleViewChange" :center="location">
+                <map-component ref="mapRef" :center="location" @change="handleViewChange">
                     <!-- Buildings -->
                     <building-component
                         v-for="building in buildings"
@@ -38,7 +36,7 @@
                     <!-- Your current location -->
                     <location-marker-component></location-marker-component>
                     <!-- Location center button -->
-                    <location-center-component ref="locationCenterRef"></location-center-component> 
+                    <location-center-component ref="locationCenterRef"></location-center-component>
                 </map-component>
             </div>
 
@@ -94,7 +92,6 @@ import EditFabComponent from '../components/map/controls/EditFabComponent.vue';
 import LocationMarkerComponent from '../components/map/markers/LocationMarkerComponent.vue';
 import MapImageComponent from '../components/map/editor/MapImageComponent.vue';
 import LocationCenterComponent from '../components/map/controls/LocationCenterComponent.vue';
-import MapImageSelectorModal from '../components/modals/MapImageSelectorModal.vue';
 import CreateBuildingModal from '../components/modals/CreateBuildingModal.vue';
 import { useSettings } from '../stores/settings';
 import { Building } from '@openhps/geospatial';
@@ -110,7 +107,6 @@ import { Absolute2DPosition, GCS, GeographicalPosition, Vector2 } from '@openhps
         LocationMarkerComponent,
         MapImageComponent,
         LocationCenterComponent,
-        MapImageSelectorModal,
         CreateBuildingModal,
         BuildingComponent,
         IonButtons,
@@ -132,7 +128,7 @@ import { Absolute2DPosition, GCS, GeographicalPosition, Vector2 } from '@openhps
         IonSegmentButton,
         MapComponent,
         IonSearchbar,
-        EditFabComponent
+        EditFabComponent,
     },
     data: () => ({
         stop,
@@ -167,19 +163,17 @@ export default class MapPage extends Vue {
     @Provide({
         reactive: true,
     })
-    imageSelector: MapImageSelectorModal;
-    @Provide({
-        reactive: true,
-    })
     imageEditor: MapImageComponent;
 
     mounted() {
-        this.imageSelector = this.$refs.imageSelector as MapImageSelectorModal;
         this.imageEditor = this.$refs.imageEditor as MapImageComponent;
 
-        this.geolocationStore.initialize().then(() => {
-            return this.geolocationStore.start();
-        }).catch(console.error);
+        this.geolocationStore
+            .initialize()
+            .then(() => {
+                return this.geolocationStore.start();
+            })
+            .catch(console.error);
     }
 
     @Watch('geolocationStore.location')
@@ -251,7 +245,7 @@ export default class MapPage extends Vue {
                 .sort((a, b) => a.distance - b.distance);
         return distances;
     }
-    
+
     ionViewDidEnter(): void {
         const beaconUID = this.route.params.beaconUID as string;
         if (beaconUID) {

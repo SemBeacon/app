@@ -1,11 +1,9 @@
 <template>
     <ion-fab id="edit-fab" slot="fixed" vertical="top" horizontal="end" :edge="true">
-        <ion-fab-button
-            color="primary"
-        >
+        <ion-fab-button color="secondary">
             <ion-icon name="create-outline"></ion-icon>
         </ion-fab-button>
-         <ion-fab-list side="bottom">
+        <ion-fab-list side="bottom">
             <ion-fab-button>
                 <ion-icon name="create-outline"></ion-icon>
             </ion-fab-button>
@@ -22,7 +20,7 @@ import { Vue, Options } from 'vue-property-decorator';
         IonFab,
         IonFabButton,
         IonIcon,
-        IonFabList
+        IonFabList,
     },
 })
 export default class EditFabComponent extends Vue {

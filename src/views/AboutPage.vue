@@ -86,7 +86,7 @@ export default class AboutPage extends Vue {
     settings = useSettings();
 
     get logoSrc(): string {
-        return this.settings.darkMode ? "/assets/logo/logo_alpha.svg" : "/assets/logo/logo.svg";
+        return this.settings.darkMode ? '/assets/logo/logo_alpha.svg' : '/assets/logo/logo.svg';
     }
 }
 </script>

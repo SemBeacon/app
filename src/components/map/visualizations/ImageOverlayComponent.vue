@@ -25,6 +25,7 @@ export default class ImageOverlayComponent extends Vue {
 
     mounted(): void {
         this.layer = new GeoImageLayer({
+            zIndex: 1,
             opacity: 0.7,
             source: new GeoImage({
                 url: this.mapObject.image,
