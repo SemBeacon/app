@@ -12,13 +12,8 @@
         <ion-content :fullscreen="true">
             <div id="container">
                 <ion-content class="ion-padding">
-                    <picture class="logo">
-                        <source
-                            srcset="/assets/logo/logo_alpha.svg"
-                            media="(prefers-color-scheme: dark)"
-                        />
-                        <img alt="SemBeacon Logo" src="/assets/logo/logo.svg" />
-                    </picture>
+                    <img alt="SemBeacon Logo" class="logo" :src="logoSrc" />
+
                     <ion-label class="ion-text-wrap">
                         This application was developed for the IoT 2023 conference to demonstrate
                         the capabilities of SemBeacon. This application will scan for SemBeacon,
@@ -66,6 +61,7 @@ import {
     IonRow,
     IonCol,
 } from '@ionic/vue';
+import { useSettings } from '@/stores/settings';
 
 @Options({
     components: {
@@ -86,7 +82,13 @@ import {
         IonCol,
     },
 })
-export default class AboutPage extends Vue {}
+export default class AboutPage extends Vue {
+    settings = useSettings();
+
+    get logoSrc(): string {
+        return this.settings.darkMode ? "/assets/logo/logo_alpha.svg" : "/assets/logo/logo.svg";
+    }
+}
 </script>
 
 <style scoped lang="scss">

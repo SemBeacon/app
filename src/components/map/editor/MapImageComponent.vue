@@ -74,6 +74,7 @@ export default class MapImageComponent extends Vue {
     border-radius: 0 10px 0 0;
     background: #fff;
     padding: 5px;
+    background-color: var(--ion-background-color);
 }
 
 #img.hidden {

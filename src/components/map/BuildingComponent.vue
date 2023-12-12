@@ -3,7 +3,7 @@
         <slot></slot>
 
         <!-- Floor -->
-        <floor-component ref="floorRef" :floor="selectedFloor"> </floor-component>
+        <floor-component ref="floorRef" :floor="selectedFloor"></floor-component>
 
         <!-- Building Controls -->
         <floor-selector-component ref="floorSelector" :floors="floors" @change="onFloorChange">
@@ -36,7 +36,7 @@ export default class BuildingComponent extends Vue {
     @Ref('floorSelector') floorSelector: FloorSelectorComponent;
     environmentStore = useEnvironmentStore();
     floors: Floor[] = [];
-    selectedFloor: Floor;
+    selectedFloor: Floor = undefined;
     @Inject() imageEditor: MapImageComponent;
 
     mounted(): void {

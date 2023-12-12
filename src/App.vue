@@ -5,13 +5,7 @@
                 <ion-content>
                     <ion-list id="menu-list">
                         <ion-list-header>
-                            <picture>
-                                <source
-                                    srcset="/assets/logo/logo_alpha.svg"
-                                    media="(prefers-color-scheme: dark)"
-                                />
-                                <img alt="SemBeacon Logo" src="/assets/logo/logo.svg" />
-                            </picture>
+                            <img alt="SemBeacon Logo" :src="logoSrc" />
                         </ion-list-header>
 
                         <ion-menu-toggle v-for="(p, i) in appPages" :key="i" auto-hide="false">
@@ -94,6 +88,7 @@ import { useGeolocationStore } from './stores/geolocation';
 import moment from 'moment';
 import { ControllerState } from './stores/types';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { useSettings } from './stores/settings';
 
 @Options({
     components: {
@@ -117,6 +112,8 @@ export default class App extends Vue {
     geolocationStore = useGeolocationStore();
     userStore = useUserStore();
     logger = useLogger();
+    settings = useSettings();
+
     info: AppInfo = {} as any;
     isLoading: boolean = false;
 
@@ -157,6 +154,10 @@ export default class App extends Vue {
         },
     ];
 
+    get logoSrc(): string {
+        return this.settings.darkMode ? "/assets/logo/logo_alpha.svg" : "/assets/logo/logo.svg";
+    }
+
     handlePermissions(): Promise<void> {
         return new Promise((resolve) => {
             if (
@@ -191,6 +192,9 @@ export default class App extends Vue {
     }
 
     async created() {
+        // Load settings
+        this.settings.update();
+
         RDFSerializer.initialize('rf');
         RDFSerializer.initialize('geospatial');
         this.logger.initialize();

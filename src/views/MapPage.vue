@@ -25,7 +25,7 @@
                 <!-- Map image screen -->
                 <map-image-component ref="imageEditor"></map-image-component>
                 <!-- Map screen -->
-                <map-component @change="handleViewChange">
+                <map-component ref="mapRef" @change="handleViewChange" :center="location">
                     <!-- Buildings -->
                     <building-component
                         v-for="building in buildings"
@@ -37,13 +37,13 @@
 
                     <!-- Your current location -->
                     <location-marker-component></location-marker-component>
+                    <!-- Location center button -->
+                    <location-center-component ref="locationCenterRef"></location-center-component> 
                 </map-component>
             </div>
 
             <!-- Edit map fab -->
             <edit-fab-component></edit-fab-component>
-            <!-- Location center fab -->
-            <location-center-component ref="locationCenterRef"></location-center-component> 
             <ion-fab slot="fixed" horizontal="end" vertical="bottom">
                 <ion-fab-button
                     :color="beaconStore.isScanning ? 'danger' : undefined"
@@ -99,7 +99,6 @@ import CreateBuildingModal from '../components/modals/CreateBuildingModal.vue';
 import { useSettings } from '../stores/settings';
 import { Building } from '@openhps/geospatial';
 import { Coordinate } from 'ol/coordinate';
-import { MapboxVectorLayer } from 'ol-mapbox-style';
 import { useEnvironmentStore } from '../stores/environment';
 import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
@@ -151,10 +150,6 @@ export default class MapPage extends Vue {
     beacons = computed(() => this.beaconStore.beacons);
     loading = false;
     @Ref('mapComponent') map: MapComponent;
-    @Provide({
-        reactive: true,
-    })
-    mapEdit: boolean = true;
 
     zoom = 18;
 
@@ -181,15 +176,6 @@ export default class MapPage extends Vue {
     mounted() {
         this.imageSelector = this.$refs.imageSelector as MapImageSelectorModal;
         this.imageEditor = this.$refs.imageEditor as MapImageComponent;
-
-        this.mapRef.map.addLayer(
-            new MapboxVectorLayer({
-                styleUrl: this.settings.mapStyle,
-                accessToken: this.settings.accessToken,
-                zIndex: 0,
-                declutter: true,
-            }),
-        );
 
         this.geolocationStore.initialize().then(() => {
             return this.geolocationStore.start();

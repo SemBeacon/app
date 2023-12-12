@@ -2,8 +2,8 @@
     <ol-vector-layer
         v-if="location"
         class-name="location-marker"
-        update-while-animating="true"
-        update-while-interaction="true"
+        :update-while-animating="true"
+        :update-while-interacting="true"
     >
         <ol-source-vector>
             <!-- Location accuracy -->

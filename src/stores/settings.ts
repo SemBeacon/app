@@ -25,15 +25,26 @@ export const useSettings = defineStore('settings', {
             return this.darkMode ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/streets-v12';
         },
         darkMode(): boolean {
-            return prefersDark.matches;
+            return this.data.theme === 'SYSTEM' ? 
+                prefersDark.matches : 
+                    (this.data.theme === 'DARK' ? true : false);
         }
     },
     actions: {
+        update(): void {
+            this.load().then(() => {
+                if (this.darkMode) {
+                    document.body.classList.add("dark");
+                } else {
+                    document.body.classList.remove("dark");
+                }
+            }).catch(console.error);
+        },
         save(): Promise<void> {
             return new Promise((resolve, reject) => {
                 Preferences.set({
                     key: 'settings',
-                    value: JSON.stringify(this.data),
+                    value: JSON.stringify({ version: this.version, data: this.data }),
                 })
                     .then(() => {
                         resolve();
@@ -48,12 +59,18 @@ export const useSettings = defineStore('settings', {
                 })
                     .then((result) => {
                         try {
-                            const data = JSON.parse(result.value);
-                            this.data = data;
-                            resolve();
+                            const value = JSON.parse(result.value);
+                            if (value && value.version === 1) {
+                                this.data = value.data;
+                                resolve();
+                            } else {
+                                return this.save();
+                            }
                         } catch (err) {
                             reject(err);
                         }
+                    }).then(() => {
+                        resolve();
                     })
                     .catch(reject);
             });

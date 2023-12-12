@@ -3,8 +3,8 @@
         <ol-vector-layer
             ref="markerLayer"
             :z-index="1000"
-            update-while-animating="true"
-            update-while-interaction="true"
+            :update-while-animating="true"
+            :update-while-interacting="true"
         >
             <ol-source-vector ref="sourceRef">
                 <ol-feature v-for="beacon in beacons" :key="beacon.uid">
@@ -208,6 +208,7 @@ span.key {
     left: -50px;
     min-width: 170px;
     color: black;
+    opacity: 0.75;
 }
 .ol-popup:after,
 .ol-popup:before {

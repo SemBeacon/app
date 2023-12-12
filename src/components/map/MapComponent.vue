@@ -23,7 +23,7 @@ import { useBeaconStore } from '../../stores/beacon.scanning';
 import { useEnvironmentStore } from '../../stores/environment';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
 import { Map as OlMap } from 'ol';
-import { Coordinate } from 'ol/coordinate';
+import type { Coordinate } from 'ol/coordinate';
 import { useSettings } from '../../stores/settings';
 
 @Options({
@@ -36,13 +36,13 @@ export default class MapComponent extends Vue {
     settings = useSettings();
     zoom = 18;
 
-    @Prop() center: Coordinate = [0, 0];
+    @Prop() center: Coordinate;
     @Ref() mapRef?: { map: OlMap };
     @Provide() map: OlMap;
 
-    mounted() {
-        console.log(this.mapRef)
-        this.mapRef.map.addLayer(
+    mounted(): void {
+        this.map = this.mapRef.map;
+        this.map.addLayer(
             new MapboxVectorLayer({
                 styleUrl: this.settings.mapStyle,
                 accessToken: this.settings.accessToken,
@@ -50,7 +50,7 @@ export default class MapComponent extends Vue {
                 declutter: true,
             }),
         );
-        this.map = this.mapRef.map;
+        this.$emit("load", this.map);
     }
 
     handleViewChange(event: any) {

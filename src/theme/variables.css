@@ -91,13 +91,8 @@ ion-segment-button {
   --background-focused: var(--ion-color-primary-shade);
 }
 
-@media (prefers-color-scheme: dark) {
-  /*
-   * Dark Colors
-   * -------------------------------------------
-   */
 
-  body {
+  body.dark {
     --ion-color-primary: #888af0;
     --ion-color-primary-rgb: 66,140,255;
     --ion-color-primary-contrast: #ffffff;
@@ -167,7 +162,7 @@ ion-segment-button {
    * -------------------------------------------
    */
 
-  .ios body {
+  .ios body.dark {
     --ion-background-color: #000000;
     --ion-background-color-rgb: 0,0,0;
 
@@ -199,7 +194,7 @@ ion-segment-button {
     --ion-card-background: #1c1c1d;
   }
 
-  .ios ion-modal {
+  .ios body.dark ion-modal {
     --ion-background-color: var(--ion-color-step-100);
     --ion-toolbar-background: var(--ion-color-step-150);
     --ion-toolbar-border-color: var(--ion-color-step-250);
@@ -211,7 +206,7 @@ ion-segment-button {
    * -------------------------------------------
    */
 
-  .md body {
+  .md body.dark {
     --ion-background-color: #121212;
     --ion-background-color-rgb: 18,18,18;
 
@@ -249,18 +244,17 @@ ion-segment-button {
     --ion-card-background: #1e1e1e;
   }
 
-  ion-toolbar, ion-fab-button {
+  body.dark ion-toolbar, ion-fab-button {
     --background: #363795;
     --color: #ffffff;
   }
   
-  ion-segment {
+  body.dark ion-segment {
     --background: #363795;
   }
   
-  ion-segment-button {
+  body.dark ion-segment-button {
     --color-checked: #ffffff;
     --color: #babbff;
     --background-focused: #484abd;
   }
-}
