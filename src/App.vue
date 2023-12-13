@@ -70,7 +70,7 @@ import {
 import {
     map,
     bluetooth,
-    //  logIn,
+    logIn,
     help,
     wifiOutline,
 } from 'ionicons/icons';
@@ -139,12 +139,19 @@ export default class App extends Vue {
             iosIcon: map,
             mdIcon: map,
         },
-        // {
-        //   title: 'Solid Login',
-        //   url: '/Login',
-        //   iosIcon: logIn,
-        //   mdIcon: logIn,
-        // },
+        {
+            name: 'editor',
+            title: 'Map editor',
+            url: '/map/editor',
+            iosIcon: map,
+            mdIcon: map,
+        },
+        {
+          title: 'Solid Login',
+          url: '/Login',
+          iosIcon: logIn,
+          mdIcon: logIn,
+        },
         {
             name: 'about',
             title: 'About',
@@ -288,6 +295,10 @@ export default class App extends Vue {
 
 #container a {
     text-decoration: none;
+}
+
+ion-item {
+    cursor: pointer;
 }
 
 ion-menu.md ion-content {

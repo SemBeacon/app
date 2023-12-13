@@ -62,7 +62,7 @@ import MapComponent from '../map/MapComponent.vue';
 export default class CreateBuildingModal extends Vue {
     settings = useSettings();
     @Ref() mapRef?: { map: OlMap };
-    open = true;
+    open = false;
 
     cancel(): void {
         this.open = false;

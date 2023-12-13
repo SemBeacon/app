@@ -11,8 +11,8 @@
             <ol-feature v-if="accuracy > 0 && accuracy < 100">
                 <ol-geom-polygon :coordinates="accuracyCoordinates"></ol-geom-polygon>
                 <ol-style>
-                    <ol-style-stroke color="rgba(0, 66, 200, 0.4)" width="1"></ol-style-stroke>
-                    <ol-style-fill color="rgba(0, 66, 256, 0.2)"></ol-style-fill>
+                    <ol-style-stroke color="rgba(0, 66, 200, 0.35)" width="1"></ol-style-stroke>
+                    <ol-style-fill color="rgba(0, 66, 256, 0.15)"></ol-style-fill>
                 </ol-style>
             </ol-feature>
             <!-- Location -->

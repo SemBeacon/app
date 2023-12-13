@@ -2,9 +2,10 @@
     <ol-map id="img" ref="mapImageRef" class="hidden" :style="{
         width: `${width}px`,
         height: `${height}px`
-    }">
+    }" :controls="[]">
+        <!-- Resizer -->
         <div 
-            class="resize" @mousedown="resizeStart" @ondblclick="console.log">
+            class="resize" @mousedown="resizeStart" @dblclick="onFullscreen">
             <ion-icon icon="resize-outline"></ion-icon>
         </div>
 
@@ -12,7 +13,7 @@
         <input id="file-upload" type="file" :style="{ display: 'none' }" @change="onImage" />
 
         <!-- Projection view -->
-        <ol-view :projection="pixelProjection" :zoom="7" :center="[0, 0]"></ol-view>
+        <ol-view :enableRotation="false" :projection="pixelProjection" :zoom="7" :center="[0, 0]"></ol-view>
 
         <!-- Image crop -->
         <ol-vector-layer :zIndex="1" ref="editor">
@@ -41,7 +42,7 @@
 
             <ol-style>
                 <ol-style-stroke color="red" :width="2"></ol-style-stroke>
-                <ol-style-fill color="rgba(255,255,255,0.1)"></ol-style-fill>
+                <ol-style-fill color="rgba(255, 255, 255, 0.3)"></ol-style-fill>
             </ol-style>
         </ol-vector-layer>
     </ol-map>
@@ -183,6 +184,12 @@ export default class MapImageComponent extends Vue {
         this.mapRef.mapRef.classList.add('hidden');
     }
 
+    onFullscreen(): void {
+        this.mapRef.mapRef.classList.add("snap-width");
+        this.mapRef.mapRef.classList.add("snap-height");
+        this.mapRef.mapRef.classList.remove("resizing");
+    }
+
     resize(event: MouseEvent): void {
         if (this.isResizing) {
             const dx = event.screenX - this.x;
@@ -196,24 +203,44 @@ export default class MapImageComponent extends Vue {
 
     resizeStart(event: MouseEvent): void {
         this.isResizing = true;
+        const bounds = this.mapRef.mapRef.getBoundingClientRect();
+        // Set accuracy width and height to avoid 'snapping' when resizing again
+        this.width = bounds.width;
+        this.height = bounds.height;
+        
         this.x = event.screenX;
         this.y = event.screenY;
+        this.mapRef.mapRef.classList.add("resizing");
         document.body.addEventListener("mousemove", this.resize.bind(this));
-        document.body.addEventListener("mouseup", () => {
+        const mouseUp = () => {
             document.body.removeEventListener("mousemove", this.resize.bind(this));
+            document.body.removeEventListener("mouseup", mouseUp);
             this.resizeStop();
-        });
+        };
+        document.body.addEventListener("mouseup", mouseUp);
+        const mouseLeave = () => {
+            document.body.removeEventListener("mousemove", this.resize.bind(this));
+            document.body.removeEventListener("mouseleave", mouseLeave);
+            document.body.removeEventListener("mouseup", mouseUp);
+            this.resizeStop();
+        };
+        document.body.addEventListener("mouseleave", mouseLeave);
     }
 
     resizeStop(): void {
         this.isResizing = false;
         const bounds = this.mapRef.mapRef.getBoundingClientRect();
         if (this.width > bounds.width) {
-
+            this.mapRef.mapRef.classList.add("snap-width");
+        } else {
+            this.mapRef.mapRef.classList.remove("snap-width");
         }
         if (this.height > bounds.height) {
-
+            this.mapRef.mapRef.classList.add("snap-height");
+        } else {
+            this.mapRef.mapRef.classList.remove("snap-height");
         }
+        this.mapRef.mapRef.classList.remove("resizing");
     }
 }
 </script>
@@ -230,20 +257,45 @@ export default class MapImageComponent extends Vue {
     min-height: 200px;
     max-height: 80%;
     max-width: 80%;
+    box-shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+#img.snap-width.resizing {
+    min-width: 200px;
+    max-width: 100%;
+    transition: none;
+}
+
+#img.snap-height.resizing {
+    min-height: 200px;
+    max-height: 100%;
+    transition: none;
 }
 
 #img.snap-width {
-    width: 100%;
+    min-width: 100%;
     max-width: 100%;
+    transition: 50ms ease-in-out;
+    border-radius: 0 0 0 10px;
 }
 
 #img.snap-height {
-    height: 100%;
+    min-height: 100%;
     max-height: 100%;
+    transition: 50ms ease-in-out;
+    border-radius: 0 0 0 10px;
 }
 
 #img.hidden {
     display: none;
+}
+
+#img.snap-height .resize {
+    border-radius: 0 10px 0 10px;
+}
+
+#img.snap-width .resize {
+    border-radius: 0 10px 0 10px;
 }
 
 #img .resize {
@@ -256,6 +308,7 @@ export default class MapImageComponent extends Vue {
     z-index: 1;
     cursor: ne-resize;
     border-radius: 0 10px 0 10px;
+    color: rgb(102, 102, 102);
 }
 
 #img .resize ion-icon {

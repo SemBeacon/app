@@ -6,7 +6,7 @@
                     <ion-menu-button></ion-menu-button>
                 </ion-buttons>
 
-                <ion-title>Beacon Map</ion-title>
+                <ion-title>Map Editor</ion-title>
 
                 <ion-progress-bar
                     v-if="beaconStore.isScanning"
@@ -18,8 +18,17 @@
 
         <ion-content :fullscreen="true">
             <div id="container">
+                <add-map-fab-component></add-map-fab-component>
+                <create-building-modal></create-building-modal>
+
+                <!-- Map image screen -->
+                <map-image-component ref="imageEditor"></map-image-component>
                 <!-- Map screen -->
                 <map-component ref="mapRef" :center="defaultCenter" @change="handleViewChange">
+                    <location-target-component></location-target-component>
+                    <!-- Context menu -->
+                    <context-menu-component></context-menu-component>
+
                     <!-- Buildings -->
                     <building-component
                         v-for="building in buildings"
@@ -35,26 +44,12 @@
                     <location-center-component ref="locationCenterRef"></location-center-component>
                 </map-component>
             </div>
-
-            <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-                <ion-fab-button
-                    :color="beaconStore.isScanning ? 'danger' : undefined"
-                    :disabled="beaconStore.state !== ControllerState.READY"
-                    @click="toggleScan"
-                >
-                    <ion-spinner v-if="loading" name="circular"></ion-spinner>
-                    <ion-icon
-                        v-if="!loading"
-                        :name="beaconStore.isScanning ? 'stop' : 'play'"
-                    ></ion-icon>
-                </ion-fab-button>
-            </ion-fab>
         </ion-content>
     </ion-page>
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref, Watch } from 'vue-property-decorator';
+import { Vue, Options, Ref, Provide, Watch } from 'vue-property-decorator';
 import {
     IonButtons,
     IonContent,
@@ -83,7 +78,9 @@ import { useRoute } from 'vue-router';
 import { ControllerState } from '../stores/types';
 import { useGeolocationStore } from '../stores/geolocation';
 import LocationMarkerComponent from '../components/map/markers/LocationMarkerComponent.vue';
+import MapImageComponent from '../components/map/editor/MapImageComponent.vue';
 import LocationCenterComponent from '../components/map/controls/LocationCenterComponent.vue';
+import CreateBuildingModal from '../components/modals/CreateBuildingModal.vue';
 import { useSettings } from '../stores/settings';
 import { Building } from '@openhps/geospatial';
 import { Coordinate } from 'ol/coordinate';
@@ -92,12 +89,20 @@ import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
 import BuildingComponent from '../components/map/BuildingComponent.vue';
 import { Absolute2DPosition, GCS, GeographicalPosition, Vector2 } from '@openhps/core';
+import ContextMenuComponent from '../components/map/controls/ContextMenuComponent.vue';
+import AddMapFabComponent from '../components/map/controls/AddMapFabComponent.vue';
+import LocationTargetComponent from '../components/map/controls/LocationTargetComponent.vue';
 
 @Options({
     components: {
+        LocationTargetComponent,
         LocationMarkerComponent,
+        MapImageComponent,
         LocationCenterComponent,
+        CreateBuildingModal,
         BuildingComponent,
+        ContextMenuComponent,
+        AddMapFabComponent,
         IonButtons,
         IonContent,
         IonHeader,
@@ -124,7 +129,7 @@ import { Absolute2DPosition, GCS, GeographicalPosition, Vector2 } from '@openhps
         ControllerState,
     }),
 })
-export default class MapPage extends Vue {
+export default class MapEditorPage extends Vue {
     route = useRoute();
     geolocationStore = useGeolocationStore();
     beaconStore = useBeaconStore();
@@ -148,8 +153,14 @@ export default class MapPage extends Vue {
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];
     @Ref() locationCenterRef: LocationCenterComponent;
+    @Provide({
+        reactive: true,
+    })
+    imageEditor: MapImageComponent;
 
     mounted() {
+        this.imageEditor = this.$refs.imageEditor as MapImageComponent;
+
         this.geolocationStore
             .initialize()
             .then(() => {

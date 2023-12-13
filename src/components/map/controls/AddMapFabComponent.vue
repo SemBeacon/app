@@ -1,11 +1,14 @@
 <template>
-    <ion-fab id="edit-fab" slot="fixed" vertical="top" horizontal="end" :edge="true">
-        <ion-fab-button color="secondary">
-            <ion-icon name="create-outline"></ion-icon>
+    <ion-fab id="edit-fab" slot="fixed" vertical="top" horizontal="end">
+        <ion-fab-button color="primary">
+            <ion-icon name="add-sharp"></ion-icon>
         </ion-fab-button>
         <ion-fab-list side="bottom">
             <ion-fab-button>
-                <ion-icon name="create-outline"></ion-icon>
+                <ion-icon name="home-sharp"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button>
+                <ion-icon name="layers-sharp"></ion-icon>
             </ion-fab-button>
         </ion-fab-list>
     </ion-fab>
@@ -23,7 +26,7 @@ import { Vue, Options } from 'vue-property-decorator';
         IonFabList,
     },
 })
-export default class EditFabComponent extends Vue {
+export default class AddMapFabComponent extends Vue {
     mounted(): void {}
 }
 </script>

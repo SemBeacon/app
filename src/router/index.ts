@@ -7,6 +7,11 @@ const routes: Array<RouteRecordRaw> = [
         redirect: '/beacon/scanner',
     },
     {
+        name: 'editor',
+        path: '/map/editor',
+        component: () => import('../views/MapEditorPage.vue'),
+    },
+    {
         name: 'map',
         path: '/map/:beaconUID?',
         component: () => import('../views/MapPage.vue'),
