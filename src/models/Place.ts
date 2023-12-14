@@ -1,5 +1,6 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
-import { ogc, PolygonGeometry, schema } from '@openhps/rdf';
+import { ogc, schema } from '@openhps/rdf';
+import { PolygonGeometry } from '@openhps/rdf/models';
 
 @SerializableObject({
     rdf: {

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
-import { User } from '@/models/User';
+import { User } from '@openhps/rdf/models';
 import { rdfs, RDFSerializer, Thing } from '@openhps/rdf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 
@@ -73,7 +73,7 @@ export const useUserStore = defineStore('user', {
                     .getThing(this.session, this.session.info.webId)
                     .then((card) => {
                         const user = RDFSerializer.deserialize(card as unknown as Thing, User);
-                        if (!user.firstName && card.predicates[rdfs.seeAlso]) {
+                        if (!user.name && card.predicates[rdfs.seeAlso]) {
                             // Get extended profile
                             const extendedProfile = card.predicates[rdfs.seeAlso].namedNodes[0];
                             return service.getThing(this.session, extendedProfile);
