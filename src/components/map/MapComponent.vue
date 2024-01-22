@@ -18,9 +18,6 @@
 
 <script lang="ts">
 import { Vue, Options, Ref, Prop, Provide } from 'vue-property-decorator';
-import { useGeolocationStore } from '../../stores/geolocation';
-import { useBeaconStore } from '../../stores/beacon.scanning';
-import { useEnvironmentStore } from '../../stores/environment';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
 import { Map as OlMap } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
@@ -30,9 +27,6 @@ import { useSettings } from '../../stores/settings';
     components: {},
 })
 export default class MapComponent extends Vue {
-    geolocationStore = useGeolocationStore();
-    beaconStore = useBeaconStore();
-    environmentStore = useEnvironmentStore();
     settings = useSettings();
     zoom = 18;
 

@@ -1,4 +1,3 @@
-import { Device } from '@/models/crowdsourcing/data/Device';
 import { SensorType } from '@openhps/core';
 import { defineStore } from 'pinia';
 
@@ -19,9 +18,9 @@ export const useCrowdsourcing = defineStore('crowdsourcing', {
          * Get supported devices of the user
          * 
          * @param {SensorType[]} [sensors] Sensors that should be available
-         * @returns {Promise<Device[]>} Promise with list of devices
+         * @returns {Promise<any[]>} Promise with list of devices
          */
-        getDevices(sensors?: SensorType[]): Promise<Device[]> {
+        getDevices(sensors?: SensorType[]): Promise<any[]> {
             return new Promise((resolve) => {
 
             });
@@ -29,10 +28,10 @@ export const useCrowdsourcing = defineStore('crowdsourcing', {
         /**
          * Add a devie to the user
          * 
-         * @param {Device} device Device to add
+         * @param {any} device Device to add
          * @returns {Promise<void>} Promise of adding
          */
-        addDevice(device: Device): Promise<void> {
+        addDevice(device: any): Promise<void> {
             return new Promise((resolve) => {
 
             });

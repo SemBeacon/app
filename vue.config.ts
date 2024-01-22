@@ -5,6 +5,7 @@ import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 export default defineConfig({
   configureWebpack: {
     externals: {
+      'path': [],
       '@openhps/core': ['OpenHPS', 'core'],
       '@openhps/rf': ['OpenHPS', 'rf'],
       '@openhps/geospatial': ['OpenHPS', 'geospatial'],
