@@ -15,15 +15,19 @@ import { toRaw } from 'vue';
 
 export interface EnvironmentState {
     environments: Map<string, SymbolicSpace<GeographicalPosition>>;
-    service: SymbolicSpaceService<any>;
 }
+
+// Global caching for symbolic spaces and querying
+const globalService = new SymbolicSpaceService(new MemoryDataService(SymbolicSpace));
 
 export const useEnvironmentStore = defineStore('environments', {
     state: (): EnvironmentState => ({
         environments: new Map(),
-        service: new SymbolicSpaceService(new MemoryDataService(SymbolicSpace)),
     }),
     getters: {
+        service(): SymbolicSpaceService<any> {
+            return globalService;
+        },
         buildings(): Building[] {
             const buildings: Building[] = [];
             this.environments.forEach((env) => {
@@ -42,15 +46,15 @@ export const useEnvironmentStore = defineStore('environments', {
                     engine: DefaultEngine,
                 });
                 const query = `
-          PREFIX sembeacon: <http://purl.org/sembeacon/>
-          PREFIX ssn: <http://www.w3.org/ns/ssn/>
-          PREFIX sosa: <http://www.w3.org/ns/sosa/>
-          PREFIX ogc: <http://www.opengis.net/ont/geosparql#>
+                    PREFIX sembeacon: <http://purl.org/sembeacon/>
+                    PREFIX ssn: <http://www.w3.org/ns/ssn/>
+                    PREFIX sosa: <http://www.w3.org/ns/sosa/>
+                    PREFIX ogc: <http://www.opengis.net/ont/geosparql#>
 
-          SELECT ?space {
-              ?space a ssn:Deployment .
-              ?space a ogc:SpatialObject .
-          }`;
+                    SELECT ?space {
+                        ?space a ssn:Deployment .
+                        ?space a ogc:SpatialObject .
+                    }`;
                 driver
                     .queryBindings(query)
                     .then((bindings) => {
@@ -89,9 +93,9 @@ export const useEnvironmentStore = defineStore('environments', {
                             if (data) {
                                 const environments: { [k: string]: any } =
                                     DataSerializer.deserialize(data);
-                                this.environments = new Map(Object.entries(environments));
-                                this.environments.forEach((space: SymbolicSpace<any>) => {
-                                    this.service.insertObject(space);
+                                Object.entries(environments).forEach((entry) => {
+                                    console.log(entry);
+                                    // this.addSpace(entry[1]);
                                 });
                             }
                         }

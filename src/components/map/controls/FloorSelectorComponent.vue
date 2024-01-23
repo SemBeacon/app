@@ -25,11 +25,15 @@ export default class FloorSelectorComponent extends Vue {
     @Watch('floors')
     onFloorsChange(floors: Floor[]): void {
         this.clear();
-        floors.forEach((floor) => {
-            this.addFloor(floor);
-        });
-        const toggle = this.mainBar.getControls()[0] as Toggle;
-        toggle.setActive(true);
+        if (floors.length > 1 || (floors.length === 1 && floors[0].floorLevel !== undefined)) {
+            floors.forEach((floor) => {
+                this.addFloor(floor);
+            });
+            const toggle = this.mainBar.getControls()[0] as Toggle;
+            toggle.setActive(true);
+        } else {
+            this.hide();
+        }
         this.$emit('change', floors[0], true);
     }
 
@@ -43,6 +47,10 @@ export default class FloorSelectorComponent extends Vue {
     }
 
     show(): void {
+        if (this.mainBar.getControls().length === 0) {
+            // Do not show when empty
+            return;
+        } 
         if (this.mapEdit) {
             this.map.addControl(this.editBar);
         }

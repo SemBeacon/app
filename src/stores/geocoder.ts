@@ -17,11 +17,9 @@ interface GeocoderResult {
  */
 export const useGeocoder = defineStore('geocoder', {
     state: (): GeocoderState => ({
-        accessToken: undefined
+        accessToken: undefined,
     }),
-    getters: {
-
-    },
+    getters: {},
     actions: {
         initialize(): void {
             const settings = useSettings();
@@ -29,15 +27,18 @@ export const useGeocoder = defineStore('geocoder', {
         },
         search(query: string): Promise<GeocoderResult[]> {
             return new Promise((resolve, reject) => {
-                const querySanitized = query.replace(/[\u00A0-\u9999<>\&]/g, function(i) {
-                    return '&#'+i.charCodeAt(0)+';';
+                const querySanitized = query.replace(/[\u00A0-\u9999<>\&]/g, function (i) {
+                    return '&#' + i.charCodeAt(0) + ';';
                 });
                 const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${querySanitized}.json?access_token=${this.accessToken}`;
-                axios.get(url).then(response => {
-                    const features = response.data.features as GeocoderResult[];
-                    resolve(features);
-                }).catch(reject);
+                axios
+                    .get(url)
+                    .then((response) => {
+                        const features = response.data.features as GeocoderResult[];
+                        resolve(features);
+                    })
+                    .catch(reject);
             });
-        }
+        },
     },
 });

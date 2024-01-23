@@ -67,12 +67,7 @@ import {
     IonRouterOutlet,
     IonSplitPane,
 } from '@ionic/vue';
-import {
-    map,
-    bluetooth,
-    help,
-    wifiOutline,
-} from 'ionicons/icons';
+import { map, bluetooth, help, wifiOutline } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';

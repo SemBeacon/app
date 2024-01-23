@@ -15,9 +15,11 @@
                     <img alt="SemBeacon Logo" class="logo" :src="logoSrc" />
 
                     <ion-label class="ion-text-wrap">
-                        This application was developed for the <a href="https://iot-conference.org/iot2023/">IoT 2023</a> conference to demonstrate
-                        the capabilities of SemBeacon. This application will scan for SemBeacon,
-                        iBeacon, AltBeacon, Eddystone beacons using the OpenHPS framework.
+                        This application was developed for the
+                        <a href="https://iot-conference.org/iot2023/">IoT 2023</a> conference to
+                        demonstrate the capabilities of SemBeacon. This application will scan for
+                        SemBeacon, iBeacon, AltBeacon, Eddystone beacons using the OpenHPS
+                        framework.
                     </ion-label>
                     <ion-label class="ion-text-wrap">
                         <picture>

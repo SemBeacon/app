@@ -64,11 +64,10 @@ export default class FloorComponent extends Vue {
                 },
             })
             .then((spaces) => {
+                // Spaces within the floor
                 this.spaces = spaces;
             })
-            .catch((err) => {
-                console.error(err);
-            });
+            .catch(console.error);
     }
 
     get beacons() {

@@ -21,8 +21,7 @@
                 ></ion-input>
             </ion-item>
             <ion-item>
-                <map-component class="map" ref="mapRef">
-                </map-component>
+                <map-component ref="mapRef" class="map"> </map-component>
             </ion-item>
         </ion-content>
     </ion-modal>
@@ -56,7 +55,7 @@ import MapComponent from '../map/MapComponent.vue';
         IonInput,
         IonHeader,
         IonItem,
-        MapComponent
+        MapComponent,
     },
 })
 export default class CreateBuildingModal extends Vue {

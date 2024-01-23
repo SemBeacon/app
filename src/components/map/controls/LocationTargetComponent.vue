@@ -19,14 +19,14 @@ export default class LocationTargetComponent extends Vue {
 
     mounted(): void {
         const style: Style | Style[] = new Style({
-            image: new Icon({ src: "/assets/markers/location-marker.png", scale: 6 / 256 }) 
+            image: new Icon({ src: '/assets/markers/location-marker.png', scale: 6 / 256 }),
         });
 
         this.target = new Target({
             style: style,
-            composite: "overlay"
+            composite: 'overlay',
         });
-        console.log(this.target)
+        console.log(this.target);
 
         this.map.addControl(this.target);
     }

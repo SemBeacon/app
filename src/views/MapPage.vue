@@ -241,13 +241,7 @@ export default class MapPage extends Vue {
             if (this.beaconStore.isScanning) {
                 this.beaconStore
                     .stopScan()
-                    .then(() => {
-                        //
-                    })
-                    .catch((err) => {
-                        //
-                        console.error(err);
-                    })
+                    .catch(console.error)
                     .finally(() => {
                         this.loading = false;
                     });
@@ -255,13 +249,7 @@ export default class MapPage extends Vue {
                 // Start scan
                 this.beaconStore
                     .startScan()
-                    .then(() => {
-                        //
-                    })
-                    .catch((err) => {
-                        //
-                        console.error(err);
-                    })
+                    .catch(console.error)
                     .finally(() => {
                         this.loading = false;
                     });

@@ -56,13 +56,21 @@ export default class BuildingComponent extends Vue {
             });
     }
 
+    /**
+     * Triggers when a floor is selected or deselected
+     * @param floor Floor that was selected
+     * @param selected Whether the floor was selected or deselected
+     */
     onFloorChange(floor: Floor, selected: boolean): void {
-        if (selected) {
+        if (selected && this.selectedFloor !== floor) {
             this.selectedFloor = floor;
-            this.floorRef.onFloorChange(floor);
         }
     }
 
+    /**
+     * Focus on a building when in view
+     * @param focus 
+     */
     setFocus(focus: boolean) {
         if (this.focus !== focus) {
             this.focus = focus;

@@ -1,11 +1,16 @@
 <template>
-    <ol-map id="img" ref="mapImageRef" class="hidden" :style="{
-        width: `${width}px`,
-        height: `${height}px`
-    }" :controls="[]">
+    <ol-map
+        id="img"
+        ref="mapImageRef"
+        class="hidden"
+        :style="{
+            width: `${width}px`,
+            height: `${height}px`,
+        }"
+        :controls="[]"
+    >
         <!-- Resizer -->
-        <div 
-            class="resize" @mousedown="resizeStart" @dblclick="onFullscreen">
+        <div class="resize" @mousedown="resizeStart" @dblclick="onFullscreen">
             <ion-icon icon="resize-outline"></ion-icon>
         </div>
 
@@ -13,25 +18,28 @@
         <input id="file-upload" type="file" :style="{ display: 'none' }" @change="onImage" />
 
         <!-- Projection view -->
-        <ol-view :enableRotation="false" :projection="pixelProjection" :zoom="7" :center="[0, 0]"></ol-view>
+        <ol-view
+            :enable-rotation="false"
+            :projection="pixelProjection"
+            :zoom="7"
+            :center="[0, 0]"
+        ></ol-view>
 
         <!-- Image crop -->
-        <ol-vector-layer :zIndex="1" ref="editor">
+        <ol-vector-layer ref="editor" :z-index="1">
             <ol-source-vector :projection="pixelProjection">
-                <ol-interaction-modify
-                    @modifyend="onCrop"
-                    v-if="state === 1">
+                <ol-interaction-modify v-if="state === 1" @modifyend="onCrop">
                     <ol-style>
                         <ol-style-stroke color="blue" :width="2"></ol-style-stroke>
                         <ol-style-fill color="rgba(255, 255, 0, 0.4)"></ol-style-fill>
                     </ol-style>
                 </ol-interaction-modify>
                 <ol-interaction-draw
-                    :stopClick="true"
+                    v-if="state === 1"
+                    :stop-click="true"
+                    type="Polygon"
                     @drawstart="onCropStart"
                     @drawend="onCrop"
-                    v-if="state === 1"
-                    type="Polygon"
                 >
                     <ol-style>
                         <ol-style-stroke color="blue" :width="2"></ol-style-stroke>
@@ -80,7 +88,7 @@ export default class MapImageComponent extends Vue {
     @Ref('mapImageRef') mapRef?: { map: OlMap; mapRef: HTMLElement };
     imageLayer: Image<GeoImage>;
     state: ImageEditorState = ImageEditorState.MOVE;
-    @Ref() editor: { vectorLayer: VectorLayer<VectorSource> }
+    @Ref() editor: { vectorLayer: VectorLayer<VectorSource> };
     width = 200;
     height = 200;
     x: number;
@@ -185,9 +193,9 @@ export default class MapImageComponent extends Vue {
     }
 
     onFullscreen(): void {
-        this.mapRef.mapRef.classList.add("snap-width");
-        this.mapRef.mapRef.classList.add("snap-height");
-        this.mapRef.mapRef.classList.remove("resizing");
+        this.mapRef.mapRef.classList.add('snap-width');
+        this.mapRef.mapRef.classList.add('snap-height');
+        this.mapRef.mapRef.classList.remove('resizing');
     }
 
     resize(event: MouseEvent): void {
@@ -207,40 +215,40 @@ export default class MapImageComponent extends Vue {
         // Set accuracy width and height to avoid 'snapping' when resizing again
         this.width = bounds.width;
         this.height = bounds.height;
-        
+
         this.x = event.screenX;
         this.y = event.screenY;
-        this.mapRef.mapRef.classList.add("resizing");
-        document.body.addEventListener("mousemove", this.resize.bind(this));
+        this.mapRef.mapRef.classList.add('resizing');
+        document.body.addEventListener('mousemove', this.resize.bind(this));
         const mouseUp = () => {
-            document.body.removeEventListener("mousemove", this.resize.bind(this));
-            document.body.removeEventListener("mouseup", mouseUp);
+            document.body.removeEventListener('mousemove', this.resize.bind(this));
+            document.body.removeEventListener('mouseup', mouseUp);
             this.resizeStop();
         };
-        document.body.addEventListener("mouseup", mouseUp);
+        document.body.addEventListener('mouseup', mouseUp);
         const mouseLeave = () => {
-            document.body.removeEventListener("mousemove", this.resize.bind(this));
-            document.body.removeEventListener("mouseleave", mouseLeave);
-            document.body.removeEventListener("mouseup", mouseUp);
+            document.body.removeEventListener('mousemove', this.resize.bind(this));
+            document.body.removeEventListener('mouseleave', mouseLeave);
+            document.body.removeEventListener('mouseup', mouseUp);
             this.resizeStop();
         };
-        document.body.addEventListener("mouseleave", mouseLeave);
+        document.body.addEventListener('mouseleave', mouseLeave);
     }
 
     resizeStop(): void {
         this.isResizing = false;
         const bounds = this.mapRef.mapRef.getBoundingClientRect();
         if (this.width > bounds.width) {
-            this.mapRef.mapRef.classList.add("snap-width");
+            this.mapRef.mapRef.classList.add('snap-width');
         } else {
-            this.mapRef.mapRef.classList.remove("snap-width");
+            this.mapRef.mapRef.classList.remove('snap-width');
         }
         if (this.height > bounds.height) {
-            this.mapRef.mapRef.classList.add("snap-height");
+            this.mapRef.mapRef.classList.add('snap-height');
         } else {
-            this.mapRef.mapRef.classList.remove("snap-height");
+            this.mapRef.mapRef.classList.remove('snap-height');
         }
-        this.mapRef.mapRef.classList.remove("resizing");
+        this.mapRef.mapRef.classList.remove('resizing');
     }
 }
 </script>
@@ -257,7 +265,9 @@ export default class MapImageComponent extends Vue {
     min-height: 200px;
     max-height: 80%;
     max-width: 80%;
-    box-shadow: rgba(100, 100, 111, 0.4) 0px 7px 29px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    box-shadow:
+        rgba(100, 100, 111, 0.4) 0px 7px 29px 0px,
+        rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 
 #img.snap-width.resizing {

@@ -1,12 +1,11 @@
 <template>
-    <ol-context-menu-control 
-        :items="contextMenuItems" :defaultItems="false"/>
+    <ol-context-menu-control :items="contextMenuItems" :default-items="false" />
 </template>
 
 <script lang="ts">
 import { Vue, Options, Inject } from 'vue-property-decorator';
 import type { Map } from 'ol';
-import type { Item } from "ol-contextmenu/dist/types";
+import type { Item } from 'ol-contextmenu/dist/types';
 import { cloudUploadOutline } from 'ionicons/icons';
 
 @Options({
@@ -18,18 +17,18 @@ export default class ContextMenuComponent extends Vue {
     get contextMenuItems(): Item[] {
         const items: Item[] = [];
         items.push({
-            text: "Add a Marker",
+            text: 'Add a Marker',
             callback: (val) => {
-                console.log(val)
+                console.log(val);
             },
         });
         // Floor controls
-        items.push("-");
+        items.push('-');
         items.push({
-            text: "Upload floor plan",
+            text: 'Upload floor plan',
             icon: cloudUploadOutline,
             callback: (val) => {
-                console.log(val)
+                console.log(val);
             },
         });
         return items;

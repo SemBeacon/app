@@ -583,9 +583,8 @@ import { Ref, ref } from 'vue';
 import { TimeService } from '@openhps/core';
 import { maskito } from '@maskito/vue';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
+import { useSettings } from '@/stores/settings';
 const BLECompanies = require('../models/BLECompanies.json'); // eslint-disable-line
-
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Options({
     components: {
@@ -628,6 +627,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 export default class BeaconPage extends Vue {
     simulated: boolean = false;
     loading = true;
+    settings = useSettings();
     route = useRoute();
     beaconStore = useBeaconStore();
     beaconSimulatorStore = useBeaconAdvertisingStore();
@@ -824,7 +824,7 @@ export default class BeaconPage extends Vue {
     get beaconIcon(): string {
         const beaconType = this.beaconType();
         return `/assets/beacons/${beaconType.toLowerCase()}${
-            prefersDark.matches ? '_alpha' : ''
+            this.settings.darkMode ? '_alpha' : ''
         }.svg`;
     }
 
