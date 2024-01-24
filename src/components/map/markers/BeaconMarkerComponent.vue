@@ -5,6 +5,7 @@
             :z-index="4"
             :update-while-animating="true"
             :update-while-interacting="true"
+            :visible="visible"
         >
             <ol-source-vector ref="sourceRef">
                 <ol-feature v-for="beacon in beacons" :key="beacon.uid">
@@ -75,6 +76,7 @@ import type { Point } from 'ol/geom';
 })
 export default class BeaconMarkerComponent extends Vue {
     @Prop() beacons: Array<BLEBeaconObject & Beacon>;
+    @Prop() visible: boolean;
     beaconStore = useBeaconStore();
     @Ref('markerLayer') markerLayer: { vectorLayer: Vector<any> };
     @Ref('overlayRef') overlayRef: { overlay: Overlay };
@@ -131,6 +133,7 @@ export default class BeaconMarkerComponent extends Vue {
                 if (image) {
                     image.setOpacity(this.opacity(this.getBeaconByMarker(marker)));
                 }
+                this.markerLayer.vectorLayer.changed();
             });
         }, 1000);
     }

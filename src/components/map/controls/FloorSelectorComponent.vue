@@ -12,6 +12,9 @@ import Toggle from 'ol-ext/control/Toggle';
 import Button from 'ol-ext/control/Button';
 import { Floor } from '@openhps/geospatial';
 
+/**
+ * Floor selector component
+ */
 @Options({
     components: {},
 })
@@ -34,7 +37,6 @@ export default class FloorSelectorComponent extends Vue {
         } else {
             this.hide();
         }
-        this.$emit('change', floors[0], true);
     }
 
     @Watch('mapEdit')

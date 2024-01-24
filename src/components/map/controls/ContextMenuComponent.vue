@@ -28,7 +28,7 @@ export default class ContextMenuComponent extends Vue {
             text: 'Upload floor plan',
             icon: cloudUploadOutline,
             callback: (val) => {
-                console.log(val);
+                this.$emit('action:upload', val);
             },
         });
         return items;

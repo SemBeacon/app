@@ -3,7 +3,12 @@
         <slot></slot>
 
         <!-- Floor -->
-        <floor-component ref="floorRef" :floor="selectedFloor"></floor-component>
+        <floor-component ref="floorRef" 
+            v-for="floor in floors" 
+            :floor="floor" 
+            :key="floor.uid"
+            :selected="floor.uid === selectedFloor.uid">
+        </floor-component>
 
         <!-- Building Controls -->
         <floor-selector-component ref="floorSelector" :floors="floors" @change="onFloorChange">
@@ -20,6 +25,7 @@ import { useEnvironmentStore } from '../../stores/environment';
 import FloorComponent from './FloorComponent.vue';
 import { Coordinate } from 'ol/coordinate';
 import { GeographicalPosition } from '@openhps/core';
+import { toRaw } from 'vue';
 
 @Options({
     components: {
@@ -35,25 +41,20 @@ export default class BuildingComponent extends Vue {
     @Ref('floorSelector') floorSelector: FloorSelectorComponent;
     environmentStore = useEnvironmentStore();
     floors: Floor[] = [];
-    selectedFloor: Floor = undefined;
+    selectedFloor: Floor = { uid: undefined } as Floor;
 
     mounted(): void {
         // Find all floors in the building
-        this.environmentStore.service
-            .findAll({
-                where: {
-                    parentUID: this.building.uid,
-                },
-            })
-            .then((floors) => {
-                this.floors = floors.filter((f) => f instanceof Floor);
-                if (this.floorSelector !== undefined) {
-                    this.floorSelector.onFloorsChange(this.floors);
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+         this.environmentStore.fetchChildren(this.building).then((floors) => {
+            this.floors = floors.filter((f) => f instanceof Floor).map(s => toRaw(s)) as Floor[];
+            if (this.floors.length > 0) {
+                // Select the first floor
+                this.selectedFloor = this.floors[0];
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+        });
     }
 
     /**
@@ -62,8 +63,8 @@ export default class BuildingComponent extends Vue {
      * @param selected Whether the floor was selected or deselected
      */
     onFloorChange(floor: Floor, selected: boolean): void {
-        if (selected && this.selectedFloor !== floor) {
-            this.selectedFloor = floor;
+        if (selected && this.selectedFloor.uid !== floor.uid) {
+           this.selectedFloor = floor;
         }
     }
 

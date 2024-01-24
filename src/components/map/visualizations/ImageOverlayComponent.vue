@@ -13,6 +13,7 @@ import GeoImage from 'ol-ext/source/GeoImage';
 import GeoImageLayer from 'ol-ext/layer/GeoImage';
 import type { Map } from 'ol';
 import { HelmertTransformation } from '../../../utils/HelmertTransformation';
+import { PolygonGeometry } from '@openhps/rdf/models';
 
 @Options({
     components: {},
@@ -74,7 +75,7 @@ export default class ImageOverlayComponent extends Vue {
     }
 
     get coordinates(): Coordinate[] {
-        return this.mapObject.coverage.geometry.coords.map((coord) => {
+        return (this.mapObject.coverage.geometry as PolygonGeometry).coords.map((coord) => {
             return fromLonLat([coord.longitude, coord.latitude]);
         });
     }

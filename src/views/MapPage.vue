@@ -91,7 +91,7 @@ import { useEnvironmentStore } from '../stores/environment';
 import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
 import BuildingComponent from '../components/map/BuildingComponent.vue';
-import { Absolute2DPosition, GCS, GeographicalPosition, Vector2 } from '@openhps/core';
+import { GCS, GeographicalPosition, Vector2 } from '@openhps/core';
 
 @Options({
     components: {
@@ -131,7 +131,6 @@ export default class MapPage extends Vue {
     environmentStore = useEnvironmentStore();
     settings = useSettings();
 
-    beacons = computed(() => this.beaconStore.beacons);
     loading = false;
     @Ref('mapComponent') map: MapComponent;
 
@@ -181,14 +180,18 @@ export default class MapPage extends Vue {
         this.beaconStore
             .findByUID(uid)
             .then((beacon) => {
-                const position = beacon.position as unknown as Absolute2DPosition;
+                if (!beacon) {
+                    // No beacon found
+                    return;
+                }
+                const position = beacon.position as unknown as GeographicalPosition;
                 if (
                     position !== undefined &&
                     position.x !== undefined &&
                     !Number.isNaN(position.x)
                 ) {
-                    const array = beacon.position.toVector3().toArray();
-                    this.defaultCenter = fromLonLat([array[1], array[0]]);
+                    this.following = false;
+                    this.defaultCenter = fromLonLat([position.longitude, position.latitude]);
                     this.mapRef.map.getView().setCenter(this.defaultCenter);
                     this.mapRef.map.getView().setZoom(18);
                 }

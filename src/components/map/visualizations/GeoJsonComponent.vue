@@ -1,11 +1,15 @@
 <template>
     <ol-vector-layer
         class-name="geojson"
+        ref="layerRef"
         :update-while-animating="true"
         :update-while-interacting="true"
         :z-index="2"
     >
-        <ol-source-vector :features="features" @featuresloaderror="console.error">
+        <ol-source-vector ref="sourceRef">
+            <ol-feature>
+                <ol-geom-polygon :coordinates="coordinates" />
+            </ol-feature>
         </ol-source-vector>
         <ol-style>
             <ol-style-stroke :color="options.color" :width="2"></ol-style-stroke>
@@ -15,34 +19,42 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop } from 'vue-property-decorator';
+import { Vue, Options, Prop, Ref, Watch } from 'vue-property-decorator';
 import { Building, Corridor, Floor, Room, SymbolicSpace, Zone } from '@openhps/geospatial';
 import { GeographicalPosition } from '@openhps/core';
 import { isProxy, toRaw } from 'vue';
-import GeoJSON from 'ol/format/GeoJSON';
-import { FeatureLike } from 'ol/Feature';
+import { Coordinate } from 'ol/coordinate';
+import { fromLonLat } from 'ol/proj';
+import { Vector } from 'ol/layer';
 
 @Options({
     components: {},
-    data: () => ({
-        GeoJSON,
-    }),
 })
 export default class GeoJsonComponent extends Vue {
     @Prop() space: SymbolicSpace<GeographicalPosition>;
+    @Prop() visible: boolean;
+    @Ref('layerRef') layerRef: { vectorLayer: Vector<any> };
 
-    get features(): FeatureLike[] {
-        return new GeoJSON({ featureProjection: 'EPSG:3857' }).readFeatures(
-            this.space.toGeoJSON(true),
-        );
+    @Watch("visible")
+    onVisibilityChange(visible: boolean): void {
+        this.layerRef.vectorLayer.setVisible(visible);     
     }
 
-    get options() {
+    get coordinates(): Coordinate[][] {
+        const bounds = this.space.getBounds();
+        return [bounds.map(b => fromLonLat([b.longitude, b.latitude]))];
+    }
+
+    get rawSpace() {
         let rawSpace = this.space;
         if (isProxy(rawSpace)) {
             rawSpace = toRaw(rawSpace);
         }
+        return rawSpace;
+    }
 
+    get options() {
+        const rawSpace = this.rawSpace;
         if (rawSpace instanceof Building) {
             return {
                 fillColor: [0, 0, 0, 0],

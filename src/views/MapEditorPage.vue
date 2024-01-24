@@ -27,7 +27,10 @@
                 <map-component ref="mapRef" :center="defaultCenter" @change="handleViewChange">
                     <location-target-component></location-target-component>
                     <!-- Context menu -->
-                    <context-menu-component></context-menu-component>
+                    <context-menu-component
+                        @action:upload="imageEditor.upload()"
+                    >
+                    </context-menu-component>
 
                     <!-- Buildings -->
                     <building-component

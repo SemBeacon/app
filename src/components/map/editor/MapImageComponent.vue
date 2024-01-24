@@ -99,12 +99,16 @@ export default class MapImageComponent extends Vue {
     crop: Coordinate[][];
     controlPoints: Coordinate[];
 
+    upload(): void {
+        document.getElementById('file-upload').click();
+    }
+
     mounted(): void {
         const btnUpload = new Button({
             title: 'Upload floor plan',
             html: `<ion-icon name="cloud-upload-outline"></ion-icon>`,
             handleClick: () => {
-                document.getElementById('file-upload').click();
+                this.upload();
             },
         });
 

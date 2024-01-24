@@ -1,6 +1,6 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
 import { ogc, schema } from '@openhps/rdf';
-import { PolygonGeometry } from '@openhps/rdf/models';
+import { Geometry } from '@openhps/rdf/models';
 
 @SerializableObject({
     rdf: {
@@ -13,5 +13,5 @@ export class Place {
             predicate: ogc.hasGeometry,
         },
     })
-    geometry: PolygonGeometry;
+    geometry: Geometry;
 }

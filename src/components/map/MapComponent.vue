@@ -12,6 +12,7 @@
             projection="EPSG:3857"
             @change="handleViewChange"
         ></ol-view>
+        <!-- Map components -->
         <slot></slot>
     </ol-map>
 </template>

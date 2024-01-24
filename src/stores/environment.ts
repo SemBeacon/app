@@ -6,27 +6,40 @@ import {
     RDFSerializer,
     SPARQLDataDriver,
     Store,
+    Thing,
+    schema,
 } from '@openhps/rdf';
 import { defineStore } from 'pinia';
-import { Building, SymbolicSpace, SymbolicSpaceService } from '@openhps/geospatial';
-import { DataSerializer, GeographicalPosition, MemoryDataService } from '@openhps/core';
+import { Building, Floor, SymbolicSpace, SymbolicSpaceService } from '@openhps/geospatial';
+import { DataSerializer, GeographicalPosition } from '@openhps/core';
 import { Preferences } from '@capacitor/preferences';
 import { toRaw } from 'vue';
+import { PiniaDataService } from '@/utils/PiniaDataService';
+import { MapObject } from '@/models/MapObject';
 
 export interface EnvironmentState {
     environments: Map<string, SymbolicSpace<GeographicalPosition>>;
+    floorPlans: Map<string, MapObject>;
+    spaceService: SymbolicSpaceService<any>;
 }
-
-// Global caching for symbolic spaces and querying
-const globalService = new SymbolicSpaceService(new MemoryDataService(SymbolicSpace));
 
 export const useEnvironmentStore = defineStore('environments', {
     state: (): EnvironmentState => ({
         environments: new Map(),
+        floorPlans: new Map(),
+        spaceService: undefined
     }),
     getters: {
+        getFloorplan(): (uid: string) => MapObject {
+            return (uid: string) => {
+                return this.floorPlans.get(uid);
+            }
+        },
         service(): SymbolicSpaceService<any> {
-            return globalService;
+            if (!this.spaceService) {
+                this.spaceService = new SymbolicSpaceService(new PiniaDataService(SymbolicSpace, this.environments));;
+            }
+            return this.spaceService;
         },
         buildings(): Building[] {
             const buildings: Building[] = [];
@@ -39,6 +52,16 @@ export const useEnvironmentStore = defineStore('environments', {
         },
     },
     actions: {
+        fetchChildren(parent: SymbolicSpace<any>): Promise<SymbolicSpace<any>[]> {
+            return new Promise((resolve, reject) => {
+                this.service
+                    .findChildren(parent)
+                    .then((spaces) => {
+                        resolve(spaces);
+                    })
+                    .catch(reject);
+            });
+        },
         fetchEnvironments(store: Store): Promise<void> {
             return new Promise((resolve, reject) => {
                 const driver = new SPARQLDataDriver(SymbolicSpace, {
@@ -76,7 +99,13 @@ export const useEnvironmentStore = defineStore('environments', {
         },
         addSpace(space: SymbolicSpace<any>): void {
             this.environments.set(space.uid, space);
-            this.service.insertObject(space);
+            if (space instanceof Floor && space.rdf && space.rdf.predicates[schema.hasMap]) {
+                const mapObject = RDFSerializer.deserialize(space.rdf.predicates[schema.hasMap][0] as Thing, MapObject);
+                if (mapObject instanceof MapObject) {
+                    this.floorPlans.set(space.uid, mapObject);
+                }
+                console.log(mapObject)
+            }
         },
         clear(): void {
             this.environments = new Map();
@@ -94,8 +123,7 @@ export const useEnvironmentStore = defineStore('environments', {
                                 const environments: { [k: string]: any } =
                                     DataSerializer.deserialize(data);
                                 Object.entries(environments).forEach((entry) => {
-                                    console.log(entry);
-                                    // this.addSpace(entry[1]);
+                                    this.addSpace(entry[1]);
                                 });
                             }
                         }
