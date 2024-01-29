@@ -198,6 +198,7 @@ export default class App extends Vue {
 
         RDFSerializer.initialize('rf');
         RDFSerializer.initialize('geospatial');
+        
         this.logger.initialize();
         moment.updateLocale('en', {
             relativeTime: {

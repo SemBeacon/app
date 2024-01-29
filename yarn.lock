@@ -5212,10 +5212,10 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.40":
-  version "0.4.40"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.40.tgz#abec053836d51b73eb7747c180d794b1a4644129"
-  integrity sha512-ySAfznRaee48zOEXWSsNptAc2AG6ArKc4Xz1nAaMM2AaLTuy+R1UmwlNigyFE8h4+nlZqwDPUKsbcP9yevoO3g==
+"@openhps/rdf@^0.4.41":
+  version "0.4.41"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.41.tgz#1543ab4bc8275f87795abe57d6e017c2f8ce9ab7"
+  integrity sha512-aNf5a/jfbloGNWUh8bMA+mNlQCxFmPfHo225vubfJmJshX3uvHY2X7XBCwmiPQ+SnBbZrZszz4vstARNoWK9BA==
   dependencies:
     "@comunica/query-sparql" "^2.10.1"
     "@inquirer/prompts" "^3.3.0"
