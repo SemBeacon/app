@@ -32,7 +32,6 @@ export default class ImageOverlayComponent extends Vue {
                 url: this.mapObject.image,
                 imageMask: this.coordinates,
             }),
-            onclick: console.log,
         });
         this.layer.setZIndex(1);
         this.calculate();

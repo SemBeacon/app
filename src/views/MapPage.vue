@@ -223,6 +223,9 @@ export default class MapPage extends Vue {
             this.environmentStore.buildings
                 .map((building) => {
                     const position = building.centroid as GeographicalPosition;
+                    if (!position) {
+                        return { building, distance: Infinity };
+                    }
                     const center: Coordinate = position.toVector3(GCS.EPSG3857).toArray();
                     const distance = new Vector2(center[0], center[1]).distanceTo(viewCenterVector);
                     return { building, distance };

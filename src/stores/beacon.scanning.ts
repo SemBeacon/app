@@ -217,11 +217,13 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                             }
                             logger.log(
                                 'info',
-                                `Retrieved information for SemBeacon ${beacon.resourceUri}`,
+                                `Retrieved information for SemBeacon ${insertedBeacon.resourceUri}`,
                             );
                         }
+                        return Promise.resolve();
+                    }).finally(() => {
+                        this.save().then(resolve).catch(reject);
                     });
-                    this.save().then(resolve).catch(reject);
                 } else {
                     if (beacon instanceof BLEiBeacon) {
                         const uuidStr = beacon.proximityUUID.toString();
@@ -442,6 +444,8 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         },
         save(): Promise<void> {
             return new Promise((resolve, reject) => {
+                const logger = useLogger();
+                logger.log('info', 'Saving beacons and environments ...');
                 const environmentStore = useEnvironmentStore();
 
                 const serialized = DataSerializer.serialize(

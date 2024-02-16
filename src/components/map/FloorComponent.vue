@@ -74,9 +74,6 @@ export default class FloorComponent extends Vue {
             // Beacon has a position
             const position = b.position as unknown as Absolute2DPosition;
             return position !== undefined && position.x !== undefined && !Number.isNaN(position.x);
-        }).filter(() => {
-            // Beacon is within the floor
-            return true;
         });
     }
 }

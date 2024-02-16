@@ -1,6 +1,6 @@
 import { SerializableMember, SerializableObject } from '@openhps/core';
 import { ogc, schema } from '@openhps/rdf';
-import { Geometry } from '@openhps/rdf/models';
+import { Geometry } from '@openhps/rdf';
 
 @SerializableObject({
     rdf: {

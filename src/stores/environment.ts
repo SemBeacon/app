@@ -104,7 +104,6 @@ export const useEnvironmentStore = defineStore('environments', {
                 if (mapObject instanceof MapObject) {
                     this.floorPlans.set(space.uid, mapObject);
                 }
-                console.log(mapObject, space)
             }
         },
         clear(): void {
