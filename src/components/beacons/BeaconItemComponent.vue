@@ -267,7 +267,7 @@ ion-item-sliding.item-delete-animation {
     opacity: 0.001;
     height: 0;
 }
-ion-label[slot="end"] {
+ion-label[slot='end'] {
     text-align: right;
 }
 </style>

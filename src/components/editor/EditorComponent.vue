@@ -4,12 +4,11 @@
 
 <script lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import { Options, Vue } from 'vue-property-decorator';
+import { Options, Prop, Vue, Watch } from 'vue-property-decorator';
 import loader from '@monaco-editor/loader';
 import { Registry } from 'monaco-textmate';
 import { wireTmGrammars } from 'monaco-editor-textmate';
 import { editor } from 'monaco-editor';
-import { loadWASM } from 'onigasm';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -24,9 +23,13 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 })
 export default class EditorComponent extends Vue {
     editor: editor.IStandaloneCodeEditor;
+    @Prop() code: string;
 
-    async beforeMount() {
-        await loadWASM('/js/vendor/onigasm/onigasm.wasm');
+    @Watch('code')
+    onCodeChange(code: string) {
+        if (this.editor) {
+            this.value = code;
+        }
     }
 
     mounted(): void {
@@ -54,8 +57,13 @@ export default class EditorComponent extends Vue {
                         value: '',
                         language: 'turtle',
                         minimap: { enabled: false },
+                        automaticLayout: true,
                     },
                 );
+
+                if (this.code !== undefined) {
+                    this.editor.setValue(this.code);
+                }
                 return wireTmGrammars(monaco, registry, grammars, this.editor);
             })
             .catch(console.error);
@@ -63,6 +71,10 @@ export default class EditorComponent extends Vue {
 
     get value(): string {
         return this.editor.getValue();
+    }
+
+    set value(value: string) {
+        this.editor.setValue(value);
     }
 }
 </script>

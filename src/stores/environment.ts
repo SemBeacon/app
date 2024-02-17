@@ -27,17 +27,19 @@ export const useEnvironmentStore = defineStore('environments', {
     state: (): EnvironmentState => ({
         environments: new Map(),
         floorPlans: new Map(),
-        spaceService: undefined
+        spaceService: undefined,
     }),
     getters: {
         getFloorplan(): (uid: string) => MapObject {
             return (uid: string) => {
                 return this.floorPlans.get(uid);
-            }
+            };
         },
         service(): SymbolicSpaceService<any> {
             if (!this.spaceService) {
-                this.spaceService = new SymbolicSpaceService(new PiniaDataService(SymbolicSpace, this.environments));;
+                this.spaceService = new SymbolicSpaceService(
+                    new PiniaDataService(SymbolicSpace, this.environments),
+                );
             }
             return this.spaceService;
         },
@@ -100,10 +102,14 @@ export const useEnvironmentStore = defineStore('environments', {
         addSpace(space: SymbolicSpace<any>): void {
             this.environments.set(space.uid, space);
             if (space instanceof Floor && space.rdf && space.rdf.predicates[schema.hasMap]) {
-                const mapObject = RDFSerializer.deserialize(space.rdf.predicates[schema.hasMap][0] as Thing, MapObject);
+                const mapObject = RDFSerializer.deserialize(
+                    space.rdf.predicates[schema.hasMap][0] as Thing,
+                    MapObject,
+                );
                 if (mapObject instanceof MapObject) {
                     this.floorPlans.set(space.uid, mapObject);
                 }
+                console.log(mapObject, space)
             }
         },
         clear(): void {

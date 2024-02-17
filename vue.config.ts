@@ -3,6 +3,14 @@ import CopyPlugin from "copy-webpack-plugin";
 import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 
 export default defineConfig({
+  terser: {
+    minify: 'uglifyJs',
+    terserOptions: {
+        compress: {
+            drop_console: true,
+        },
+    },
+  },
   configureWebpack: {
     externals: {
       'path': [],

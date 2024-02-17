@@ -270,7 +270,7 @@ export default class BLESimulatorComponent extends Vue {
         this.downloading = true;
         BLESemBeaconBuilder.create()
             .namespaceId(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
-            .instanceId('9c7ce6fc')
+            .instanceId('c187d748')
             .shortResourceUri('https://bit.ly/3JsEnF9')
             .flag(SEMBEACON_FLAG_HAS_POSITION)
             .flag(SEMBEACON_FLAG_HAS_SYSTEM)

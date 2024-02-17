@@ -3,11 +3,13 @@
         <slot></slot>
 
         <!-- Floor -->
-        <floor-component ref="floorRef" 
-            v-for="floor in floors" 
-            :floor="floor" 
+        <floor-component
+            v-for="floor in floors"
+            ref="floorRef"
             :key="floor.uid"
-            :selected="floor.uid === selectedFloor.uid">
+            :floor="floor"
+            :selected="floor.uid === selectedFloor.uid"
+        >
         </floor-component>
 
         <!-- Building Controls -->
@@ -45,16 +47,20 @@ export default class BuildingComponent extends Vue {
 
     mounted(): void {
         // Find all floors in the building
-         this.environmentStore.fetchChildren(this.building).then((floors) => {
-            this.floors = floors.filter((f) => f instanceof Floor).map(s => toRaw(s)) as Floor[];
-            if (this.floors.length > 0) {
-                // Select the first floor
-                this.selectedFloor = this.floors[0];
-            }
-        })
-        .catch((err) => {
-            console.error(err);
-        });
+        this.environmentStore
+            .fetchChildren(this.building)
+            .then((floors) => {
+                this.floors = floors
+                    .filter((f) => f instanceof Floor)
+                    .map((s) => toRaw(s)) as Floor[];
+                if (this.floors.length > 0) {
+                    // Select the first floor
+                    this.selectedFloor = this.floors[0];
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }
 
     /**
@@ -64,13 +70,13 @@ export default class BuildingComponent extends Vue {
      */
     onFloorChange(floor: Floor, selected: boolean): void {
         if (selected && this.selectedFloor.uid !== floor.uid) {
-           this.selectedFloor = floor;
+            this.selectedFloor = floor;
         }
     }
 
     /**
      * Focus on a building when in view
-     * @param focus 
+     * @param focus
      */
     setFocus(focus: boolean) {
         if (this.focus !== focus) {

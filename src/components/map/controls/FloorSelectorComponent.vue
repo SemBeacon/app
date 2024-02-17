@@ -52,7 +52,7 @@ export default class FloorSelectorComponent extends Vue {
         if (this.mainBar.getControls().length === 0) {
             // Do not show when empty
             return;
-        } 
+        }
         if (this.mapEdit) {
             this.map.addControl(this.editBar);
         }

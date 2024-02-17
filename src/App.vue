@@ -83,6 +83,7 @@ import moment from 'moment';
 import { ControllerState } from './stores/types';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { useSettings } from './stores/settings';
+import { loadWASM } from 'onigasm';
 
 @Options({
     components: {
@@ -192,13 +193,17 @@ export default class App extends Vue {
         });
     }
 
+    async beforeMount() {
+        await loadWASM('/js/vendor/onigasm/onigasm.wasm');
+    }
+
     async created() {
         // Load settings
         this.settings.update();
 
         RDFSerializer.initialize('rf');
         RDFSerializer.initialize('geospatial');
-        
+
         this.logger.initialize();
         moment.updateLocale('en', {
             relativeTime: {

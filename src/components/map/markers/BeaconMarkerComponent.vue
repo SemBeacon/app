@@ -5,7 +5,6 @@
             :z-index="4"
             :update-while-animating="true"
             :update-while-interacting="true"
-            :visible="visible"
         >
             <ol-source-vector ref="sourceRef">
                 <ol-feature v-for="beacon in beacons" :key="beacon.uid">
@@ -51,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop, Ref } from 'vue-property-decorator';
+import { Vue, Options, Prop, Ref, Watch } from 'vue-property-decorator';
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { isProxy, toRaw } from 'vue';
@@ -84,6 +83,11 @@ export default class BeaconMarkerComponent extends Vue {
     @Ref('interactionRef') interacitonRef: { select: any };
     selectedBeacon: BLEBeaconObject & Beacon = {} as any;
 
+    @Watch('visible')
+    onVisibilityChange(visible: boolean): void {
+        this.markerLayer.vectorLayer.setVisible(visible);
+    }
+    
     getBeaconByMarker(marker: Feature<Point>): BLEBeaconObject & Beacon {
         if (marker === undefined || marker === null) {
             return undefined;

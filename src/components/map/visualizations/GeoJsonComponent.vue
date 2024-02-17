@@ -1,7 +1,7 @@
 <template>
     <ol-vector-layer
-        class-name="geojson"
         ref="layerRef"
+        class-name="geojson"
         :update-while-animating="true"
         :update-while-interacting="true"
         :z-index="2"
@@ -35,14 +35,14 @@ export default class GeoJsonComponent extends Vue {
     @Prop() visible: boolean;
     @Ref('layerRef') layerRef: { vectorLayer: Vector<any> };
 
-    @Watch("visible")
+    @Watch('visible')
     onVisibilityChange(visible: boolean): void {
-        this.layerRef.vectorLayer.setVisible(visible);     
+        this.layerRef.vectorLayer.setVisible(visible);
     }
 
     get coordinates(): Coordinate[][] {
         const bounds = this.space.getBounds();
-        return [bounds.map(b => fromLonLat([b.longitude, b.latitude]))];
+        return [bounds.map((b) => fromLonLat([b.longitude, b.latitude]))];
     }
 
     get rawSpace() {

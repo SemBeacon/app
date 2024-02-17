@@ -9,7 +9,6 @@
                 <ion-title>Environments</ion-title>
             </ion-toolbar>
         </ion-header>
-
     </ion-page>
 </template>
 

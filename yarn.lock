@@ -5212,10 +5212,10 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.44":
-  version "0.4.44"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.44.tgz#ae6931c3f634a2ce398431b4b094f35f260b33ac"
-  integrity sha512-zaeUFhcbvJ8Mm+BzjbsbHV6zg3+BIojKyiCCYQDftkw3rgNxmeFxqbxCsA56km9NRSJlvIgxLYAppHeu0msq7Q==
+"@openhps/rdf@^0.4.46":
+  version "0.4.46"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.46.tgz#9f34dd07663fdc9685a784c57169caba1e4e93d1"
+  integrity sha512-p3Uv4K2S0mpUcAD14eYRlvhupXHiu4VT5V3A7oOtXDZ1R/mRRxW7d4MWeBMcO+MvoOUwXz/aC/SBRNRXetaTQQ==
   dependencies:
     "@comunica/query-sparql" "^2.10.1"
     "@inquirer/prompts" "^3.3.0"
@@ -5332,10 +5332,10 @@
     "@inrupt/solid-client-authn-core" "^1.12.1"
     "@inrupt/solid-client-authn-node" "^1.12.1"
 
-"@sembeacon/openhps@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.2.3.tgz#971983c8b57b0583ca20e1a604a68a9af3b1eb1b"
-  integrity sha512-itJgrKwXmCnRK0Gtx03o7JDk2dPaH5exfVULHZH18wBYnZxMaxu4gPUGaMg/RHA+Zxx1l/iUcQfVfZI/OXlWDg==
+"@sembeacon/openhps@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.2.7.tgz#eec4ecc507eca9586098769ae70d855d0eda5866"
+  integrity sha512-mavaWlTxJBp6RDhsw/CcHC6TeyzPtTZEQ90NZi0W94oLrP9XdNVC+CO5H5k/ZKqwcOCVuVT8Nn9WrJ6bWr2dAw==
   dependencies:
     axios "^1.6.2"
     wkt "^0.1.1"

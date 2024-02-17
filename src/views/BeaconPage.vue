@@ -25,6 +25,19 @@
                         :style="{ color: '#ffffff' }"
                         @click="
                             () => {
+                                $router.push(`/beacon/edit/${beacon.uid}/code`);
+                            }
+                        "
+                    >
+                        <ion-icon :name="'code-slash-outline'"></ion-icon>
+                    </ion-button>
+
+                    <ion-button
+                        v-if="beacon && simulated"
+                        icon-only
+                        :style="{ color: '#ffffff' }"
+                        @click="
+                            () => {
                                 enabled ? saveBeacon() : (enabled = !enabled);
                             }
                         "
