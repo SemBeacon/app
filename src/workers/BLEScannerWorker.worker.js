@@ -22,7 +22,7 @@ export default ModelBuilder.create()
     .addService(
         new SemBeaconService(null, {
             accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
-            cors: true,
+            cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
             uid: 'sembeacon-worker-service',
         }),
     )

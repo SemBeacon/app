@@ -41,6 +41,7 @@ import { Preferences } from '@capacitor/preferences';
 import { toRaw } from 'vue';
 import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 import { Floor } from '@openhps/geospatial';
+import { IriString } from '@openhps/rdf';
 
 export interface BeaconScan {
     results: number;
@@ -76,7 +77,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             }),
             {
                 accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
-                cors: true,
+                cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
                 uid: 'sembeacon-service',
             },
         ),
