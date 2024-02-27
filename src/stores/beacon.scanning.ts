@@ -79,6 +79,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
                 cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
                 uid: 'sembeacon-service',
+                timeout: 15000,
             },
         ),
         state: ControllerState.PENDING,
@@ -240,13 +241,19 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 const environmentStore = useEnvironmentStore();
                 const service = this.model.findDataService(SemBeaconService);
                 if (beacon instanceof BLESemBeacon) {
+                    if (beacon.namespaceId === undefined || beacon.instanceId === undefined) {
+                        return reject(new Error('SemBeacon is missing namespace or instance ID'));
+                    }
                     // Add SemBeacon namespace structure
                     const namespace = this.namespaces[beacon.namespaceId.toString()] ?? {
                         beacons: {},
                         model: undefined,
                     };
                     this.namespaces[beacon.namespaceId.toString()] = namespace;
-                    logger.log('info', `Detecting SemBeacon with URI=${beacon.shortResourceUri}`);
+                    logger.log(
+                        'info',
+                        `Detecting SemBeacon with URI=${beacon.shortResourceUri}, NS=${beacon.namespaceId.toString()}, ID=${beacon.instanceId.toString()}`,
+                    );
                     service
                         .insert(beacon.uid, beacon)
                         .then((insertedBeacon: BLEBeaconObject) => {
@@ -294,6 +301,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 this.state = ControllerState.INITIALIZING;
                 const logger = useLogger();
                 logger.log('info', 'Initializing beacon scanner model ...');
+                this.beaconService.logger = (level: string, message: string) => logger.log(level, message);
                 ModelBuilder.create()
                     .addService(this.beaconService)
                     .from(...this.sources)
@@ -404,6 +412,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                         this.state = ControllerState.READY;
 
                         service.resolve = (object: BLESemBeacon, options: ResolveOptions) => {
+                            logger.log('debug', `Resolving SemBeacon (${object.resourceUri ?? object.shortResourceUri}) on worker`);
                             return this.worker.invokeMethod('resolve', object, options);
                         };
 

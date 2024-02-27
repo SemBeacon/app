@@ -208,7 +208,7 @@
                                     :readonly="!simulated && !enabled"
                                     label-placement="floating"
                                     placeholder="00000000"
-                                    :value="beacon.instanceId.toString(false)"
+                                    :value="beacon.instanceId.toString(4, false)"
                                     @change="
                                         (e) =>
                                             (beacon.instanceId = BLEUUID.fromString(e.target.value))

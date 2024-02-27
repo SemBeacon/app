@@ -87,7 +87,7 @@ export default class BeaconMarkerComponent extends Vue {
     onVisibilityChange(visible: boolean): void {
         this.markerLayer.vectorLayer.setVisible(visible);
     }
-    
+
     getBeaconByMarker(marker: Feature<Point>): BLEBeaconObject & Beacon {
         if (marker === undefined || marker === null) {
             return undefined;

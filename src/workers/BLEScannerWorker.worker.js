@@ -24,6 +24,7 @@ export default ModelBuilder.create()
             accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
             cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
             uid: 'sembeacon-worker-service',
+            timeout: 15000,
         }),
     )
     .from()
