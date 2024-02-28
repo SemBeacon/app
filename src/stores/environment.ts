@@ -30,11 +30,6 @@ export const useEnvironmentStore = defineStore('environments', {
         spaceService: undefined,
     }),
     getters: {
-        getFloorplan(): (uid: string) => MapObject {
-            return (uid: string) => {
-                return this.floorPlans.get(uid);
-            };
-        },
         service(): SymbolicSpaceService<any> {
             if (!this.spaceService) {
                 this.spaceService = new SymbolicSpaceService(
@@ -100,7 +95,6 @@ export const useEnvironmentStore = defineStore('environments', {
             });
         },
         addSpace(space: SymbolicSpace<any>): void {
-            this.environments.set(space.uid, space);
             if (space instanceof Floor && space.rdf && space.rdf.predicates[schema.hasMap]) {
                 const mapObject = RDFSerializer.deserialize(
                     space.rdf.predicates[schema.hasMap][0] as Thing,
@@ -109,8 +103,9 @@ export const useEnvironmentStore = defineStore('environments', {
                 if (mapObject instanceof MapObject) {
                     this.floorPlans.set(space.uid, mapObject);
                 }
-                console.log(mapObject, space);
             }
+
+            this.environments.set(space.uid, space);
         },
         clear(): void {
             this.environments = new Map();

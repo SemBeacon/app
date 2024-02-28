@@ -24,42 +24,28 @@ export default class ImageOverlayComponent extends Vue {
     @Prop() edit: boolean = false;
     layer: GeoImageLayer;
 
-    mounted(): void {
-        this.layer = new GeoImageLayer({
-            zIndex: 1,
-            opacity: 0.7,
-            source: new GeoImage({
-                url: this.mapObject.image,
-                imageMask: this.coordinates,
-            }),
-        });
-        this.layer.setZIndex(1);
-        this.calculate();
-        this.map.addLayer(this.layer);
-    }
-
-    @Watch('edit')
-    onEdit(edit: boolean): void {
-        if (edit) {
-            this.layer.setZIndex(10);
-            this.layer.setOpacity(1);
-        } else {
-            this.layer.setZIndex(1);
-            this.layer.setOpacity(0.7);
-        }
-    }
-
-    calculate(): void {
-        const source = this.layer.getSource();
-        const image = this.layer.getSource().getGeoImage() as HTMLImageElement;
+    updateLayer(mapObject: MapObject): void {
+        const image = new Image();
         image.onload = () => {
+            console.log('Image loaded', mapObject);
+            this.layer = new GeoImageLayer({
+                zIndex: 1,
+                opacity: 0.7,
+                source: new GeoImage({
+                    image,
+                    imageMask: this.coordinates(mapObject),
+                }),
+            });
+            this.layer.setZIndex(1);
+            this.map.addLayer(this.layer);
+            const source = this.layer.getSource();
             const xy = [
                 [-image.width / 2, image.height / 2],
                 [image.width / 2, image.height / 2],
                 [image.width / 2, -image.height / 2],
                 [-image.width / 2, -image.height / 2],
             ];
-            const XY = this.coordinates;
+            const XY = this.coordinates(mapObject);
             const transformation = new HelmertTransformation();
             transformation.setControlPoints(xy, XY);
 
@@ -71,10 +57,45 @@ export default class ImageOverlayComponent extends Vue {
             source.setRotation(a);
             source.setCenter(t);
         };
+        image.onerror = (error) => {
+            console.error('Image error', error);
+        };
+        image.src = mapObject.image;
     }
 
-    get coordinates(): Coordinate[] {
-        return (this.mapObject.coverage.geometry as PolygonGeometry).coords.map((coord) => {
+    mounted(): void {
+        if (this.mapObject) {
+            this.updateLayer(this.mapObject);
+        }
+    }
+
+    @Watch('mapObject')
+    onImage(mapObject: MapObject): void {
+        console.log('Image changed');
+        if (this.layer) {
+            this.map.removeLayer(this.layer);
+        }
+        if (mapObject) {
+            this.updateLayer(mapObject);
+        }
+    }
+
+    @Watch('edit')
+    onEdit(edit: boolean): void {
+        if (!this.layer) {
+            return;
+        }
+        if (edit) {
+            this.layer.setZIndex(10);
+            this.layer.setOpacity(1);
+        } else {
+            this.layer.setZIndex(1);
+            this.layer.setOpacity(0.7);
+        }
+    }
+
+    coordinates(mapObject: MapObject): Coordinate[] {
+        return (mapObject.coverage.geometry as PolygonGeometry).coords.map((coord) => {
             return fromLonLat([coord.longitude, coord.latitude]);
         });
     }

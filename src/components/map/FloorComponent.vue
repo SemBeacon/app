@@ -4,7 +4,6 @@
 
         <!-- Floorplan -->
         <map-image-component
-            v-if="floorPlan !== undefined"
             :map-object="floorPlan"
             :visible="selected"
         >
@@ -65,7 +64,7 @@ export default class FloorComponent extends Vue {
     }
 
     get floorPlan(): MapObject {
-        return this.environmentStore.getFloorplan(this.floor.uid);
+        return this.environmentStore.floorPlans.get(this.floor.uid) as MapObject;
     }
 
     get beacons() {

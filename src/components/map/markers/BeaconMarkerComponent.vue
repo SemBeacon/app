@@ -12,8 +12,8 @@
                     <ol-style>
                         <ol-style-icon
                             :src="markerIcon(beacon)"
-                            :scale="35 / 639.13"
-                            :anchor="[13 / 35, 39 / 35]"
+                            :scale="40 / 639.13"
+                            :anchor="[13 / 40, 39 / 40]"
                         >
                         </ol-style-icon>
                     </ol-style>
@@ -39,18 +39,11 @@
                 </div>
             </div>
         </ol-overlay>
-        <ol-interaction-select
-            ref="interactionRef"
-            :condition="click"
-            :filter="selectInteractionFilter"
-            @select="onClick"
-        >
-        </ol-interaction-select>
     </div>
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop, Ref, Watch } from 'vue-property-decorator';
+import { Vue, Options, Prop, Ref, Watch, Inject } from 'vue-property-decorator';
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { isProxy, toRaw } from 'vue';
@@ -60,18 +53,14 @@ import { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
 import type { Vector } from 'ol/layer';
 import type Overlay from 'ol/Overlay';
-import { click } from 'ol/events/condition.js';
 import type { Style } from 'ol/style';
-import type { SelectEvent } from 'ol/interaction/Select';
 import VectorSource from 'ol/source/Vector';
 import type { Feature } from 'ol';
 import type { Point } from 'ol/geom';
+import { Map as OlMap } from 'ol';
 
 @Options({
     components: {},
-    data: () => ({
-        click,
-    }),
 })
 export default class BeaconMarkerComponent extends Vue {
     @Prop() beacons: Array<BLEBeaconObject & Beacon>;
@@ -82,6 +71,7 @@ export default class BeaconMarkerComponent extends Vue {
     @Ref('sourceRef') sourceRef: { source: VectorSource };
     @Ref('interactionRef') interacitonRef: { select: any };
     selectedBeacon: BLEBeaconObject & Beacon = {} as any;
+    @Inject() map: OlMap
 
     @Watch('visible')
     onVisibilityChange(visible: boolean): void {
@@ -110,10 +100,6 @@ export default class BeaconMarkerComponent extends Vue {
         }
     }
 
-    selectInteractionFilter(e: any) {
-        return this.sourceRef && this.sourceRef.source.getFeatureByUid(e.ol_uid) !== undefined;
-    }
-
     coordinates(beacon: BLEBeaconObject): Coordinate {
         if (!beacon.position) {
             return undefined;
@@ -127,8 +113,19 @@ export default class BeaconMarkerComponent extends Vue {
     }
 
     mounted() {
-        // Disable modifying the style when clicking a marker
-        this.interacitonRef.select.style_ = null;
+        this.map.on('singleclick', (e) => {
+            const features: Feature[] = [];
+            this.map.forEachFeatureAtPixel(e.pixel, (feature: Feature) => {
+                if (this.sourceRef && this.sourceRef.source.getFeatureByUid((feature as any).ol_uid) !== undefined) {
+                    features.push(feature);
+                }
+            }, {
+                hitTolerance: 10
+            });
+            if (features) {
+                this.onClick(features);
+            }
+        });
 
         // Modify the opacity of markers when not seen for a while
         setInterval(() => {
@@ -156,13 +153,13 @@ export default class BeaconMarkerComponent extends Vue {
         }
     }
 
-    onClick(event: SelectEvent) {
-        if (event.selected.length === 0) {
+    onClick(features: Feature[]) {
+        if (features.length === 0) {
             this.selectedBeacon = {} as any;
             return;
         }
         const selectedMarker = this.sourceRef.source.getFeatureByUid(
-            (event.selected[0] as any).ol_uid,
+            (features[0] as any).ol_uid,
         );
         const selectedBeacon = this.getBeaconByMarker(selectedMarker as Feature<Point>);
         if (selectedBeacon) {

@@ -11,6 +11,7 @@
             zoom="18"
             projection="EPSG:3857"
             @change="handleViewChange"
+            :enableRotation="false"
         ></ol-view>
         <!-- Map components -->
         <slot></slot>

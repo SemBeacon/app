@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   server: {
     iosScheme: "ionic",
     androidScheme: "https",
-    hostname: "sembeacon.org"
+    hostname: "app.sembeacon.org"
   },
   loggingBehavior: "none",
   android: {
