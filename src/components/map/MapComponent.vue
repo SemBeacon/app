@@ -44,6 +44,10 @@ export default class MapComponent extends Vue {
                 accessToken: this.settings.accessToken,
                 zIndex: 0,
                 declutter: true,
+                layers: {
+                    accessToken: this.settings.accessToken,
+                    webfonts: "https://cdn.jsdelivr.net/npm/@fontsource/{font-family}/{fontweight}{-fontstyle}.css"
+                } as any
             }),
         );
         this.$emit('load', this.map);

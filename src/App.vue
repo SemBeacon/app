@@ -67,7 +67,7 @@ import {
     IonRouterOutlet,
     IonSplitPane,
 } from '@ionic/vue';
-import { map, bluetooth, help, wifiOutline } from 'ionicons/icons';
+import { map, bluetooth, help, wifiOutline, logIn } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';
@@ -141,12 +141,12 @@ export default class App extends Vue {
         //     iosIcon: map,
         //     mdIcon: map,
         // },
-        // {
-        //   title: 'Solid Login',
-        //   url: '/Login',
-        //   iosIcon: logIn,
-        //   mdIcon: logIn,
-        // },
+        {
+          title: 'Solid Login',
+          url: '/Login',
+          iosIcon: logIn,
+          mdIcon: logIn,
+        },
         {
             name: 'about',
             title: 'About',
@@ -204,6 +204,7 @@ export default class App extends Vue {
         RDFSerializer.initialize('rf');
         RDFSerializer.initialize('geospatial');
 
+        this.userStore.initialize();
         this.logger.initialize();
         moment.updateLocale('en', {
             relativeTime: {

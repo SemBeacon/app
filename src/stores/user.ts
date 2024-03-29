@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', {
                         namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
                     }),
                     redirectUrl,
-                    restorePreviousSession: false,
+                    restorePreviousSession: true,
                     handleRedirect: (redirectUrl: string) => {
                         // Use @capacitor/browser
                         Browser.open({
@@ -46,15 +46,15 @@ export const useUserStore = defineStore('user', {
                         });
                     },
                 });
-                service.emit('build');
+                this.service = service;
                 service.on('login', (session: SolidSession) => {
                     console.log(`Logged in ${session.info.webId}`);
-                    this.fetchProfile();
+                    this.fetchProfile(session);
                 });
-                this.service = service;
                 service.once('ready', () => {
                     resolve();
                 });
+                service.emit('build');
             });
         },
         authenticate(issuer: string): Promise<void> {
@@ -66,11 +66,14 @@ export const useUserStore = defineStore('user', {
                     .catch(reject);
             });
         },
-        fetchProfile(): Promise<User> {
+        fetchProfile(session: SolidSession = this.session): Promise<User> {
             return new Promise((resolve, reject) => {
                 const service: SolidClientService = this.service;
+                if (!session.info.isLoggedIn) {
+                    return reject(new Error(`User is not logged in!`));
+                }
                 service
-                    .getThing(this.session, this.session.info.webId)
+                    .getThing(session, session.info.webId)
                     .then((card) => {
                         const user = RDFSerializer.deserialize(card as unknown as Thing, User);
                         if (!user.name && card.predicates[rdfs.seeAlso]) {

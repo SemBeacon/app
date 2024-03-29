@@ -14,20 +14,22 @@
                 <ion-list>
                     <ion-item>
                         <ion-label position="stacked" color="primary">Solid Issuer</ion-label>
-                        <ion-select
-                            aria-label="provider"
-                            interface="popover"
-                            placeholder="Select your Issuer"
+                        <ion-input 
+                            placeholder="Select your issuer"
                             @ionChange="selectedIssuer = $event.detail.value"
+                            v-AddListAttributeDirective="'issuers'"
                         >
-                            <ion-select-option
+                        </ion-input>    
+
+                        <datalist id="issuers">
+                            <option 
                                 v-for="issuer in knownIssuers"
                                 :key="issuer"
                                 :value="issuer"
                             >
                                 {{ issuer }}
-                            </ion-select-option>
-                        </ion-select>
+                            </option>
+                        </datalist>
                     </ion-item>
                 </ion-list>
 
@@ -63,6 +65,7 @@ import {
     IonCol,
 } from '@ionic/vue';
 import { useUserStore } from '../stores/user';
+import AddListAttributeDirective from '../directives/AddListAttributeDirective';
 
 @Options({
     components: {
@@ -82,6 +85,9 @@ import { useUserStore } from '../stores/user';
         IonRow,
         IonCol,
     },
+    directives: {
+        AddListAttributeDirective
+    }
 })
 export default class LoginPage extends Vue {
     userStore = useUserStore();
