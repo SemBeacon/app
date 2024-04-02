@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
-import { User } from '@openhps/rdf/models';
+import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer, Thing } from '@openhps/rdf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 
@@ -75,7 +75,9 @@ export const useUserStore = defineStore('user', {
                 service
                     .getThing(session, session.info.webId)
                     .then((card) => {
-                        const user = RDFSerializer.deserialize(card as unknown as Thing, User);
+                        console.log(JSON.stringify(card, null, 2));
+                        const user = RDFSerializer.deserializeFromSubjects(card.url as IriString, [card as Subject]) as User;
+                        console.log(user);
                         if (!user.name && card.predicates[rdfs.seeAlso]) {
                             // Get extended profile
                             const extendedProfile = card.predicates[rdfs.seeAlso].namedNodes[0];
@@ -101,5 +103,12 @@ export const useUserStore = defineStore('user', {
                     .catch(reject);
             });
         },
+        createBeacon(): Promise<BLESemBeacon> {
+            return new Promise((resolve) => {
+                const beacon = new BLESemBeacon();
+
+                resolve(beacon);
+            });
+        }
     },
 });

@@ -5,17 +5,24 @@
                 <ion-buttons slot="start">
                     <ion-menu-button></ion-menu-button>
                 </ion-buttons>
-                <ion-title>Login to Solid Provider</ion-title>
+                <ion-title>Sign in</ion-title>
             </ion-toolbar>
         </ion-header>
 
         <ion-content :fullscreen="true">
             <div id="container">
-                <ion-list>
-                    <ion-item>
-                        <ion-label position="stacked" color="primary">Solid Issuer</ion-label>
+                <ion-row responsive-sm>
+                    <ion-col md="12">
+                        <img alt="Solid Project logo" class="logo" src="/assets/logo/solid-logo.svg" />
+                    </ion-col>
+                </ion-row>
+                <ion-row responsive-sm>
+                    <ion-col>
                         <ion-input 
+                            label="Solid Issuer" label-placement="stacked"
                             placeholder="Select your issuer"
+                            fill="outline"
+                            helper-text="A Solid issuer is a service that provides you with a Solid Pod."
                             @ionChange="selectedIssuer = $event.detail.value"
                             v-AddListAttributeDirective="'issuers'"
                         >
@@ -30,14 +37,24 @@
                                 {{ issuer }}
                             </option>
                         </datalist>
-                    </ion-item>
-                </ion-list>
+                    </ion-col>
+                </ion-row>
 
                 <ion-row responsive-sm>
                     <ion-col>
-                        <ion-button color="primary" expand="block" @click="login()">
-                            Login
+                        <ion-button href="https://solidweb.org/register" shape="round" color="primary" fill="outline" expand="block">
+                            Sign up
                         </ion-button>
+                    </ion-col>
+                    <ion-col>
+                        <ion-button shape="round" color="primary" expand="block" @click="login()">
+                            <ion-icon name="log-in-outline"></ion-icon>&nbsp;Sign in
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
+                <ion-row responsive-sm>
+                    <ion-col class="ion-text-center">
+                        <a href="https://solidproject.org/users/get-a-pod"><ion-icon name="information-circle-outline"></ion-icon> Click here for more info about Solid</a>
                     </ion-col>
                 </ion-row>
             </div>
@@ -55,8 +72,6 @@ import {
     IonPage,
     IonTitle,
     IonToolbar,
-    IonList,
-    IonItem,
     IonLabel,
     IonSelect,
     IonSelectOption,
@@ -76,8 +91,6 @@ import AddListAttributeDirective from '../directives/AddListAttributeDirective';
         IonPage,
         IonTitle,
         IonToolbar,
-        IonList,
-        IonItem,
         IonLabel,
         IonSelect,
         IonSelectOption,
@@ -112,4 +125,15 @@ export default class LoginPage extends Vue {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+img.logo {
+    margin-top: 2em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    height: 100px;
+    width: 100px;
+    margin-bottom: 2em;
+    object-fit: contain;
+}
+</style>
