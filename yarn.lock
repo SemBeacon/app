@@ -5324,10 +5324,10 @@
     lz-string "^1.4.4"
     node-localstorage "^2.2.1"
 
-"@openhps/rdf@^0.4.50":
-  version "0.4.50"
-  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.50.tgz#a5e0cc2ea3896b57a2d05031d8ffad5c0b801455"
-  integrity sha512-q/0kHWKjltSUNPL1vnJdHCzu9UPkpkB7ipf5sZPtoaAls6z2BvvKUZ0HdcaO06dkkvxV7dJOtv4ReNB40BuYTA==
+"@openhps/rdf@^0.4.52":
+  version "0.4.52"
+  resolved "https://registry.yarnpkg.com/@openhps/rdf/-/rdf-0.4.52.tgz#fa7c210a654e971c6d41051a2274275abbf97d29"
+  integrity sha512-gSv4HEU8On82WaoCuXs/g6uwkJZaFaoJh/doscpwir+32K8AbyTtnQRu7A/3xbOovC1dCFdoMrK0RDPNCDoCPA==
   dependencies:
     "@comunica/query-sparql" "^2.10.1"
     "@inquirer/prompts" "^3.3.0"
@@ -9307,10 +9307,10 @@ cubic-spline@^3.0.3:
   resolved "https://registry.yarnpkg.com/cubic-spline/-/cubic-spline-3.0.3.tgz#c081df05ca4c850ddaac34f5dcb7a8b35521f54d"
   integrity sha512-yAvcHgrpf/k83pZiO4+R2reWOJlufgjpQhmDD3OXa8YMbjmRgjtUK8pcFOCZvJwqXaMD1isZdL7Z4ghqDPN/yw==
 
-cypress@^13.7.1:
-  version "13.7.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.7.1.tgz#d1208eb04efd46ef52a30480a5da71a03373261a"
-  integrity sha512-4u/rpFNxOFCoFX/Z5h+uwlkBO4mWzAjveURi3vqdSu56HPvVdyGTxGw4XKGWt399Y1JwIn9E1L9uMXQpc0o55w==
+cypress@^13.7.2:
+  version "13.7.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.7.2.tgz#61e841382abb20e0a9a063086ee0d850af3ef6bc"
+  integrity sha512-FF5hFI5wlRIHY8urLZjJjj/YvfCBrRpglbZCLr/cYcL9MdDe0+5usa8kTIrDHthlEc9lwihbkb5dmwqBDNS2yw==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
@@ -18635,10 +18635,10 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue3-openlayers@^6.3.2:
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/vue3-openlayers/-/vue3-openlayers-6.3.2.tgz#9721edd5486c4d3a2d603dc82d6a5256df0c4f8e"
-  integrity sha512-76Vywn1vM+TMF2X72wA9Hr4RmQL4s0ZlgSKsWVyzZmqolTliaaZLAETknfVpHnhRbWwNJiHp4MMqYgvEq+aF3w==
+vue3-openlayers@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/vue3-openlayers/-/vue3-openlayers-6.4.0.tgz#e87b1828c37066f9c470dc1c78df5c56179c312a"
+  integrity sha512-zsMhDrJLN2ZhncNfY4Fw7O3c6pM3fpxzocMQHQ22192KiYBvkA2astLl+2+RjOJxjhR+Eaq/YMVJJcxVRyNbpQ==
   dependencies:
     "@turf/buffer" "^6.5.0"
     "@turf/helpers" "^6.5.0"

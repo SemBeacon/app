@@ -56,7 +56,7 @@
     "@openhps/core": "^0.6.9",
     "@openhps/geospatial": "^0.1.30",
     "@openhps/localstorage": "^1.0.1",
-    "@openhps/rdf": "^0.4.50",
+    "@openhps/rdf": "^0.4.52",
     "@openhps/rf": "^0.1.61",
     "@openhps/solid": "^0.2.1",
     "@sembeacon/openhps": "^1.2.10",
@@ -90,7 +90,7 @@
     "vue-class-component": "^8.0.0-rc.1",
     "vue-property-decorator": "^10.0.0-rc.3",
     "vue-router": "^4.3.0",
-    "vue3-openlayers": "^6.3.2"
+    "vue3-openlayers": "^6.4.0"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
@@ -114,7 +114,7 @@
     "babel-jest": "^29.7.0",
     "capacitor-resources": "^2.0.5",
     "copy-webpack-plugin": "^12.0.2",
-    "cypress": "^13.7.1",
+    "cypress": "^13.7.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",

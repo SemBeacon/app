@@ -3,8 +3,9 @@ import { SolidClientService, SolidSession } from '@openhps/solid/browser';
 import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
 import { IriString, Subject, User } from '@openhps/rdf';
-import { rdfs, RDFSerializer, Thing } from '@openhps/rdf';
-import { BLESemBeacon } from '@sembeacon/openhps';
+import { rdfs, RDFSerializer } from '@openhps/rdf';
+import { BLESemBeacon, BLESemBeaconBuilder } from '@sembeacon/openhps';
+import { BLEUUID } from '@openhps/rf';
 
 const CLIENT_NAME = 'SemBeacon Application';
 
@@ -12,6 +13,7 @@ export interface UserState {
     service: SolidClientService;
     user: User;
     beacons: BLESemBeacon[];
+    ready: boolean;
 }
 
 export const useUserStore = defineStore('user', {
@@ -19,6 +21,7 @@ export const useUserStore = defineStore('user', {
         service: undefined,
         user: undefined,
         beacons: [],
+        ready: false
     }),
     getters: {
         session(): SolidSession {
@@ -29,6 +32,9 @@ export const useUserStore = defineStore('user', {
         },
     },
     actions: {
+        once(event: string, callback: (...args: any[]) => void) {
+            this.service.once(event, callback);
+        },
         initialize(): Promise<void> {
             return new Promise((resolve) => {
                 const redirectUrl = window.location.origin + '/login';
@@ -52,14 +58,18 @@ export const useUserStore = defineStore('user', {
                     this.fetchProfile(session);
                 });
                 service.once('ready', () => {
+                    console.log('Solid service is ready');	
                     resolve();
                 });
                 service.emit('build');
             });
         },
-        authenticate(issuer: string): Promise<void> {
+        authenticate(issuer: string, remember?: boolean): Promise<void> {
             return new Promise((resolve, reject) => {
                 const service: SolidClientService = this.service;
+                if (remember) {
+                    console.log("remember me");
+                }
                 service
                     .login(issuer)
                     .then(() => resolve())
@@ -75,26 +85,23 @@ export const useUserStore = defineStore('user', {
                 service
                     .getThing(session, session.info.webId)
                     .then((card) => {
-                        console.log(JSON.stringify(card, null, 2));
                         const user = RDFSerializer.deserializeFromSubjects(card.url as IriString, [card as Subject]) as User;
-                        console.log(user);
                         if (!user.name && card.predicates[rdfs.seeAlso]) {
                             // Get extended profile
                             const extendedProfile = card.predicates[rdfs.seeAlso].namedNodes[0];
                             return service.getThing(this.session, extendedProfile);
                         } else {
                             this.user = user;
-                            resolve(this.user);
+                            console.log(this.user)
+                            resolve(user);
+                            return;
                         }
                     })
                     .then((profile) => {
-                        console.log(profile);
                         if (profile) {
-                            this.user = RDFSerializer.deserialize(
-                                profile as unknown as Thing,
-                                User,
+                            this.user = RDFSerializer.deserializeFromSubject(
+                                this.profile
                             );
-                            console.log(this.user);
                             resolve(this.user);
                         } else {
                             reject(new Error(`User profile is not accessible!`));
@@ -104,10 +111,16 @@ export const useUserStore = defineStore('user', {
             });
         },
         createBeacon(): Promise<BLESemBeacon> {
-            return new Promise((resolve) => {
-                const beacon = new BLESemBeacon();
-
-                resolve(beacon);
+            return new Promise((resolve, reject) => {
+                const user: User = this.user;
+                BLESemBeaconBuilder.create()
+                    .resourceUri(this.service.session.info.webId)
+                    .displayName(user.name)
+                    .namespaceId(BLEUUID.fromString(''))
+                    .instanceId(0x01)
+                    .build().then((beacon) => {
+                        resolve(beacon);
+                    }).catch(reject);
             });
         }
     },

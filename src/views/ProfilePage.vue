@@ -9,8 +9,29 @@
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true">
-            <div id="container"></div>
+        <ion-content :fullscreen="true" v-if="userStore.user">
+            <div id="container">
+                <ion-row>
+                    <ion-col>
+                        <ion-avatar>
+                            <img 
+                                :src="userStore.user.picture"
+                                alt="Silhouette of a person's head" 
+                                on-error="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                        </ion-avatar>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col>
+                        <ion-input 
+                            label="Name" label-placement="stacked"
+                            fill="outline"
+                            :value="userStore.user.name"
+                        >
+                        </ion-input> 
+                    </ion-col>
+                </ion-row>
+            </div>
         </ion-content>
     </ion-page>
 </template>
@@ -26,8 +47,11 @@ import {
     IonTitle,
     IonToolbar,
     IonList,
+    IonInput,
     IonItem,
     IonLabel,
+    IonRow,
+    IonCol,
 } from '@ionic/vue';
 import { useUserStore } from '../stores/user';
 
@@ -43,13 +67,15 @@ import { useUserStore } from '../stores/user';
         IonList,
         IonItem,
         IonLabel,
+        IonRow,
+        IonCol,
+        IonInput
     },
 })
 export default class ProfilePage extends Vue {
     userStore = useUserStore();
 
     mounted(): void {
-        // test
     }
 }
 </script>

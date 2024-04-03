@@ -23,6 +23,15 @@
             >
                 Bluetooth advertising is not supported!
             </permission-error-component>
+
+            <beacon-profile-component
+                v-if="userStore.user"	
+                :beacon="userStore.createBeacon()"
+                simulator="true"
+                :disabled="beaconStore.state !== ControllerState.READY"
+                @simulateToggle="toggleAdvertising"
+            >
+            </beacon-profile-component>
             <beacon-item-component
                 v-for="beacon in beacons"
                 :key="beacon.uid"
@@ -91,6 +100,7 @@ import {
     IonNote,
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
+import BeaconProfileComponent from './beacons/BeaconProfileComponent.vue';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
 import {
     BLEAltBeacon,
@@ -113,6 +123,7 @@ import {
 import { useBeaconStore } from '../stores/beacon.scanning';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 import { ControllerState } from '../stores/types';
+import { useUserStore } from '@/stores/user';
 
 @Options({
     components: {
@@ -141,12 +152,14 @@ import { ControllerState } from '../stores/types';
         IonInput,
         IonButton,
         IonToggle,
+        BeaconProfileComponent
     },
 })
 export default class BLESimulatorComponent extends Vue {
     ControllerState: any = ControllerState;
 
     beaconStore = useBeaconAdvertisingStore();
+    userStore = useUserStore();
     beaconScannerStore = useBeaconStore();
     downloading: boolean = false;
 

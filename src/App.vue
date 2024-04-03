@@ -27,6 +27,17 @@
                             </ion-item>
                         </ion-menu-toggle>
 
+                        <ion-menu-toggle auto-hide="false" v-if="userStore.user">
+                            <ion-item
+                                lines="none"
+                                detail="false"
+                                class="hydrated"
+                                disabled="true"
+                            >
+                                <ion-label>{{ userStore.user.firstName }}</ion-label>
+                            </ion-item>
+                        </ion-menu-toggle>
+
                         <ion-menu-toggle auto-hide="false">
                             <ion-item
                                 v-if="info.version"
@@ -204,8 +215,9 @@ export default class App extends Vue {
         RDFSerializer.initialize('rf');
         RDFSerializer.initialize('geospatial');
 
-        this.userStore.initialize();
         this.logger.initialize();
+        await this.userStore.initialize();
+
         moment.updateLocale('en', {
             relativeTime: {
                 future: 'in %s',
