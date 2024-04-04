@@ -7,6 +7,40 @@
                         <ion-list-header>
                             <img alt="SemBeacon Logo" :src="logoSrc" />
                         </ion-list-header>
+                        
+                        <ion-menu-toggle auto-hide="false" class="profile">
+                            <ion-item
+                                v-if="userStore.user"
+                                detail="false"
+                                class="hydrated"
+                            >
+                                <ion-avatar slot="start">
+                                    <img 
+                                        :src="userStore.user.picture"
+                                        @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
+                                        :alt="`Profile picture of ${userStore.user.name}`"/>
+                                </ion-avatar>
+                                <ion-label>{{ userStore.user.name }}</ion-label>
+                                <ion-button @click="userStore.logout()" fill="clear" slot="end" icon-only>
+                                    <ion-icon :icon="logOut"></ion-icon>
+                                </ion-button>
+                            </ion-item>
+                            <ion-item
+                                v-else
+                                detail="false"
+                                class="hydrated"
+                            >
+                                <ion-avatar slot="start">
+                                    <img 
+                                        src="/assets/logo/solid-logo.svg"
+                                        alt="Solid logo"/>
+                                </ion-avatar>
+                                <ion-label>Solid log in</ion-label>
+                                <ion-button @click="this.$router.push('/login')" fill="clear" slot="end" icon-only>
+                                    <ion-icon :icon="logIn"></ion-icon>
+                                </ion-button>
+                            </ion-item>
+                        </ion-menu-toggle>
 
                         <ion-menu-toggle v-for="(p, i) in appPages" :key="i" auto-hide="false">
                             <ion-item
@@ -24,17 +58,6 @@
                                     :md="p.mdIcon"
                                 ></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
-                            </ion-item>
-                        </ion-menu-toggle>
-
-                        <ion-menu-toggle auto-hide="false" v-if="userStore.user">
-                            <ion-item
-                                lines="none"
-                                detail="false"
-                                class="hydrated"
-                                disabled="true"
-                            >
-                                <ion-label>{{ userStore.user.firstName }}</ion-label>
                             </ion-item>
                         </ion-menu-toggle>
 
@@ -78,7 +101,7 @@ import {
     IonRouterOutlet,
     IonSplitPane,
 } from '@ionic/vue';
-import { map, bluetooth, help, wifiOutline, logIn } from 'ionicons/icons';
+import { map, bluetooth, help, wifiOutline, logIn, logOut } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';
@@ -111,6 +134,12 @@ import { loadWASM } from 'onigasm';
         IonRouterOutlet,
         IonSplitPane,
     },
+    data() {
+        return {
+            logOut,
+            logIn
+        };
+    },
 })
 export default class App extends Vue {
     beaconStore = useBeaconStore();
@@ -140,23 +169,10 @@ export default class App extends Vue {
         },
         {
             name: 'map',
-            title: 'Beacon map',
+            title: 'Map',
             url: '/map',
             iosIcon: map,
             mdIcon: map,
-        },
-        // {
-        //     name: 'editor',
-        //     title: 'Map editor',
-        //     url: '/map/editor',
-        //     iosIcon: map,
-        //     mdIcon: map,
-        // },
-        {
-          title: 'Solid Login',
-          url: '/Login',
-          iosIcon: logIn,
-          mdIcon: logIn,
         },
         {
             name: 'about',
@@ -239,7 +255,7 @@ export default class App extends Vue {
 
         CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
             this.zone.run(() => {
-                const domain = 'sembeacon.org/app';
+                const domain = 'app.sembeacon.org';
                 const pathArray = event.url.split(domain);
                 const appPath = pathArray.pop();
                 if (appPath) {
@@ -277,7 +293,6 @@ export default class App extends Vue {
     }
 }
 </script>
-
 <style lang="scss">
 #container {
     position: relative;
@@ -442,5 +457,11 @@ ion-menu ion-list-header img {
 ion-menu.ios ion-list-header img {
     margin-top: 2em;
     margin-left: 1em;
+}
+
+.profile {
+    ion-label {
+        font-weight: bold;
+    }
 }
 </style>

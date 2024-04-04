@@ -5,7 +5,6 @@ import { Browser } from '@capacitor/browser';
 import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder } from '@sembeacon/openhps';
-import { BLEUUID } from '@openhps/rf';
 
 const CLIENT_NAME = 'SemBeacon Application';
 
@@ -24,6 +23,9 @@ export const useUserStore = defineStore('user', {
         ready: false
     }),
     getters: {
+        webId(): string {
+            return this.service && this.service.session.info.webId;
+        },
         session(): SolidSession {
             return this.service && this.service.session;
         },
@@ -49,6 +51,7 @@ export const useUserStore = defineStore('user', {
                         // Use @capacitor/browser
                         Browser.open({
                             url: redirectUrl,
+                            windowName: '_self'
                         });
                     },
                 });
@@ -76,6 +79,18 @@ export const useUserStore = defineStore('user', {
                     .catch(reject);
             });
         },
+        logout(): Promise<void> {
+            return new Promise((resolve, reject) => {
+                const service: SolidClientService = this.service;
+                service
+                    .logout(this.session)
+                    .then(() => {
+                        this.user = undefined;
+                        resolve();
+                    })
+                    .catch(reject);
+            });
+        },
         fetchProfile(session: SolidSession = this.session): Promise<User> {
             return new Promise((resolve, reject) => {
                 const service: SolidClientService = this.service;
@@ -92,7 +107,6 @@ export const useUserStore = defineStore('user', {
                             return service.getThing(this.session, extendedProfile);
                         } else {
                             this.user = user;
-                            console.log(this.user)
                             resolve(user);
                             return;
                         }
@@ -116,7 +130,7 @@ export const useUserStore = defineStore('user', {
                 BLESemBeaconBuilder.create()
                     .resourceUri(this.service.session.info.webId)
                     .displayName(user.name)
-                    .namespaceId(BLEUUID.fromString(''))
+                    //.namespaceId(BLEUUID.fromString(''))
                     .instanceId(0x01)
                     .build().then((beacon) => {
                         resolve(beacon);

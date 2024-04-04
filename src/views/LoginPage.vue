@@ -3,9 +3,9 @@
         <ion-header :translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-menu-button></ion-menu-button>
+                    <ion-back-button></ion-back-button>
                 </ion-buttons>
-                <ion-title>Log in</ion-title>
+                <ion-title>Log in to your Solid Pod</ion-title>
             </ion-toolbar>
         </ion-header>
 
@@ -20,7 +20,7 @@
                     <ion-col>
                         <ion-input 
                             label="Your ID provider" label-placement="stacked"
-                            placeholder="Select your issuer"
+                            placeholder="Select your ID provider"
                             fill="outline"
                             helper-text="A Solid issuer is a service that provides you with a Solid Pod."
                             @ionChange="selectedIssuer = $event.detail.value"
@@ -67,7 +67,10 @@
 
                 <ion-row responsive-sm>
                     <ion-col>
-                        <ion-button href="https://solidweb.org/register" shape="round" color="primary" fill="outline" expand="block">
+                        <ion-button 
+                            href="https://solidweb.org/register" 
+                            target="_blank"
+                            shape="round" color="primary" fill="outline" expand="block">
                             Sign up
                         </ion-button>
                     </ion-col>
@@ -79,7 +82,10 @@
                 </ion-row>
                 <ion-row responsive-sm>
                     <ion-col class="ion-text-center">
-                        <a href="https://solidproject.org/users/get-a-pod"><ion-icon name="information-circle-outline"></ion-icon> Click here for more info about Solid</a>
+                        <a 
+                            href="https://solidproject.org/users/get-a-pod"
+                            target="_blank"
+                        ><ion-icon name="information-circle-outline"></ion-icon> Click here for more info about Solid</a>
                     </ion-col>
                 </ion-row>
             </div>
@@ -93,7 +99,7 @@ import {
     IonButtons,
     IonContent,
     IonHeader,
-    IonMenuButton,
+    IonAvatar,
     IonPage,
     IonTitle,
     IonToolbar,
@@ -102,6 +108,7 @@ import {
     IonSelectOption,
     IonButton,
     IonRow,
+    IonBackButton,
     IonCol,
 } from '@ionic/vue';
 import { useUserStore } from '../stores/user';
@@ -109,10 +116,11 @@ import AddListAttributeDirective from '../directives/AddListAttributeDirective';
 
 @Options({
     components: {
+        IonAvatar,
         IonButtons,
         IonContent,
         IonHeader,
-        IonMenuButton,
+        IonBackButton,
         IonPage,
         IonTitle,
         IonToolbar,
@@ -141,7 +149,7 @@ export default class LoginPage extends Vue {
             if (this.userStore.isLoggedIn) {
                 // Redirect
                 console.log('Logged in');
-                this.$router.replace('/profile');
+                this.$router.replace("/");
             } else {
                 console.log('Not logged in');
             }
@@ -155,8 +163,20 @@ export default class LoginPage extends Vue {
 </script>
 
 <style scoped lang="scss">
+ion-toolbar {
+    --background: transparent;
+}
+
+ion-toolbar {
+  --background: transparent no-repeat fixed center;
+  --color: black;
+  position: absolute;
+  top: 0;
+}
+
 #container {
     padding: 1em;
+    padding-top: 3em;
 }
 
 img.logo {
@@ -180,6 +200,6 @@ img.logo {
 }
 
 .info-card ion-icon[name='information-circle-outline'] {
-    zoom: 1.8;
+    zoom: 1.5;
 }
 </style>

@@ -3,7 +3,8 @@
         <ion-avatar slot="start">
             <img 
                 :src="userStore.user.picture"
-                alt="Silhouette of a person's head"/>
+                @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
+                :alt="`Profile picture of ${userStore.user.name}`"/>
         </ion-avatar>
         <ion-grid style="width: 100%" @click="onClick">
             <ion-row v-if="beacon.displayName">
@@ -14,17 +15,11 @@
                 </ion-col>
             </ion-row>
             <ion-row>
-                <ion-col size="12" size-md="3">
-                    <ion-label class="key" color="primary">Namespace</ion-label>
+                <ion-col size="12" size-md="12">
+                    <ion-label>{{ userStore.user.name }}</ion-label>
                 </ion-col>
-                <ion-col size="12" size-md="8">
-                    <ion-label>{{ beacon.namespaceId.toString() }}</ion-label>
-                </ion-col>
-                <ion-col size="6" size-md="3">
-                    <ion-label class="key" color="primary">Instance</ion-label>
-                </ion-col>
-                <ion-col size="6" size-md="8">
-                    <ion-label>{{ beacon.instanceId.toString(false) }}</ion-label>
+                <ion-col size="12" size-md="12">
+                    <ion-label>{{ userStore.webId }}</ion-label>
                 </ion-col>
             </ion-row>
         </ion-grid>
