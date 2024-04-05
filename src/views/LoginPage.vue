@@ -43,7 +43,7 @@
 
                 <ion-row responsive-sm>
                     <ion-col>
-                        <ion-checkbox label-placement="end">Remember me</ion-checkbox>
+                        <ion-checkbox v-model="remember" label-placement="end">Remember me</ion-checkbox>
                     </ion-col>
                 </ion-row>
 
@@ -105,6 +105,7 @@ import {
     IonToolbar,
     IonLabel,
     IonSelect,
+    IonCheckbox,
     IonSelectOption,
     IonButton,
     IonRow,
@@ -124,6 +125,7 @@ import AddListAttributeDirective from '../directives/AddListAttributeDirective';
         IonPage,
         IonTitle,
         IonToolbar,
+        IonCheckbox,
         IonLabel,
         IonSelect,
         IonSelectOption,
@@ -143,6 +145,7 @@ export default class LoginPage extends Vue {
         'https://login.inrupt.com/',
         'https://solidcommunity.net/',
     ];
+    remember: boolean;
 
     mounted(): void {
         this.userStore.once('login', () => {
@@ -157,7 +160,7 @@ export default class LoginPage extends Vue {
     }
 
     login(): void {
-        this.userStore.authenticate(this.selectedIssuer);
+        this.userStore.authenticate(this.selectedIssuer, this.remember);
     }
 }
 </script>

@@ -6,7 +6,9 @@ import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder } from '@sembeacon/openhps';
 
+const DEBUG = true;
 const CLIENT_NAME = 'SemBeacon Application';
+const CLIENT_ID = DEBUG ? 'https://sembeacon.org/id_debug.jsonld' : 'https://sembeacon.org/id.jsonld';
 
 export interface UserState {
     service: SolidClientService;
@@ -41,7 +43,7 @@ export const useUserStore = defineStore('user', {
             return new Promise((resolve) => {
                 const redirectUrl = window.location.origin + '/login';
                 const service = new SolidClientService({
-                    clientName: CLIENT_NAME,
+                    clientId: CLIENT_ID,
                     dataServiceDriver: new LocalStorageDriver<string, string>(String as any, {
                         namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
                     }),
@@ -64,17 +66,22 @@ export const useUserStore = defineStore('user', {
                     console.log('Solid service is ready');	
                     resolve();
                 });
-                service.emit('build');
+                service.on('error', err => {
+                    // Show a toast message with the login error
+                    
+                    console.error(err);
+                })
+                service.emitAsync('build');
             });
         },
         authenticate(issuer: string, remember?: boolean): Promise<void> {
             return new Promise((resolve, reject) => {
-                const service: SolidClientService = this.service;
+                const service: any = this.service;
                 if (remember) {
                     console.log("remember me");
                 }
                 service
-                    .login(issuer)
+                    .login(issuer, remember)
                     .then(() => resolve())
                     .catch(reject);
             });

@@ -29,6 +29,7 @@
                                 v-else
                                 detail="false"
                                 class="hydrated"
+                                @click="this.$router.push('/login')"
                             >
                                 <ion-avatar slot="start">
                                     <img 
@@ -36,9 +37,7 @@
                                         alt="Solid logo"/>
                                 </ion-avatar>
                                 <ion-label>Solid log in</ion-label>
-                                <ion-button @click="this.$router.push('/login')" fill="clear" slot="end" icon-only>
-                                    <ion-icon :icon="logIn"></ion-icon>
-                                </ion-button>
+                                <ion-icon slot="end" :icon="logIn"></ion-icon>
                             </ion-item>
                         </ion-menu-toggle>
 
@@ -231,6 +230,7 @@ export default class App extends Vue {
         RDFSerializer.initialize('rf');
         RDFSerializer.initialize('geospatial');
 
+        console.log('Initializing stores');
         this.logger.initialize();
         await this.userStore.initialize();
 
