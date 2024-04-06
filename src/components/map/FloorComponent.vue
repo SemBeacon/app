@@ -3,11 +3,7 @@
         <slot></slot>
 
         <!-- Floorplan -->
-        <map-image-component
-            :map-object="floorPlan"
-            :visible="selected"
-        >
-        </map-image-component>
+        <map-image-component :map-object="floorPlan" :visible="selected"> </map-image-component>
 
         <!-- GeoJSON Spaces -->
         <geo-json-component

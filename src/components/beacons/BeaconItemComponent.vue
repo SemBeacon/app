@@ -1,10 +1,41 @@
 <template>
     <ion-item-sliding :class="deleted ? 'item-delete-animation' : ''">
         <ion-item ref="item" class="beacon-item" button :detail="false" :disabled="disabled">
-            <ion-thumbnail v-if="beaconIcon" slot="start" @click="onClick">
+            <ion-avatar
+                v-if="beaconType === 'SemBeacon' && beacon.object && beacon.object instanceof User"
+                slot="start"
+            >
+                <img
+                    :src="beacon.object.picture"
+                    :alt="`Profile picture of ${beacon.object.name}`"
+                    @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
+                />
+            </ion-avatar>
+            <ion-thumbnail v-else-if="beaconIcon" slot="start" @click="onClick">
                 <img :alt="beacon.displayName" :src="beaconIcon" />
             </ion-thumbnail>
-            <ion-grid style="width: 100%" @click="onClick">
+            <ion-grid
+                v-if="beaconType === 'SemBeacon' && beacon.object && beacon.object instanceof User"
+                style="width: 100%"
+                @click="onClick"
+            >
+                <ion-row v-if="beacon.object.name">
+                    <ion-col size="12">
+                        <ion-label color="primary-contrast" class="key">{{
+                            beacon.object.name
+                        }}</ion-label>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col size="12" size-md="3">
+                        <ion-label class="key" color="primary">WebID</ion-label>
+                    </ion-col>
+                    <ion-col size="12" size-md="8">
+                        <ion-label>{{ beacon.object.id }}</ion-label>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+            <ion-grid v-else style="width: 100%" @click="onClick">
                 <ion-row v-if="beacon.displayName">
                     <ion-col size="12">
                         <ion-label color="primary-contrast" class="key">{{
@@ -111,7 +142,7 @@
                 <small :key="key.value">{{ lastSeen() }}</small>
             </ion-label>
         </ion-item>
-        <ion-item-options v-if="simulator" @ionSwipe="deleteBeacon">
+        <ion-item-options v-if="simulator && deleteBeacon" @ionSwipe="deleteBeacon">
             <ion-item-option color="danger" expandable @click="deleteBeacon">
                 <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
@@ -146,10 +177,11 @@ import {
 import { BLESemBeacon } from '@sembeacon/openhps';
 import moment from 'moment';
 import { Beacon } from '../../stores/beacon.scanning';
-import { TimeService } from '@openhps/core';
+import { Serializable, TimeService } from '@openhps/core';
 import { ref } from 'vue';
 import { Ref } from 'vue-property-decorator';
 import { SimulatedBeacon } from '@/stores/beacon.advertising';
+import { User } from '@openhps/rdf';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -169,6 +201,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     },
 })
 export default class BeaconItemComponent extends Vue {
+    readonly User: Serializable<User> = User;
     BeaconType: any = {
         BLESemBeacon,
         BLEEddystoneTLM,
@@ -244,13 +277,22 @@ export default class BeaconItemComponent extends Vue {
 span.rssi {
     font-weight: bold;
 }
+
 ion-label.key {
     font-weight: bold;
 }
+
 ion-thumbnail {
     --size: 36px;
     margin-right: 0.5em;
 }
+
+ion-avatar {
+    width: 36px;
+    height: 36px;;
+    margin-right: 0.5em;
+}
+
 ion-col {
     margin: 0;
     padding: 0;

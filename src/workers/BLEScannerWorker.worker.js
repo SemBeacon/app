@@ -21,7 +21,10 @@ export default ModelBuilder.create()
     })
     .addService(
         new SemBeaconService(null, {
-            accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
+            bitly: {
+                accessToken: '5acd0aa037c74dd34287db2e914246603d97c84a',
+                groupGuid: "Bo46fA1eqqx"
+            },
             cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
             uid: 'sembeacon-worker-service',
             timeout: 15000,

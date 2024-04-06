@@ -10,8 +10,8 @@
             :center="center"
             zoom="18"
             projection="EPSG:3857"
+            :enable-rotation="false"
             @change="handleViewChange"
-            :enableRotation="false"
         ></ol-view>
         <!-- Map components -->
         <slot></slot>
@@ -46,8 +46,9 @@ export default class MapComponent extends Vue {
                 declutter: true,
                 layers: {
                     accessToken: this.settings.accessToken,
-                    webfonts: "https://cdn.jsdelivr.net/npm/@fontsource/{font-family}/{fontweight}{-fontstyle}.css"
-                } as any
+                    webfonts:
+                        'https://cdn.jsdelivr.net/npm/@fontsource/{font-family}/{fontweight}{-fontstyle}.css',
+                } as any,
             }),
         );
         this.$emit('load', this.map);

@@ -13,28 +13,35 @@
             <div id="container">
                 <ion-row responsive-sm>
                     <ion-col size="12">
-                        <img alt="Solid Project logo" class="logo" src="/assets/logo/solid-logo.svg" />
+                        <picture>
+                            <source
+                                srcset="/assets/logo/login_alpha.svg"
+                                media="(prefers-color-scheme: dark)"
+                            />
+                            <img
+                                alt="Solid Project logo"
+                                class="logo"
+                                src="/assets/logo/login.svg"
+                            />
+                        </picture>
                     </ion-col>
                 </ion-row>
                 <ion-row responsive-sm>
                     <ion-col>
-                        <ion-input 
-                            label="Your ID provider" label-placement="stacked"
+                        <ion-input
+                            @keyup.enter="login()"
+                            v-AddListAttributeDirective="'issuers'"
+                            label="Your ID provider"
+                            label-placement="stacked"
                             placeholder="Select your ID provider"
                             fill="outline"
                             helper-text="A Solid issuer is a service that provides you with a Solid Pod."
                             @ionChange="selectedIssuer = $event.detail.value"
-                            v-AddListAttributeDirective="'issuers'"
-                            v-on:enter="login()"
                         >
-                        </ion-input>    
+                        </ion-input>
 
                         <datalist id="issuers">
-                            <option 
-                                v-for="issuer in knownIssuers"
-                                :key="issuer"
-                                :value="issuer"
-                            >
+                            <option v-for="issuer in knownIssuers" :key="issuer" :value="issuer">
                                 {{ issuer }}
                             </option>
                         </datalist>
@@ -43,7 +50,9 @@
 
                 <ion-row responsive-sm>
                     <ion-col>
-                        <ion-checkbox v-model="remember" label-placement="end">Remember me</ion-checkbox>
+                        <ion-checkbox v-model="remember" label-placement="end"
+                            >Remember me</ion-checkbox
+                        >
                     </ion-col>
                 </ion-row>
 
@@ -56,8 +65,9 @@
                                         <ion-icon name="information-circle-outline"></ion-icon>
                                     </ion-col>
                                     <ion-col>
-                                        If this box is checked, SemBeacon will request a refresh token and use it to automatically refresh your 
-                                        access token when it expires.
+                                        If this box is checked, SemBeacon will request a refresh
+                                        token and use it to automatically refresh your access token
+                                        when it expires.
                                     </ion-col>
                                 </ion-row>
                             </ion-card-content>
@@ -67,10 +77,14 @@
 
                 <ion-row responsive-sm>
                     <ion-col>
-                        <ion-button 
-                            href="https://solidweb.org/register" 
+                        <ion-button
+                            href="https://solidweb.org/register"
                             target="_blank"
-                            shape="round" color="primary" fill="outline" expand="block">
+                            shape="round"
+                            color="primary"
+                            fill="outline"
+                            expand="block"
+                        >
                             Sign up
                         </ion-button>
                     </ion-col>
@@ -82,19 +96,26 @@
                 </ion-row>
                 <ion-row responsive-sm>
                     <ion-col class="ion-text-center">
-                        <a 
-                            href="https://solidproject.org/users/get-a-pod"
-                            target="_blank"
-                        ><ion-icon name="information-circle-outline"></ion-icon> Click here for more info about Solid</a>
+                        <a href="https://solidproject.org/users/get-a-pod" target="_blank"
+                            ><ion-icon name="information-circle-outline"></ion-icon> Click here for
+                            more info about Solid</a
+                        >
                     </ion-col>
                 </ion-row>
             </div>
+
+            <ion-toast 
+                ref="errorToast" 
+                color="danger" 
+                trigger="open-toast" 
+                :is-open="errorToastOpen"
+                :message="errorMessage" :duration="5000"></ion-toast>
         </ion-content>
     </ion-page>
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Options, Ref } from 'vue-property-decorator';
 import {
     IonButtons,
     IonContent,
@@ -111,9 +132,12 @@ import {
     IonRow,
     IonBackButton,
     IonCol,
+    IonToast
 } from '@ionic/vue';
 import { useUserStore } from '../stores/user';
 import AddListAttributeDirective from '../directives/AddListAttributeDirective';
+import { StatusBar, Animation } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 
 @Options({
     components: {
@@ -132,10 +156,11 @@ import AddListAttributeDirective from '../directives/AddListAttributeDirective';
         IonButton,
         IonRow,
         IonCol,
+        IonToast,
     },
     directives: {
-        AddListAttributeDirective
-    }
+        AddListAttributeDirective,
+    },
 })
 export default class LoginPage extends Vue {
     userStore = useUserStore();
@@ -146,17 +171,40 @@ export default class LoginPage extends Vue {
         'https://solidcommunity.net/',
     ];
     remember: boolean = true;
+    @Ref() errorToast: any;
+    errorMessage: string = '';
+    errorToastOpen: boolean = false;
 
-    mounted(): void {
+    async mounted() {
+        this.userStore.on('error', (error: string) => {
+            console.error('Error', error);
+            this.errorMessage = error;
+            this.errorToastOpen = true;
+        });
         this.userStore.once('login', () => {
             if (this.userStore.isLoggedIn) {
                 // Redirect
                 console.log('Logged in');
-                this.$router.replace("/");
+                this.$router.replace('/');
             } else {
                 console.log('Not logged in');
             }
         });
+        console.log("Handle login", window.location.href);
+        this.userStore.handleLogin();
+        if (Capacitor.getPlatform() !== 'web') {
+            await StatusBar.hide({
+                animation: Animation.None,
+            });
+        }
+    }
+
+    async unmounted() {
+        if (Capacitor.getPlatform() !== 'web') {
+            await StatusBar.show({
+                animation: Animation.None,
+            });
+        }
     }
 
     login(): void {
@@ -171,14 +219,14 @@ ion-toolbar {
 }
 
 body.dark ion-toolbar {
-  --background: transparent no-repeat fixed center;
+    --background: transparent no-repeat fixed center;
 }
 
 ion-toolbar {
-  --background: transparent no-repeat fixed center;
-  --color: black;
-  position: absolute;
-  top: 0;
+    --background: transparent no-repeat fixed center;
+    --color: black;
+    position: absolute;
+    top: 0;
 }
 
 #container {
@@ -191,8 +239,8 @@ img.logo {
     margin-left: auto;
     margin-right: auto;
     display: block;
-    height: 100px;
-    width: 100px;
+    height: 80px;
+    max-width: 100%;
     margin-bottom: 2em;
     object-fit: contain;
 }
@@ -201,7 +249,7 @@ img.logo {
     color: #04004d;
     margin: 0;
 
-    ion-col[size="auto"] {
+    ion-col[size='auto'] {
         width: 30px;
     }
 }

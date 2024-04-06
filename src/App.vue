@@ -7,21 +7,23 @@
                         <ion-list-header>
                             <img alt="SemBeacon Logo" :src="logoSrc" />
                         </ion-list-header>
-                        
+
                         <ion-menu-toggle auto-hide="false" class="profile">
-                            <ion-item
-                                v-if="userStore.user"
-                                detail="false"
-                                class="hydrated"
-                            >
+                            <ion-item v-if="userStore.user" detail="false" class="hydrated">
                                 <ion-avatar slot="start">
-                                    <img 
+                                    <img
                                         :src="userStore.user.picture"
+                                        :alt="`Profile picture of ${userStore.user.name}`"
                                         @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
-                                        :alt="`Profile picture of ${userStore.user.name}`"/>
+                                    />
                                 </ion-avatar>
                                 <ion-label>{{ userStore.user.name }}</ion-label>
-                                <ion-button @click="userStore.logout()" fill="clear" slot="end" icon-only>
+                                <ion-button
+                                    slot="end"
+                                    fill="clear"
+                                    icon-only
+                                    @click="userStore.logout()"
+                                >
                                     <ion-icon :icon="logOut"></ion-icon>
                                 </ion-button>
                             </ion-item>
@@ -29,12 +31,10 @@
                                 v-else
                                 detail="false"
                                 class="hydrated"
-                                @click="this.$router.push('/login')"
+                                @click="$router.push('/login')"
                             >
                                 <ion-avatar slot="start">
-                                    <img 
-                                        src="/assets/logo/solid-logo.svg"
-                                        alt="Solid logo"/>
+                                    <img src="/assets/logo/solid-logo.svg" alt="Solid logo" />
                                 </ion-avatar>
                                 <ion-label>Solid log in</ion-label>
                                 <ion-icon slot="end" :icon="logIn"></ion-icon>
@@ -136,7 +136,7 @@ import { loadWASM } from 'onigasm';
     data() {
         return {
             logOut,
-            logIn
+            logIn,
         };
     },
 })
@@ -257,8 +257,16 @@ export default class App extends Vue {
             const domain = 'app.sembeacon.org';
             const pathArray = event.url.split(domain);
             const appPath = pathArray.pop();
+            console.log('App path', appPath);
             if (appPath) {
-                this.$router.push(appPath);
+                if (appPath.startsWith('/login')) {
+                    this.$router.replace(appPath);
+                    window.history.replaceState({}, document.title, event.url);
+                    console.log("Handle login", window.location.href);
+                    this.userStore.handleLogin();
+                } else {
+                    this.$router.replace(appPath);
+                }
             }
         });
 
@@ -321,6 +329,11 @@ export default class App extends Vue {
 
 #container a {
     text-decoration: none;
+}
+
+ion-avatar {
+    width: 36px;
+    height: 36px;;
 }
 
 ion-item {

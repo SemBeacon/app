@@ -5,15 +5,17 @@ import { Browser } from '@capacitor/browser';
 import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembeacon/openhps';
+import { useBeaconAdvertisingStore } from './beacon.advertising';
 
-const DEBUG = true;
+const DEBUG = false;
 const CLIENT_NAME = 'SemBeacon Application';
-const CLIENT_ID = DEBUG ? 'https://sembeacon.org/id_debug.jsonld' : 'https://sembeacon.org/id.jsonld';
+const CLIENT_ID = DEBUG
+    ? 'https://sembeacon.org/id_debug.jsonld'
+    : 'https://sembeacon.org/id.jsonld';
 
 export interface UserState {
     service: SolidClientService;
     user: User;
-    beacons: BLESemBeacon[];
     ready: boolean;
 }
 
@@ -21,8 +23,7 @@ export const useUserStore = defineStore('user', {
     state: (): UserState => ({
         service: undefined,
         user: undefined,
-        beacons: [],
-        ready: false
+        ready: false,
     }),
     getters: {
         webId(): string {
@@ -39,6 +40,14 @@ export const useUserStore = defineStore('user', {
         once(event: string, callback: (...args: any[]) => void) {
             this.service.once(event, callback);
         },
+        on(event: string, callback: (...args: any[]) => void) {
+            this.service.on(event, callback);
+        },
+        handleLogin(): void {
+            this.service.handleLogin().catch(() => {
+                // Do not handle
+            });
+        },
         initialize(): Promise<void> {
             return new Promise((resolve) => {
                 const redirectUrl = window.location.origin + '/login';
@@ -53,33 +62,36 @@ export const useUserStore = defineStore('user', {
                         // Use @capacitor/browser
                         Browser.open({
                             url: redirectUrl,
-                            windowName: '_self'
+                            windowName: '_self',
                         });
                     },
                 });
                 this.service = service;
                 service.on('login', (session: SolidSession) => {
                     console.log(`Logged in ${session.info.webId}`);
-                    this.fetchProfile(session, session.info.webId);
+                    this.fetchProfile(session, session.info.webId)
+                        .then(() => {
+                            return this.createBeacon();
+                        })
+                        .then((beacon) => {
+                            console.log("Created user beacon", beacon);
+                            const beaconStore = useBeaconAdvertisingStore();
+                            beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                        });
                 });
                 service.once('ready', () => {
-                    console.log('Solid service is ready');	
+                    console.log('Solid service is ready');
                     resolve();
                 });
-                service.on('error', err => {
-                    // Show a toast message with the login error
-                    
-                    console.error(err);
-                })
                 service.emitAsync('build');
             });
         },
         authenticate(issuer: string, remember?: boolean): Promise<void> {
             return new Promise((resolve, reject) => {
                 const service: any = this.service;
-                if (remember) {
-                    console.log("remember me");
-                }
                 service
                     .login(issuer, remember)
                     .then(() => resolve())
@@ -104,7 +116,9 @@ export const useUserStore = defineStore('user', {
                 service
                     .getThing(session, webId)
                     .then((card) => {
-                        const user = RDFSerializer.deserializeFromSubjects(card.url as IriString, [card as Subject]) as User;
+                        const user = RDFSerializer.deserializeFromSubjects(card.url as IriString, [
+                            card as Subject,
+                        ]) as User;
                         if (!user.name && card.predicates[rdfs.seeAlso]) {
                             // Get extended profile
                             const extendedProfile = card.predicates[rdfs.seeAlso].namedNodes[0];
@@ -117,9 +131,7 @@ export const useUserStore = defineStore('user', {
                     })
                     .then((profile) => {
                         if (profile) {
-                            this.user = RDFSerializer.deserializeFromSubject(
-                                this.profile
-                            );
+                            this.user = RDFSerializer.deserializeFromSubject(this.profile);
                             resolve(this.user);
                         } else {
                             reject(new Error(`User profile is not accessible!`));
@@ -131,16 +143,27 @@ export const useUserStore = defineStore('user', {
         createBeacon(): Promise<BLESemBeacon> {
             return new Promise((resolve, reject) => {
                 const user: User = this.user;
-                BLESemBeaconBuilder.create()
-                    .resourceUri(this.service.session.info.webId)
+                if (user === undefined) {
+                    return resolve(undefined);
+                }
+                BLESemBeaconBuilder.create({
+                    bitly: {
+                        accessToken: '5acd0aa037c74dd34287db2e914246603d97c84a',
+                        groupGuid: "Bo46fA1eqqx"
+                    },
+                })
+                    .resourceUri(user.id as IriString)
                     .displayName(user.name)
                     .flag(SEMBEACON_FLAG_MOVING)
-                    //.namespaceId(BLEUUID.fromString(''))
                     .instanceId(0x01)
-                    .build().then((beacon) => {
+                    .build()
+                    .then((beacon) => {
+                        beacon.object = user;
+                        beacon.uid = beacon.computeUID();
                         resolve(beacon);
-                    }).catch(reject);
+                    })
+                    .catch(reject);
             });
-        }
+        },
     },
 });

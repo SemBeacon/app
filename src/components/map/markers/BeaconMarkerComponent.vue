@@ -71,7 +71,7 @@ export default class BeaconMarkerComponent extends Vue {
     @Ref('sourceRef') sourceRef: { source: VectorSource };
     @Ref('interactionRef') interacitonRef: { select: any };
     selectedBeacon: BLEBeaconObject & Beacon = {} as any;
-    @Inject() map: OlMap
+    @Inject() map: OlMap;
 
     @Watch('visible')
     onVisibilityChange(visible: boolean): void {
@@ -115,13 +115,20 @@ export default class BeaconMarkerComponent extends Vue {
     mounted() {
         this.map.on('singleclick', (e) => {
             const features: Feature[] = [];
-            this.map.forEachFeatureAtPixel(e.pixel, (feature: Feature) => {
-                if (this.sourceRef && this.sourceRef.source.getFeatureByUid((feature as any).ol_uid) !== undefined) {
-                    features.push(feature);
-                }
-            }, {
-                hitTolerance: 10
-            });
+            this.map.forEachFeatureAtPixel(
+                e.pixel,
+                (feature: Feature) => {
+                    if (
+                        this.sourceRef &&
+                        this.sourceRef.source.getFeatureByUid((feature as any).ol_uid) !== undefined
+                    ) {
+                        features.push(feature);
+                    }
+                },
+                {
+                    hitTolerance: 10,
+                },
+            );
             if (features) {
                 this.onClick(features);
             }
@@ -158,9 +165,7 @@ export default class BeaconMarkerComponent extends Vue {
             this.selectedBeacon = {} as any;
             return;
         }
-        const selectedMarker = this.sourceRef.source.getFeatureByUid(
-            (features[0] as any).ol_uid,
-        );
+        const selectedMarker = this.sourceRef.source.getFeatureByUid((features[0] as any).ol_uid);
         const selectedBeacon = this.getBeaconByMarker(selectedMarker as Feature<Point>);
         if (selectedBeacon) {
             this.selectedBeacon = selectedBeacon;

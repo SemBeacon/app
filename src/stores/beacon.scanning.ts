@@ -76,7 +76,10 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 namespace: 'sembeacon',
             }),
             {
-                accessToken: '2cd7bc12126759042bfb3ebe1160aafda0bc65df',
+                bitly: {
+                    accessToken: '5acd0aa037c74dd34287db2e914246603d97c84a',
+                    groupGuid: "Bo46fA1eqqx"
+                },
                 cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
                 uid: 'sembeacon-service',
                 timeout: 15000,
@@ -185,6 +188,16 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .shortResourceUri('https://bit.ly/3JsEnF9')
                     .flag(SEMBEACON_FLAG_HAS_POSITION)
                     .flag(SEMBEACON_FLAG_HAS_SYSTEM)
+                    .build(),
+                BLESemBeaconBuilder.create()
+                    .resourceUri("https://solid.dyn.hofmannsnet.de/jan/profile/card#me")
+                    .instanceId(0x01)
+                    .calibratedRSSI(-56)
+                    .build(),
+                BLESemBeaconBuilder.create()
+                    .resourceUri("https://schmid.solidcommunity.net/profile/card#me")
+                    .instanceId(0x01)
+                    .calibratedRSSI(-56)
                     .build(),
                 BLEiBeaconBuilder.create()
                     .proximityUUID(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
@@ -301,7 +314,8 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 this.state = ControllerState.INITIALIZING;
                 const logger = useLogger();
                 logger.log('info', 'Initializing beacon scanner model ...');
-                this.beaconService.logger = (level: string, message: string) => logger.log(level, message);
+                this.beaconService.logger = (level: string, message: string) =>
+                    logger.log(level, message);
                 ModelBuilder.create()
                     .addService(this.beaconService)
                     .from(...this.sources)
@@ -412,7 +426,10 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                         this.state = ControllerState.READY;
 
                         service.resolve = (object: BLESemBeacon, options: ResolveOptions) => {
-                            logger.log('debug', `Resolving SemBeacon (${object.resourceUri ?? object.shortResourceUri}) on worker`);
+                            logger.log(
+                                'debug',
+                                `Resolving SemBeacon (${object.resourceUri ?? object.shortResourceUri}) on worker`,
+                            );
                             return this.worker.invokeMethod('resolve', object, options);
                         };
 
