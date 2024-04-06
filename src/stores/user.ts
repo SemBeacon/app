@@ -4,7 +4,7 @@ import { LocalStorageDriver } from '@openhps/localstorage';
 import { Browser } from '@capacitor/browser';
 import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
-import { BLESemBeacon, BLESemBeaconBuilder } from '@sembeacon/openhps';
+import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembeacon/openhps';
 
 const DEBUG = true;
 const CLIENT_NAME = 'SemBeacon Application';
@@ -60,7 +60,7 @@ export const useUserStore = defineStore('user', {
                 this.service = service;
                 service.on('login', (session: SolidSession) => {
                     console.log(`Logged in ${session.info.webId}`);
-                    this.fetchProfile(session);
+                    this.fetchProfile(session, session.info.webId);
                 });
                 service.once('ready', () => {
                     console.log('Solid service is ready');	
@@ -98,20 +98,17 @@ export const useUserStore = defineStore('user', {
                     .catch(reject);
             });
         },
-        fetchProfile(session: SolidSession = this.session): Promise<User> {
+        fetchProfile(session: SolidSession, webId: IriString): Promise<User> {
             return new Promise((resolve, reject) => {
                 const service: SolidClientService = this.service;
-                if (!session.info.isLoggedIn) {
-                    return reject(new Error(`User is not logged in!`));
-                }
                 service
-                    .getThing(session, session.info.webId)
+                    .getThing(session, webId)
                     .then((card) => {
                         const user = RDFSerializer.deserializeFromSubjects(card.url as IriString, [card as Subject]) as User;
                         if (!user.name && card.predicates[rdfs.seeAlso]) {
                             // Get extended profile
                             const extendedProfile = card.predicates[rdfs.seeAlso].namedNodes[0];
-                            return service.getThing(this.session, extendedProfile);
+                            return service.getThing(session, extendedProfile);
                         } else {
                             this.user = user;
                             resolve(user);
@@ -137,6 +134,7 @@ export const useUserStore = defineStore('user', {
                 BLESemBeaconBuilder.create()
                     .resourceUri(this.service.session.info.webId)
                     .displayName(user.name)
+                    .flag(SEMBEACON_FLAG_MOVING)
                     //.namespaceId(BLEUUID.fromString(''))
                     .instanceId(0x01)
                     .build().then((beacon) => {

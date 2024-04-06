@@ -253,15 +253,13 @@ export default class App extends Vue {
             },
         });
 
-        CapacitorApp.addListener('appUrlOpen', function (event: URLOpenListenerEvent) {
-            this.zone.run(() => {
-                const domain = 'app.sembeacon.org';
-                const pathArray = event.url.split(domain);
-                const appPath = pathArray.pop();
-                if (appPath) {
-                    this.router.navigateByUrl(appPath);
-                }
-            });
+        CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+            const domain = 'app.sembeacon.org';
+            const pathArray = event.url.split(domain);
+            const appPath = pathArray.pop();
+            if (appPath) {
+                this.$router.push(appPath);
+            }
         });
 
         if (Capacitor.getPlatform() !== 'web') {

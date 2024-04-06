@@ -145,7 +145,7 @@ export default class LoginPage extends Vue {
         'https://login.inrupt.com/',
         'https://solidcommunity.net/',
     ];
-    remember: boolean;
+    remember: boolean = true;
 
     mounted(): void {
         this.userStore.once('login', () => {
@@ -168,6 +168,10 @@ export default class LoginPage extends Vue {
 <style scoped lang="scss">
 ion-toolbar {
     --background: transparent;
+}
+
+body.dark ion-toolbar {
+  --background: transparent no-repeat fixed center;
 }
 
 ion-toolbar {
