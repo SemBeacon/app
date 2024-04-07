@@ -181,7 +181,7 @@ export default class LoginPage extends Vue {
             this.errorMessage = error;
             this.errorToastOpen = true;
         });
-        this.userStore.once('login', () => {
+        this.userStore.on('login', () => {
             if (this.userStore.isLoggedIn) {
                 // Redirect
                 console.log('Logged in');
@@ -190,7 +190,6 @@ export default class LoginPage extends Vue {
                 console.log('Not logged in');
             }
         });
-        console.log("Handle login", window.location.href);
         this.userStore.handleLogin();
         if (Capacitor.getPlatform() !== 'web') {
             await StatusBar.hide({

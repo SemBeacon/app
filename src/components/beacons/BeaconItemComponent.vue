@@ -31,7 +31,7 @@
                         <ion-label class="key" color="primary">WebID</ion-label>
                     </ion-col>
                     <ion-col size="12" size-md="8">
-                        <ion-label>{{ beacon.object.id }}</ion-label>
+                        <ion-label class="ion-text-nowrap">{{ beacon.object.id }}</ion-label>
                     </ion-col>
                 </ion-row>
             </ion-grid>
@@ -49,13 +49,13 @@
                             <ion-label class="key" color="primary">Namespace</ion-label>
                         </ion-col>
                         <ion-col size="12" size-md="8">
-                            <ion-label>{{ beacon.namespaceId.toString() }}</ion-label>
+                            <ion-label class="ion-text-nowrap">{{ beacon.namespaceId.toString() }}</ion-label>
                         </ion-col>
                         <ion-col size="6" size-md="3">
                             <ion-label class="key" color="primary">Instance</ion-label>
                         </ion-col>
                         <ion-col size="6" size-md="8">
-                            <ion-label>{{ beacon.instanceId.toString(false) }}</ion-label>
+                            <ion-label class="ion-text-nowrap">{{ beacon.instanceId.toString(false) }}</ion-label>
                         </ion-col>
                     </template>
                     <template
@@ -68,7 +68,7 @@
                             <ion-label class="key" color="primary">UUID</ion-label>
                         </ion-col>
                         <ion-col size="12" size-md="8">
-                            <ion-label>{{ beacon.proximityUUID.toString() }}</ion-label>
+                            <ion-label class="ion-text-nowrap">{{ beacon.proximityUUID.toString() }}</ion-label>
                         </ion-col>
                         <ion-col size="7" size-md="2">
                             <ion-label class="key" color="primary">Major</ion-label>
@@ -96,13 +96,13 @@
                             <ion-label class="key" color="primary">Namespace</ion-label>
                         </ion-col>
                         <ion-col size="12" size-md="8">
-                            <ion-label>{{ beacon.namespaceId.toString() }}</ion-label>
+                            <ion-label class="ion-text-nowrap">{{ beacon.namespaceId.toString() }}</ion-label>
                         </ion-col>
                         <ion-col size="12" size-md="4">
                             <ion-label class="key" color="primary">Instance</ion-label>
                         </ion-col>
                         <ion-col size="10" size-md="4">
-                            <ion-label>{{ beacon.instanceId.toString() }}</ion-label>
+                            <ion-label class="ion-text-nowrap">{{ beacon.instanceId.toString() }}</ion-label>
                         </ion-col>
                     </template>
                     <template v-else-if="beacon instanceof BeaconType.BLEEddystoneTLM">

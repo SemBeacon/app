@@ -44,8 +44,11 @@ export const useUserStore = defineStore('user', {
             this.service.on(event, callback);
         },
         handleLogin(): void {
-            this.service.handleLogin().catch(() => {
+            this.service.handleLogin().then((session) => {
+                console.log('HANDLE LOGIN', session);	
+            }).catch((err) => {
                 // Do not handle
+                console.error("HANDLE LOGIN", err);
             });
         },
         initialize(): Promise<void> {

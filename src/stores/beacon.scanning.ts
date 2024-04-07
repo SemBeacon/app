@@ -190,6 +190,16 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .flag(SEMBEACON_FLAG_HAS_SYSTEM)
                     .build(),
                 BLESemBeaconBuilder.create()
+                    .resourceUri("https://solid.maximvdw.be/profile/card#me")
+                    .instanceId(0x01)
+                    .calibratedRSSI(-56)
+                    .build(),
+                BLESemBeaconBuilder.create()
+                    .resourceUri("https://ruben.verborgh.org/profile/#me")
+                    .instanceId(0x01)
+                    .calibratedRSSI(-56)
+                    .build(),
+                BLESemBeaconBuilder.create()
                     .resourceUri("https://solid.dyn.hofmannsnet.de/jan/profile/card#me")
                     .instanceId(0x01)
                     .calibratedRSSI(-56)

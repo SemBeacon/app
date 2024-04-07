@@ -10,6 +10,10 @@ export interface SettingsState {
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
+Preferences.keys().then((keys) => {
+    console.log("Data storage", keys);
+});
+
 export const useSettings = defineStore('settings', {
     state: (): SettingsState => ({
         version: 1,
