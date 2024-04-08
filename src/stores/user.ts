@@ -14,23 +14,38 @@ const CLIENT_ID = DEBUG
     : 'https://sembeacon.org/id.jsonld';
 
 export interface UserState {
-    service: SolidClientService;
     user: User;
     ready: boolean;
 }
 
+const redirectUrl = window.location.origin + '/login';
+const service = new SolidClientService({
+    clientId: CLIENT_ID,
+    dataServiceDriver: new LocalStorageDriver<string, string>(String as any, {
+        namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
+    }),
+    redirectUrl,
+    restorePreviousSession: true,
+    handleRedirect: (redirectUrl: string) => {
+        // Use @capacitor/browser
+        Browser.open({
+            url: redirectUrl,
+            windowName: '_self',
+        });
+    },
+});
+    
 export const useUserStore = defineStore('user', {
     state: (): UserState => ({
-        service: undefined,
         user: undefined,
         ready: false,
     }),
     getters: {
         webId(): string {
-            return this.service && this.service.session.info.webId;
+            return service && service.session.info.webId;
         },
         session(): SolidSession {
-            return this.service && this.service.session;
+            return service && service.session;
         },
         isLoggedIn(): boolean {
             return this.session && this.session.info.isLoggedIn;
@@ -38,13 +53,13 @@ export const useUserStore = defineStore('user', {
     },
     actions: {
         once(event: string, callback: (...args: any[]) => void) {
-            this.service.once(event, callback);
+            service.once(event, callback);
         },
         on(event: string, callback: (...args: any[]) => void) {
-            this.service.on(event, callback);
+            service.on(event, callback);
         },
         handleLogin(): void {
-            this.service.handleLogin().then((session) => {
+            service.handleLogin().then((session) => {
                 console.log('HANDLE LOGIN', session);	
             }).catch((err) => {
                 // Do not handle
@@ -53,23 +68,6 @@ export const useUserStore = defineStore('user', {
         },
         initialize(): Promise<void> {
             return new Promise((resolve) => {
-                const redirectUrl = window.location.origin + '/login';
-                const service = new SolidClientService({
-                    clientId: CLIENT_ID,
-                    dataServiceDriver: new LocalStorageDriver<string, string>(String as any, {
-                        namespace: CLIENT_NAME.toLowerCase().replace(/\s/g, '_'),
-                    }),
-                    redirectUrl,
-                    restorePreviousSession: true,
-                    handleRedirect: (redirectUrl: string) => {
-                        // Use @capacitor/browser
-                        Browser.open({
-                            url: redirectUrl,
-                            windowName: '_self',
-                        });
-                    },
-                });
-                this.service = service;
                 service.on('login', (session: SolidSession) => {
                     console.log(`Logged in ${session.info.webId}`);
                     this.fetchProfile(session, session.info.webId)
@@ -94,7 +92,6 @@ export const useUserStore = defineStore('user', {
         },
         authenticate(issuer: string, remember?: boolean): Promise<void> {
             return new Promise((resolve, reject) => {
-                const service: SolidClientService = this.service;
                 service
                     .login(issuer, remember)
                     .then(() => resolve())
@@ -103,7 +100,6 @@ export const useUserStore = defineStore('user', {
         },
         logout(): Promise<void> {
             return new Promise((resolve, reject) => {
-                const service: SolidClientService = this.service;
                 service
                     .logout(this.session)
                     .then(() => {
@@ -115,7 +111,6 @@ export const useUserStore = defineStore('user', {
         },
         fetchProfile(session: SolidSession, webId: IriString): Promise<User> {
             return new Promise((resolve, reject) => {
-                const service: SolidClientService = this.service;
                 service
                     .getThing(session, webId)
                     .then((card) => {
