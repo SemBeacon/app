@@ -94,7 +94,7 @@ export const useUserStore = defineStore('user', {
         },
         authenticate(issuer: string, remember?: boolean): Promise<void> {
             return new Promise((resolve, reject) => {
-                const service: any = this.service;
+                const service: SolidClientService = this.service;
                 service
                     .login(issuer, remember)
                     .then(() => resolve())

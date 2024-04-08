@@ -5,7 +5,7 @@
                 <ion-buttons slot="start">
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
-                <ion-title>Log in to your Solid Pod</ion-title>
+                <ion-title>Sign in to your Solid Pod</ion-title>
             </ion-toolbar>
         </ion-header>
 
@@ -29,13 +29,15 @@
                 <ion-row responsive-sm>
                     <ion-col>
                         <ion-input
+                            :disabled="loading"
+                            type="url"
                             @keyup.enter="login()"
                             v-AddListAttributeDirective="'issuers'"
                             label="Your ID provider"
                             label-placement="stacked"
                             placeholder="Select your ID provider"
                             fill="outline"
-                            helper-text="A Solid issuer is a service that provides you with a Solid Pod."
+                            helper-text="A Solid ID provider is a service that provides you with a Solid Pod."
                             @ionChange="selectedIssuer = $event.detail.value"
                         >
                         </ion-input>
@@ -48,9 +50,11 @@
                     </ion-col>
                 </ion-row>
 
-                <ion-row responsive-sm>
+                <!-- <ion-row responsive-sm>
                     <ion-col>
-                        <ion-checkbox v-model="remember" label-placement="end"
+                        <ion-checkbox 
+                            :disabled="loading"
+                            v-model="remember" label-placement="end"
                             >Remember me</ion-checkbox
                         >
                     </ion-col>
@@ -73,11 +77,12 @@
                             </ion-card-content>
                         </ion-card>
                     </ion-col>
-                </ion-row>
+                </ion-row> -->
 
                 <ion-row responsive-sm>
                     <ion-col>
                         <ion-button
+                            :disabled="loading"
                             href="https://solidweb.org/register"
                             target="_blank"
                             shape="round"
@@ -89,7 +94,7 @@
                         </ion-button>
                     </ion-col>
                     <ion-col>
-                        <ion-button shape="round" color="primary" expand="block" @click="login()">
+                        <ion-button :disabled="loading" shape="round" color="primary" expand="block" @click="login()">
                             <ion-icon name="log-in-outline"></ion-icon>&nbsp;Sign in
                         </ion-button>
                     </ion-col>
@@ -102,20 +107,33 @@
                         >
                     </ion-col>
                 </ion-row>
-            </div>
 
-            <ion-toast 
-                ref="errorToast" 
-                color="danger" 
-                trigger="open-toast" 
-                :is-open="errorToastOpen"
-                :message="errorMessage" :duration="5000"></ion-toast>
+                <ion-row responsive-sm>
+                    <ion-col>
+                        <ion-card color="secondary" class="info-card">
+                            <ion-card-content>
+                                <ion-row>
+                                    <ion-col size="auto">
+                                        <ion-icon name="information-circle-outline"></ion-icon>
+                                    </ion-col>
+                                    <ion-col>
+                                        SemBeacon will retrieve your Solid Pod's WebID and use it to
+                                        fetch your profile data. The application will not request or store
+                                        data in your Pod unless you explicitly allow it when simulating a beacon
+                                        with a resource URI in your Pod.
+                                    </ion-col>
+                                </ion-row>
+                            </ion-card-content>
+                        </ion-card>
+                    </ion-col>
+                </ion-row>
+            </div>
         </ion-content>
     </ion-page>
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref } from 'vue-property-decorator';
+import { Vue, Options } from 'vue-property-decorator';
 import {
     IonButtons,
     IonContent,
@@ -132,7 +150,7 @@ import {
     IonRow,
     IonBackButton,
     IonCol,
-    IonToast
+    toastController,
 } from '@ionic/vue';
 import { useUserStore } from '../stores/user';
 import AddListAttributeDirective from '../directives/AddListAttributeDirective';
@@ -156,7 +174,6 @@ import { Capacitor } from '@capacitor/core';
         IonButton,
         IonRow,
         IonCol,
-        IonToast,
     },
     directives: {
         AddListAttributeDirective,
@@ -171,15 +188,20 @@ export default class LoginPage extends Vue {
         'https://solidcommunity.net/',
     ];
     remember: boolean = true;
-    @Ref() errorToast: any;
-    errorMessage: string = '';
-    errorToastOpen: boolean = false;
+    loading: boolean = false;
 
-    async mounted() {
+    async created() {
         this.userStore.on('error', (error: string) => {
             console.error('Error', error);
-            this.errorMessage = error;
-            this.errorToastOpen = true;
+            toastController
+                .create({
+                    message: error,
+                    duration: 5000,
+                    color: 'danger',
+                })
+                .then((toast) => {
+                    toast.present();
+                });
         });
         this.userStore.on('login', () => {
             if (this.userStore.isLoggedIn) {
@@ -191,6 +213,9 @@ export default class LoginPage extends Vue {
             }
         });
         this.userStore.handleLogin();
+    }
+
+    async mounted() {
         if (Capacitor.getPlatform() !== 'web') {
             await StatusBar.hide({
                 animation: Animation.None,
@@ -207,7 +232,19 @@ export default class LoginPage extends Vue {
     }
 
     login(): void {
-        this.userStore.authenticate(this.selectedIssuer, this.remember);
+        this.loading = true;
+        toastController
+            .create({
+                message: `Logging in with ${this.selectedIssuer}`,
+                duration: 5000,
+                color: 'light',
+            })
+            .then((toast) => {
+                toast.present();
+            });
+        this.userStore.authenticate(this.selectedIssuer, this.remember).finally(() => {
+            this.loading = false;
+        });
     }
 }
 </script>

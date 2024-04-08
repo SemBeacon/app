@@ -275,13 +275,9 @@ export default class App extends Vue {
                 console.log('Application information', info);
                 this.info = info;
             });
-        }
-
-        await SplashScreen.hide({
-            fadeOutDuration: 150,
-        });
-
-        if (Capacitor.getPlatform() !== 'web') {
+            await SplashScreen.hide({
+                fadeOutDuration: 150,
+            });
             await StatusBar.setStyle({ style: Style.Dark });
             await StatusBar.setBackgroundColor({
                 color: '#363795',

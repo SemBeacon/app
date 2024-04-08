@@ -36,6 +36,20 @@
             </beacon-item-component>
         </ion-list>
 
+        <ion-card v-if="beacons.length === 0">
+            <img alt="Solid Pod advertising" src="/assets/solid.png" />
+            <ion-card-header>
+                <ion-card-title>Sign in to Solid</ion-card-title>
+                <ion-card-subtitle>Advertise your WebID</ion-card-subtitle>
+            </ion-card-header>
+
+            <ion-card-content>
+                Sign in to your Solid Pod to advertise your WebID to nearby users.
+            </ion-card-content>
+
+            <ion-button fill="clear" @click="this.$router.push('/login')">Sign in</ion-button>
+        </ion-card>
+
         <ion-card v-if="beacons.length === 0" :disabled="downloading">
             <img alt="IoT 2023 demo" src="/assets/iot2023.png" />
             <ion-card-header>

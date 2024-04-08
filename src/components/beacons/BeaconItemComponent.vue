@@ -202,7 +202,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 })
 export default class BeaconItemComponent extends Vue {
     readonly User: Serializable<User> = User;
-    BeaconType: any = {
+    readonly BeaconType: Record<any, any> = {
         BLESemBeacon,
         BLEEddystoneTLM,
         BLEEddystoneUID,

@@ -6,7 +6,7 @@
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
 
-                <ion-title>{{ beacon.displayName ?? `Beacon code` }}</ion-title>
+                <ion-title>{{ beacon && beacon.displayName ? beacon.displayName : `Beacon code` }}</ion-title>
             </ion-toolbar>
         </ion-header>
 
@@ -29,12 +29,12 @@ import {
     IonToolbar,
 } from '@ionic/vue';
 import { BLEBeaconObject } from '@openhps/rf';
-import { Beacon } from '../stores/beacon.scanning';
+import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import EditorComponent from '../components/editor/EditorComponent.vue';
 import { useRoute } from 'vue-router';
 import { useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
-import { RDFSerializer } from '@openhps/rdf';
+import { IriString, RDFSerializer } from '@openhps/rdf';
 
 @Options({
     components: {
@@ -53,17 +53,19 @@ export default class CodePage extends Vue {
     beacon: (BLEBeaconObject | BLESemBeacon) & Beacon = undefined;
     route = useRoute();
     beaconSimulatorStore = useBeaconAdvertisingStore();
+    beaconStore = useBeaconStore();
     code: string = '';
     @Ref('editor') editor: EditorComponent;
 
-    ionViewDidEnter(): void {
+    async ionViewDidEnter() {
         const beaconUID = this.route.params.uid as string;
         console.log('Loading beacon code', beaconUID);
 
         if (this.route.path.startsWith('/beacon/edit')) {
             // Simulated beacon
-            const beacon = this.beaconSimulatorStore.findByUID(beaconUID);
-            if (!beacon) {
+            const simulatedBeacon = this.beaconSimulatorStore.findByUID(beaconUID);
+            const scannedBeacon = await this.beaconStore.findByUID(beaconUID);
+            if (!simulatedBeacon && !scannedBeacon) {
                 // Can not find beacon...
                 console.error(
                     `Tried to load simulated beacon (${beaconUID}) but it can not be found!`,
@@ -71,15 +73,22 @@ export default class CodePage extends Vue {
                 this.$router.replace('/beacon/simulator');
                 return;
             }
-            this.beacon = beacon.clone() as BLEBeaconObject as any;
-            RDFSerializer.stringify(this.beacon, {
-                format: 'turtle',
+            this.beacon = ((simulatedBeacon ?? scannedBeacon) as BLEBeaconObject).clone() as BLEBeaconObject as any;
+            const uri = this.beacon.rdf ? this.beacon.rdf.uri : (
+                this.beacon instanceof BLESemBeacon ? this.beacon.resourceUri : (
+                    "http://example.com#beacon"
+                )
+            );
+            const serialized = RDFSerializer.serialize(this.beacon, {
+                baseUri: uri as IriString
+            });
+            RDFSerializer.stringify(serialized, {
+                format: 'text/turtle',
                 prettyPrint: true,
                 prefixes: {
                     sembeacon: 'http://purl.org/sembeacon/',
-                },
+                }
             }).then((code) => {
-                console.log('Updating code');
                 this.code = code;
             });
         }
