@@ -14,7 +14,7 @@
                                     <img
                                         :src="userStore.user.picture"
                                         :alt="`Profile picture of ${userStore.user.name}`"
-                                        @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
+                                        @error="(e) => (e.target as HTMLImageElement).src = '/assets/avatar.svg'"
                                     />
                                 </ion-avatar>
                                 <ion-label>{{ userStore.user.name }}</ion-label>
@@ -24,7 +24,7 @@
                                     icon-only
                                     @click="userStore.logout()"
                                 >
-                                    <ion-icon :icon="logOut"></ion-icon>
+                                    <ion-icon icon="log-out-outline"></ion-icon>
                                 </ion-button>
                             </ion-item>
                             <ion-item
@@ -37,7 +37,7 @@
                                     <img src="/assets/logo/solid-logo.svg" alt="Solid logo" />
                                 </ion-avatar>
                                 <ion-label>Solid log in</ion-label>
-                                <ion-icon slot="end" :icon="logIn"></ion-icon>
+                                <ion-icon slot="end" icon="log-in-outline"></ion-icon>
                             </ion-item>
                         </ion-menu-toggle>
 
@@ -100,13 +100,13 @@ import {
     IonRouterOutlet,
     IonSplitPane,
 } from '@ionic/vue';
-import { map, bluetooth, help, wifiOutline, logIn, logOut } from 'ionicons/icons';
+import { map, bluetooth, help, wifiOutline } from 'ionicons/icons';
 
 import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';
 import { useLogger } from './stores/logger';
 
-import { Animation, StatusBar, Style } from '@capacitor/status-bar';
+import { Animation, StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
@@ -132,12 +132,6 @@ import { loadWASM } from 'onigasm';
         IonNote,
         IonRouterOutlet,
         IonSplitPane,
-    },
-    data() {
-        return {
-            logOut,
-            logIn,
-        };
     },
 })
 export default class App extends Vue {
@@ -262,7 +256,7 @@ export default class App extends Vue {
                 if (appPath.startsWith('/login')) {
                     this.$router.replace(appPath);
                     window.history.replaceState({}, document.title, event.url);
-                    console.log("Handle login", window.location.href);
+                    console.log('Handle login', window.location.href);
                     this.userStore.handleLogin();
                 } else {
                     this.$router.replace(appPath);
@@ -278,7 +272,7 @@ export default class App extends Vue {
             await SplashScreen.hide({
                 fadeOutDuration: 150,
             });
-            await StatusBar.setStyle({ style: Style.Dark });
+            // await StatusBar.setStyle({ style: Style.Dark });
             await StatusBar.setBackgroundColor({
                 color: '#363795',
             });
@@ -329,7 +323,7 @@ export default class App extends Vue {
 
 ion-avatar {
     width: 36px;
-    height: 36px;;
+    height: 36px;
 }
 
 ion-item {

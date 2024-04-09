@@ -31,10 +31,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/LoginPage.vue'),
     },
     {
-        path: '/profile',
-        component: () => import('../views/ProfilePage.vue'),
-    },
-    {
         path: '/beacon/create',
         component: () => import('../views/BeaconPage.vue'),
     },

@@ -17,26 +17,26 @@ import { toRaw } from 'vue';
 import { PiniaDataService } from '@/utils/PiniaDataService';
 import { MapObject } from '@/models/MapObject';
 
+let spaceService: SymbolicSpaceService<any>;
+
 export interface EnvironmentState {
     environments: Map<string, SymbolicSpace<GeographicalPosition>>;
     floorPlans: Map<string, MapObject>;
-    spaceService: SymbolicSpaceService<any>;
 }
 
 export const useEnvironmentStore = defineStore('environments', {
     state: (): EnvironmentState => ({
         environments: new Map(),
         floorPlans: new Map(),
-        spaceService: undefined,
     }),
     getters: {
         service(): SymbolicSpaceService<any> {
-            if (!this.spaceService) {
-                this.spaceService = new SymbolicSpaceService(
+            if (!spaceService) {
+                spaceService = new SymbolicSpaceService(
                     new PiniaDataService(SymbolicSpace, this.environments),
                 );
             }
-            return this.spaceService;
+            return spaceService;
         },
         buildings(): Building[] {
             const buildings: Building[] = [];

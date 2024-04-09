@@ -29,15 +29,15 @@
                 <ion-row responsive-sm>
                     <ion-col>
                         <ion-input
+                            v-AddListAttributeDirective="'issuers'"
                             :disabled="loading"
                             type="url"
-                            @keyup.enter="login()"
-                            v-AddListAttributeDirective="'issuers'"
                             label="Your ID provider"
                             label-placement="stacked"
                             placeholder="Select your ID provider"
                             fill="outline"
                             helper-text="A Solid ID provider is a service that provides you with a Solid Pod."
+                            @keyup.enter="login()"
                             @ionChange="selectedIssuer = $event.detail.value"
                         >
                         </ion-input>
@@ -94,7 +94,13 @@
                         </ion-button>
                     </ion-col>
                     <ion-col>
-                        <ion-button :disabled="loading" shape="round" color="primary" expand="block" @click="login()">
+                        <ion-button
+                            :disabled="loading"
+                            shape="round"
+                            color="primary"
+                            expand="block"
+                            @click="login()"
+                        >
                             <ion-icon name="log-in-outline"></ion-icon>&nbsp;Sign in
                         </ion-button>
                     </ion-col>
@@ -118,9 +124,8 @@
                                     </ion-col>
                                     <ion-col>
                                         SemBeacon will retrieve your Solid Pod's WebID and use it to
-                                        fetch your profile data. The application will not request or store
-                                        data in your Pod unless you explicitly allow it when simulating a beacon
-                                        with a resource URI in your Pod.
+                                        fetch your profile data. The application will not store data
+                                        in your Pod unless you explicitly allow it.
                                     </ion-col>
                                 </ion-row>
                             </ion-card-content>

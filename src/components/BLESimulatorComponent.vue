@@ -47,7 +47,7 @@
                 Sign in to your Solid Pod to advertise your WebID to nearby users.
             </ion-card-content>
 
-            <ion-button fill="clear" @click="this.$router.push('/login')">Sign in</ion-button>
+            <ion-button fill="clear" @click="$router.push('/login')">Sign in</ion-button>
         </ion-card>
 
         <ion-card v-if="beacons.length === 0" :disabled="downloading">
@@ -290,7 +290,7 @@ export default class BLESimulatorComponent extends Vue {
             .flag(SEMBEACON_FLAG_HAS_SYSTEM)
             .build()
             .then((dummy) => {
-                return this.beaconScannerStore.beaconService.resolve(dummy, {
+                return this.beaconScannerStore.service.resolve(dummy, {
                     resolveAll: true,
                 });
             })

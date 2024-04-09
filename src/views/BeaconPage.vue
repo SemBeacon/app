@@ -58,53 +58,58 @@
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <div :key="beacon ? beacon.uid : '_none_'">
+            <div :key="lastUpdate" v-if="beacon">
                 <!-- Beacon pages -->
-                <SemBeaconPage 
+                <SemBeaconPage
+                    v-if="(beacon instanceof BeaconType.BLESemBeacon)"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
                     :loading="loading"
-                    @update="beacon = $event"
-                    v-if="beacon && (beacon instanceof BeaconType.BLESemBeacon)">
+                    @update="onUpdate"
+                >
                 </SemBeaconPage>
                 <AltBeaconPage
+                    v-else-if="(beacon instanceof BeaconType.BLEAltBeacon) ||
+                            (beacon instanceof BeaconType.BLEiBeacon)
+                    "
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
                     :loading="loading"
-                    v-else-if="beacon && (
-                        beacon instanceof BeaconType.BLEAltBeacon || 
-                        beacon instanceof BeaconType.BLEiBeacon
-                    )">
+                >
                 </AltBeaconPage>
-                <EddystoneURLPage 
+                <EddystoneURLPage
+                    v-else-if="(beacon instanceof BeaconType.BLEEddystoneURL)"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
                     :loading="loading"
-                    v-else-if="beacon && (beacon instanceof BeaconType.BLEEddystoneURL)">
+                >
                 </EddystoneURLPage>
-                <EddystoneUIDPage 
+                <EddystoneUIDPage
+                    v-else-if="(beacon instanceof BeaconType.BLEEddystoneUID)"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
                     :loading="loading"
-                    v-else-if="beacon && (beacon instanceof BeaconType.BLEEddystoneUID)">
+                >
                 </EddystoneUIDPage>
-                <EddystoneTLMPage 
+                <EddystoneTLMPage
+                    v-else-if="(beacon instanceof BeaconType.BLEEddystoneTLM)"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
                     :loading="loading"
-                    v-else-if="beacon && (beacon instanceof BeaconType.BLEEddystoneTLM)">
+                >
                 </EddystoneTLMPage>
-                <GenericBeaconPage 
+                <GenericBeaconPage
+                    v-else
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
                     :loading="loading"
-                    v-else-if="beacon">
+                >
                 </GenericBeaconPage>
             </div>
 
@@ -141,7 +146,15 @@ import {
     IonIcon,
 } from '@ionic/vue';
 import { useRoute } from 'vue-router';
-import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEEddystoneTLM, BLEEddystoneUID, BLEEddystoneURL, BLEiBeacon } from '@openhps/rf';
+import {
+    BLEAltBeacon,
+    BLEBeaconObject,
+    BLEEddystone,
+    BLEEddystoneTLM,
+    BLEEddystoneUID,
+    BLEEddystoneURL,
+    BLEiBeacon,
+} from '@openhps/rf';
 import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { BLEUUID } from '@openhps/rf';
@@ -153,6 +166,7 @@ import AltBeaconPage from './beacon/AltBeaconPage.vue';
 import EddystoneTLMPage from './beacon/EddystoneTLMPage.vue';
 import EddystoneUIDPage from './beacon/EddystoneUIDPage.vue';
 import EddystoneURLPage from './beacon/EddystoneURLPage.vue';
+import { ref } from 'vue';
 
 @Options({
     components: {
@@ -196,11 +210,19 @@ export default class BeaconPage extends Vue {
     route = useRoute();
     beaconStore = useBeaconStore();
     beaconSimulatorStore = useBeaconAdvertisingStore();
-    beacon?: BLEBeaconObject & Beacon = undefined;
+    beacon?: BLEBeaconObject & Partial<Beacon> = ref({}) as any;
     enabled: boolean = false;
     uid: string;
+    lastUpdate: number;
+
+    onUpdate(beacon: BLEBeaconObject & Partial<Beacon>): void {
+        this.beacon = beacon;
+        this.lastUpdate = Date.now();
+    }
 
     beforeMount(): void {
+        this.lastUpdate = Date.now();
+
         const beaconUID = this.route.params.uid as string;
         this.uid = new String(beaconUID).toString();
         console.log('Loading beacon details', beaconUID);

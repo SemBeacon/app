@@ -34,7 +34,7 @@ const service = new SolidClientService({
         });
     },
 });
-    
+
 export const useUserStore = defineStore('user', {
     state: (): UserState => ({
         user: undefined,
@@ -59,12 +59,15 @@ export const useUserStore = defineStore('user', {
             service.on(event, callback);
         },
         handleLogin(): void {
-            service.handleLogin().then((session) => {
-                console.log('HANDLE LOGIN', session);	
-            }).catch((err) => {
-                // Do not handle
-                console.error("HANDLE LOGIN", err);
-            });
+            service
+                .handleLogin()
+                .then((session) => {
+                    console.log('HANDLE LOGIN', session);
+                })
+                .catch((err) => {
+                    // Do not handle
+                    console.error('HANDLE LOGIN', err);
+                });
         },
         initialize(): Promise<void> {
             return new Promise((resolve) => {
@@ -75,7 +78,7 @@ export const useUserStore = defineStore('user', {
                             return this.createBeacon();
                         })
                         .then((beacon) => {
-                            console.log("Created user beacon", beacon);
+                            console.log('Created user beacon', beacon);
                             const beaconStore = useBeaconAdvertisingStore();
                             beaconStore.addSimulatedBeacon(beacon.uid, beacon);
                         })
@@ -145,9 +148,14 @@ export const useUserStore = defineStore('user', {
                     return resolve(undefined);
                 }
                 BLESemBeaconBuilder.create({
-                    bitly: {
-                        accessToken: '5acd0aa037c74dd34287db2e914246603d97c84a',
-                        groupGuid: "Bo46fA1eqqx"
+                    urlShortener: (url: string): Promise<string> => {
+                        return new Promise((resolve, reject) => {
+                            fetch(`https://s.sembeacon.org/shorten?api=Y5Y2SRZ2zo&uri=${url}`)
+                                .then((response) => {
+                                    resolve(response.text());
+                                })
+                                .catch(reject);
+                        });
                     },
                 })
                     .resourceUri(user.id as IriString)

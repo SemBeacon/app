@@ -16,12 +16,7 @@
                     :fill="readonly && !edit ? undefined : 'solid'"
                     placeholder="00000000-0000-0000-0000-000000000000"
                     :value="beacon.proximityUUID.toString()"
-                    @change="
-                        (e) =>
-                            (beacon.proximityUUID = BLEUUID.fromString(
-                                e.target.value,
-                            ))
-                    "
+                    @change="(e) => (beacon.proximityUUID = BLEUUID.fromString(e.target.value))"
                 >
                     <div slot="label">Proximity UUID</div>
                 </ion-input>
@@ -37,9 +32,7 @@
                                 :readonly="readonly && !edit"
                                 label-placement="floating"
                                 :fill="readonly && !edit ? undefined : 'solid'"
-                                @change="
-                                    (e) => (beacon.major = parseInt(e.target.value))
-                                "
+                                @change="(e) => (beacon.major = parseInt(e.target.value))"
                             >
                                 <div slot="label">Major</div>
                             </ion-input>
@@ -52,9 +45,7 @@
                                 :readonly="!readonly && !edit"
                                 label-placement="floating"
                                 :fill="readonly && !edit ? undefined : 'solid'"
-                                @change="
-                                    (e) => (beacon.minor = parseInt(e.target.value))
-                                "
+                                @change="(e) => (beacon.minor = parseInt(e.target.value))"
                             >
                                 <div slot="label">Minor</div>
                             </ion-input>
@@ -68,11 +59,7 @@
 
 <script lang="ts">
 import { Options, Prop } from 'vue-property-decorator';
-import {
-    IonRow,
-    IonCol,
-    IonInput
-} from '@ionic/vue';
+import { IonRow, IonCol, IonInput } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
 import { BLEAltBeacon, BLEiBeacon } from '@openhps/rf';
 import { BaseBeaconPage } from './BaseBeaconPage';
@@ -84,7 +71,7 @@ import GenericBeaconPage from './GenericBeaconPage.vue';
         IonRow,
         IonCol,
         IonInput,
-        GenericBeaconPage
+        GenericBeaconPage,
     },
     directives: {
         maskito,

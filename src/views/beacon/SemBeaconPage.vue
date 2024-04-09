@@ -1,11 +1,11 @@
 <template>
     <div>
-        <ion-card mode="ios" class="user" v-if="(beacon.object instanceof User)">
+        <ion-card v-if="(beacon.object instanceof User)" mode="ios" class="user">
             <div class="img-wrapper">
                 <img
                     :src="beacon.object.picture"
                     :alt="`Profile picture of ${beacon.object.name}`"
-                    @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
+                    @error="(e) => (e.target as HTMLImageElement).src = '/assets/avatar.svg'"
                 />
             </div>
             <ion-card-content>
@@ -25,7 +25,16 @@
                                 <div slot="label">WebID</div>
                             </ion-input>
                         </ion-col>
-                        <ion-col size="12" v-if="beacon.object.jobTitle">
+                        <ion-col v-if="beacon.object.title" size="12">
+                            <ion-input
+                                v-model="beacon.object.title"
+                                :readonly="true"
+                                label-placement="floating"
+                            >
+                                <div slot="label">Title</div>
+                            </ion-input>
+                        </ion-col>
+                        <ion-col v-if="beacon.object.jobTitle" size="12">
                             <ion-input
                                 v-model="beacon.object.jobTitle"
                                 :readonly="true"
@@ -34,7 +43,7 @@
                                 <div slot="label">Job title</div>
                             </ion-input>
                         </ion-col>
-                        <ion-col size="12" v-if="beacon.object.email">
+                        <ion-col v-if="beacon.object.email" size="12">
                             <ion-input
                                 type="email"
                                 :value="beacon.object.email.replace('mailto:', '')"
@@ -44,7 +53,7 @@
                                 <div slot="label">E-mail</div>
                             </ion-input>
                         </ion-col>
-                        <ion-col size="12" v-if="beacon.object.nickname">
+                        <ion-col v-if="beacon.object.nickname" size="12">
                             <ion-input
                                 v-model="beacon.object.nickname"
                                 :readonly="true"
@@ -58,7 +67,7 @@
                                 {{ account }}
                             </a>
                         </ion-col>-->
-                        <ion-col size="12" v-if="beacon.object.birthDate">
+                        <ion-col v-if="beacon.object.birthDate" size="12">
                             <ion-input
                                 :value="beacon.object.birthDate.toDateString()"
                                 :readonly="true"
@@ -68,19 +77,14 @@
                             </ion-input>
                         </ion-col>
                     </ion-row>
-                    <ion-row
-                        v-if="!(!edit && !readonly) && beacon.displayName">
+                    <ion-row v-if="!(!edit && !readonly) && beacon.displayName">
                         <ion-col size="12">
                             <ion-input
                                 v-model="beacon.displayName"
                                 :disabled="!edit && !readonly"
                                 :readonly="readonly && !edit"
                                 label-placement="floating"
-                                :fill="
-                                    readonly && !edit
-                                        ? undefined
-                                        : 'outline'
-                                "
+                                :fill="readonly && !edit ? undefined : 'outline'"
                             >
                                 <div slot="label">Name</div>
                             </ion-input>
@@ -89,17 +93,13 @@
                 </ion-grid>
             </ion-card-content>
 
-            <ion-grid class="card-footer compact" 
-                v-if="readonly"
-                :key="key">
+            <ion-grid v-if="readonly" :key="key" class="card-footer compact">
                 <ion-row>
                     <ion-col size="6">
                         <h2>RSSI: {{ beacon.rssi }} <small>dBm</small></h2>
                     </ion-col>
                     <ion-col v-if="beacon.distance" size="6">
-                        <h2>
-                            Distance: {{ beacon.distance }} <small>m</small>
-                        </h2>
+                        <h2>Distance: {{ beacon.distance }} <small>m</small></h2>
                     </ion-col>
                     <ion-col v-else size="6">
                         <h2>Distance: -</h2>
@@ -121,7 +121,7 @@
             :readonly="readonly"
             :loading="loading"
         >
-            <template #beacon-card v-if="(beacon.object instanceof User)">
+            <template v-if="(beacon.object instanceof User)" #beacon-card>
                 <div></div>
             </template>
             <template #beacon-data>
@@ -134,12 +134,7 @@
                         label-placement="floating"
                         placeholder="00000000-0000-0000-0000-000000000000"
                         :value="beacon.namespaceId.toString()"
-                        @change="
-                            (e) =>
-                                (beacon.namespaceId = BLEUUID.fromString(
-                                    e.target.value,
-                                ))
-                        "
+                        @change="(e) => (beacon.namespaceId = BLEUUID.fromString(e.target.value))"
                     >
                         <div slot="label">Namespace ID</div>
                     </ion-input>
@@ -153,10 +148,7 @@
                         label-placement="floating"
                         placeholder="00000000"
                         :value="beacon.instanceId.toString(4, false)"
-                        @change="
-                            (e) =>
-                                (beacon.instanceId = BLEUUID.fromString(e.target.value))
-                        "
+                        @change="(e) => (beacon.instanceId = BLEUUID.fromString(e.target.value))"
                     >
                         <div slot="label">Instance ID</div>
                     </ion-input>
@@ -195,7 +187,7 @@
                 </ion-col>
             </template>
         </generic-beacon-page>
-        <ion-card v-if="beacon.flags !== 0x00 || edit">
+        <ion-card v-if="beacon.flags !== undefined || edit">
             <ion-card-header>
                 <ion-card-title>Beacon flags</ion-card-title>
             </ion-card-header>
@@ -209,8 +201,7 @@
                             () => {
                                 if (!edit) return;
                                 beacon.flags =
-                                    beacon.flags ^
-                                    BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION;
+                                    beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION;
                             }
                         "
                     >
@@ -302,8 +293,7 @@
                             () => {
                                 if (!edit) return;
                                 beacon.flags =
-                                    beacon.flags ^
-                                    BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY;
+                                    beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY;
                             }
                         "
                     >
@@ -367,7 +357,7 @@ import { User } from '@openhps/rdf';
         IonFooter,
         IonAvatar,
         IonButton,
-        GenericBeaconPage
+        GenericBeaconPage,
     },
     directives: {
         maskito,
@@ -377,7 +367,7 @@ export default class SemBeaconPage extends BaseBeaconPage {
     readonly BLESemBeacon: typeof BLESemBeacon = BLESemBeacon;
     readonly User: typeof User = User;
     @Prop() beacon?: BLESemBeacon & Beacon = undefined;
-    
+
     async resolveSemBeacon(): Promise<void> {
         const alert = await alertController.create({
             header: 'Fetch SemBeacon information',
@@ -392,32 +382,49 @@ export default class SemBeaconPage extends BaseBeaconPage {
                     role: 'confirm',
                     handler: () => {
                         // Create a toast message saying that the SemBeacon is being resolved
-                        toastController.create({
-                            message: 'Fetching SemBeacon information ...',
-                            color: 'light',
-                            duration: 2000,
-                        }).then(toast => toast.present());
-                        this.beaconStore.beaconService
-                            .resolve(this.beacon as BLESemBeacon, {
+                        toastController
+                            .create({
+                                message: 'Fetching SemBeacon information ...',
+                                color: 'light',
+                                duration: 2000,
+                            })
+                            .then((toast) => toast.present());
+                        this.beaconStore.service
+                            .resolve(this.beacon, {
                                 resolveAll: false,
-                                persistance: false,
+                                persistence: false,
                             })
                             .then((beacon) => {
+                                if (!beacon.result) {
+                                    // Create a toast message saying that the SemBeacon could not be resolved
+                                    toastController
+                                        .create({
+                                            message: 'Unable to fetch SemBeacon information!',
+                                            color: 'danger',
+                                            duration: 2000,
+                                        })
+                                        .then((toast) => toast.present());
+                                    return;
+                                }
                                 this.$emit('update', beacon.result);
                                 // Create a toast message saying that the SemBeacon has been resolved
-                                toastController.create({
-                                    message: 'Successfully fetched SemBeacon information!',
-                                    color: 'success',
-                                    duration: 2000,
-                                }).then(toast => toast.present());
+                                toastController
+                                    .create({
+                                        message: 'Successfully fetched SemBeacon information!',
+                                        color: 'success',
+                                        duration: 2000,
+                                    })
+                                    .then((toast) => toast.present());
                             })
-                            .catch(error => {
+                            .catch((error) => {
                                 // Create a toast message saying that the SemBeacon could not be resolved
-                                toastController.create({
-                                    message: 'Unable to fetch SemBeacon information!',
-                                    color: 'danger',
-                                    duration: 2000,
-                                }).then(toast => toast.present());
+                                toastController
+                                    .create({
+                                        message: 'Unable to fetch SemBeacon information!',
+                                        color: 'danger',
+                                        duration: 2000,
+                                    })
+                                    .then((toast) => toast.present());
                                 console.error(error);
                             });
                     },
@@ -428,12 +435,12 @@ export default class SemBeaconPage extends BaseBeaconPage {
     }
 
     beaconType(): string {
-        return "SemBeacon";
+        return 'SemBeacon';
     }
 }
 </script>
 
-<style scss scoped>
+<style lang="scss" scoped>
 .chip-container {
     display: flex;
     align-items: center;
@@ -467,26 +474,35 @@ ion-grid.compact {
 }
 
 ion-card.user {
-  overflow: visible;
-  margin: 16px 1em 24px;
-  position: relative;
-  padding-top: 40px;
-  contain: none;
-  margin-top: 70px;
+    overflow: visible;
+    margin: 16px 1em 24px;
+    position: relative;
+    padding-top: 40px;
+    contain: none;
+    margin-top: 70px;
 
-  .img-wrapper {
-    position: absolute;
-    left: 50%;
-    top: -50px;
-    transform: translateX(-50%);
-    img {
-        position: relative;
-        border-radius: 20px;
-        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
-        width: 100px;
-        height: 100px;
+    .img-wrapper {
+        position: absolute;
+        left: 50%;
+        top: -50px;
+        transform: translateX(-50%);
+        -webkit-transform: translateX(-50%); /* Safari and older Chrome versions */
+        -ms-transform: translateX(-50%); /* IE 9 and older */
+        -moz-transform: translateX(-50%); /* Firefox */
+        -o-transform: translateX(-50%); /* Opera */
+        
+        img {
+            position: relative;
+            border-radius: 20px;
+            -webkit-border-radius: 20px; /* Safari and older Chrome versions */
+            -moz-border-radius: 20px; /* Firefox */
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+            -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2); /* Safari and older Chrome versions */
+            -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2); /* Firefox */
+            width: 100px;
+            height: 100px;
+        }
     }
-  }
 }
 
 ion-grid.card-footer {
@@ -496,8 +512,9 @@ ion-grid.card-footer {
     padding-inline-end: 20px;
     padding-top: 20px;
     padding-bottom: 20px;
-    
-    & h2, h3 {
+
+    & h2,
+    h3 {
         font-size: 0.8rem;
         font-weight: bold;
     }

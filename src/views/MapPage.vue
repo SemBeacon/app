@@ -121,10 +121,11 @@ import { GCS, GeographicalPosition, Vector2 } from '@openhps/core';
     data: () => ({
         stop,
         play,
-        ControllerState,
     }),
 })
 export default class MapPage extends Vue {
+    readonly ControllerState: typeof ControllerState = ControllerState;
+
     route = useRoute();
     geolocationStore = useGeolocationStore();
     beaconStore = useBeaconStore();
@@ -142,7 +143,7 @@ export default class MapPage extends Vue {
             ? fromLonLat([location.longitude, location.latitude])
             : undefined;
     });
-    buildings = computed(() => this.environmentStore.buildings);
+    buildings = computed(() => this.environmentStore.buildings) as unknown as Building[];
     defaultCenter: number[] = [0, 0];
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];

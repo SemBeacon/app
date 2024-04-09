@@ -62,29 +62,36 @@ export interface BeaconState {
     proximityUUIDs: string[];
     namespaces: Record<string, SemBeaconNamespace>;
     sources: (BLESourceNode | BLEiBeaconSourceNode)[];
-    model: Model | undefined;
     beacons: Map<string, BLEBeaconObject>;
     beaconInfo: Map<string, Beacon>;
     state?: ControllerState;
-    beaconService: SemBeaconService;
 }
+
+let model: Model | undefined;
+const beaconService = new SemBeaconService(
+    new CapacitorPreferencesDriver(BLESemBeacon, {
+        namespace: 'sembeacon',
+    }),
+    {
+        urlShortener: (url: string): Promise<string> => {
+            return new Promise((resolve, reject) => {
+                fetch(
+                    `https://s.sembeacon.org/shorten?api=Y5Y2SRZ2zo&uri=${encodeURIComponent(url)}`,
+                )
+                    .then((response) => {
+                        resolve(response.json());
+                    })
+                    .catch(reject);
+            });
+        },
+        cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
+        uid: 'sembeacon-service',
+        timeout: 15000,
+    },
+);
 
 export const useBeaconStore = defineStore('beacon.scanning', {
     state: (): BeaconState => ({
-        beaconService: new SemBeaconService(
-            new CapacitorPreferencesDriver(BLESemBeacon, {
-                namespace: 'sembeacon',
-            }),
-            {
-                bitly: {
-                    accessToken: '5acd0aa037c74dd34287db2e914246603d97c84a',
-                    groupGuid: "Bo46fA1eqqx"
-                },
-                cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
-                uid: 'sembeacon-service',
-                timeout: 15000,
-            },
-        ),
         state: ControllerState.PENDING,
         proximityUUIDs: [],
         namespaces: {},
@@ -104,13 +111,15 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                   ]
                 : []),
         ],
-        model: undefined,
         beacons: new Map(),
         beaconInfo: new Map(),
     }),
     getters: {
+        service(): SemBeaconService {
+            return beaconService;
+        },
         worker(): WorkerNode<any, any> {
-            return this.model.findNodeByUID('worker');
+            return model.findNodeByUID('worker') as WorkerNode<any, any>;
         },
         cacheSize(): number {
             return (this.beacons as Map<string, BLEBeaconObject>).size;
@@ -190,22 +199,22 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .flag(SEMBEACON_FLAG_HAS_SYSTEM)
                     .build(),
                 BLESemBeaconBuilder.create()
-                    .resourceUri("https://solid.maximvdw.be/profile/card#me")
+                    .resourceUri('https://solid.maximvdw.be/profile/card#me')
                     .instanceId(0x01)
                     .calibratedRSSI(-56)
                     .build(),
                 BLESemBeaconBuilder.create()
-                    .resourceUri("https://ruben.verborgh.org/profile/#me")
+                    .resourceUri('https://ruben.verborgh.org/profile/#me')
                     .instanceId(0x01)
                     .calibratedRSSI(-56)
                     .build(),
                 BLESemBeaconBuilder.create()
-                    .resourceUri("https://solid.dyn.hofmannsnet.de/jan/profile/card#me")
+                    .resourceUri('https://solid.dyn.hofmannsnet.de/jan/profile/card#me')
                     .instanceId(0x01)
                     .calibratedRSSI(-56)
                     .build(),
                 BLESemBeaconBuilder.create()
-                    .resourceUri("https://schmid.solidcommunity.net/profile/card#me")
+                    .resourceUri('https://schmid.solidcommunity.net/profile/card#me')
                     .instanceId(0x01)
                     .calibratedRSSI(-56)
                     .build(),
@@ -248,12 +257,21 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
         },
-        findByUID(uid: string): Promise<BLEBeaconObject & Beacon> {
-            if (!this.model) {
-                return new Promise((resolve) => resolve(undefined));
-            }
-            const service = this.model.findDataService(SemBeaconService);
-            return service.findByUID(uid);
+        findByUID(uid: string): Promise<BLEBeaconObject> {
+            return new Promise((resolve) => {
+                if (!model) {
+                    return new Promise((resolve) => resolve(undefined));
+                }
+                const service = model.findService(SemBeaconService);
+                service
+                    .findByUID(uid)
+                    .then((beacon) => {
+                        resolve(beacon);
+                    })
+                    .catch(() => {
+                        resolve(undefined);
+                    });
+            });
         },
         findByNamespace(namespace: string): BLESemBeacon[] {
             return this.namespaces[namespace as any].beacons as BLESemBeacon[];
@@ -262,7 +280,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             return new Promise((resolve, reject) => {
                 const logger = useLogger();
                 const environmentStore = useEnvironmentStore();
-                const service = this.model.findDataService(SemBeaconService);
+                const service = model.findService(SemBeaconService);
                 if (beacon instanceof BLESemBeacon) {
                     if (beacon.namespaceId === undefined || beacon.instanceId === undefined) {
                         return reject(new Error('SemBeacon is missing namespace or instance ID'));
@@ -324,10 +342,11 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 this.state = ControllerState.INITIALIZING;
                 const logger = useLogger();
                 logger.log('info', 'Initializing beacon scanner model ...');
-                this.beaconService.logger = (level: string, message: string) =>
+                beaconService.logger = (level: string, message: string) =>
                     logger.log(level, message);
                 ModelBuilder.create()
-                    .addService(this.beaconService)
+                    .withLogger(logger.log)
+                    .addService(beaconService)
                     .from(...this.sources)
                     .via(
                         new FrameMergeNode(
@@ -354,13 +373,14 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                                         model: Model,
                                         object: BLESemBeacon,
                                         options: ResolveOptions,
+                                        existingObject?: BLESemBeacon
                                     ) => {
                                         return new Promise((resolve, reject) => {
                                             const service = model.findDataService(
                                                 'sembeacon-worker-service',
                                             ) as unknown as SemBeaconService;
                                             service
-                                                .resolve(object, options)
+                                                .resolve(object, options, existingObject)
                                                 .then((result) => {
                                                     resolve(result);
                                                 })
@@ -405,10 +425,10 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                         ),
                     )
                     .build()
-                    .then((model: Model) => {
-                        this.model = model;
+                    .then((m: Model) => {
+                        model = m;
                         logger.log('info', 'Initialized beacon scanner model');
-                        const service = this.model.findDataService(SemBeaconService);
+                        const service = model.findService<SemBeaconService>(SemBeaconService);
                         service.on('beacon', (beacon: BLEBeaconObject) => {
                             this.beacons.set(beacon.uid, beacon);
                             if (beacon instanceof BLESemBeacon) {
@@ -432,15 +452,15 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                                 logger.log('info', `Added beacon ${beacon.uid}`);
                             }
                         });
-                        this.model.on('error', console.error);
+                        model.on('error', console.error);
                         this.state = ControllerState.READY;
 
-                        service.resolve = (object: BLESemBeacon, options: ResolveOptions) => {
+                        service.resolve = (object: BLESemBeacon, options: ResolveOptions, existingObject?: BLESemBeacon) => {
                             logger.log(
                                 'debug',
                                 `Resolving SemBeacon (${object.resourceUri ?? object.shortResourceUri}) on worker`,
                             );
-                            return this.worker.invokeMethod('resolve', object, options);
+                            return this.worker.invokeMethod('resolve', object, options, existingObject);
                         };
 
                         return this.load();
@@ -492,7 +512,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             this.namespaces = {};
             this.beacons = new Map();
             this.beaconInfo = new Map();
-            const service = this.model.findDataService(SemBeaconService);
+            const service = model.findService(SemBeaconService);
             service.deleteAll();
             this.save();
         },
@@ -510,7 +530,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                                 const beacons: { [k: string]: any } =
                                     DataSerializer.deserialize(data);
                                 this.beaconInfo = new Map(Object.entries(beacons));
-                                this.beaconService
+                                beaconService
                                     .findAll()
                                     .then((storedBeacons) => {
                                         storedBeacons.forEach((b) => {

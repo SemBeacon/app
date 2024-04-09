@@ -17,28 +17,20 @@
                                             <h1>{{ beaconType() }}</h1>
                                         </ion-col>
                                     </ion-row>
-                                    <ion-row
-                                        v-if="edit || beacon.displayName">
+                                    <ion-row v-if="edit || beacon.displayName">
                                         <ion-col size="12">
                                             <ion-input
                                                 v-model="beacon.displayName"
                                                 :disabled="!edit && !readonly"
                                                 :readonly="readonly && !edit"
                                                 label-placement="floating"
-                                                :fill="
-                                                    readonly && !edit
-                                                        ? undefined
-                                                        : 'outline'
-                                                "
+                                                :fill="readonly && !edit ? undefined : 'outline'"
                                             >
                                                 <div slot="label">Name</div>
                                             </ion-input>
                                         </ion-col>
                                     </ion-row>
-                                    <ion-row
-                                        v-if="readonly"
-                                        :key="key"
-                                    >
+                                    <ion-row v-if="readonly" :key="key">
                                         <ion-col size="6">
                                             <h2>RSSI: {{ beacon.rssi }} <small>dBm</small></h2>
                                         </ion-col>
@@ -64,7 +56,7 @@
                 </ion-card-content>
             </ion-card>
         </slot>
-    
+
         <ion-grid>
             <ion-row>
                 <template v-if="beaconType().startsWith('Eddystone')">
@@ -77,9 +69,7 @@
                             placeholder="-12"
                             type="number"
                             :value="beacon.getCalibratedRSSI(0)"
-                            @change="
-                                (e) => beacon.setCalibratedRSSI(parseInt(e.target.value), 0)
-                            "
+                            @change="(e) => beacon.setCalibratedRSSI(parseInt(e.target.value), 0)"
                         >
                             <div slot="label">Calibrated RSSI at 0m</div>
                         </ion-input>
@@ -95,9 +85,7 @@
                             label-placement="floating"
                             :fill="readonly && !edit ? undefined : 'solid'"
                             placeholder="-56"
-                            @change="
-                                (e) => (beacon.calibratedRSSI = parseInt(e.target.value))
-                            "
+                            @change="(e) => (beacon.calibratedRSSI = parseInt(e.target.value))"
                         >
                             <div slot="label">Calibrated RSSI at 1m</div>
                         </ion-input>
@@ -123,9 +111,7 @@
                         <div slot="label">Manufacturer</div>
                     </ion-input>
                 </ion-col>
-                <slot name="beacon-data">
-
-                </slot>
+                <slot name="beacon-data"> </slot>
                 <ion-col v-if="beacon && position" size="12">
                     <ion-input
                         :disabled="!edit && !readonly"
@@ -173,14 +159,14 @@ import { BLEBeaconObject } from '@openhps/rf';
 })
 export default class GenericBeaconPage extends BaseBeaconPage {
     @Prop() beacon?: BLEBeaconObject & Beacon = undefined;
-    
+
     beaconType(): string {
-        return this.type ?? "Bluetooth";
+        return this.type ?? 'Bluetooth';
     }
 }
 </script>
 
-<style scss scoped>
+<style lang="scss" scoped>
 ion-card-content ion-grid {
     padding-top: 0;
     padding-bottom: 0;

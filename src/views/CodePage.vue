@@ -6,7 +6,9 @@
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
 
-                <ion-title>{{ beacon && beacon.displayName ? beacon.displayName : `Beacon code` }}</ion-title>
+                <ion-title>{{
+                    beacon && beacon.displayName ? beacon.displayName : `Beacon code`
+                }}</ion-title>
             </ion-toolbar>
         </ion-header>
 
@@ -73,21 +75,23 @@ export default class CodePage extends Vue {
                 this.$router.replace('/beacon/simulator');
                 return;
             }
-            this.beacon = ((simulatedBeacon ?? scannedBeacon) as BLEBeaconObject).clone() as BLEBeaconObject as any;
-            const uri = this.beacon.rdf ? this.beacon.rdf.uri : (
-                this.beacon instanceof BLESemBeacon ? this.beacon.resourceUri : (
-                    "http://example.com#beacon"
-                )
-            );
+            this.beacon = (
+                (simulatedBeacon ?? scannedBeacon) as BLEBeaconObject
+            ).clone() as BLEBeaconObject as any;
+            const uri = this.beacon.rdf
+                ? this.beacon.rdf.uri
+                : this.beacon instanceof BLESemBeacon
+                  ? this.beacon.resourceUri
+                  : 'http://example.com#beacon';
             const serialized = RDFSerializer.serialize(this.beacon, {
-                baseUri: uri as IriString
+                baseUri: uri as IriString,
             });
             RDFSerializer.stringify(serialized, {
                 format: 'text/turtle',
                 prettyPrint: true,
                 prefixes: {
                     sembeacon: 'http://purl.org/sembeacon/',
-                }
+                },
             }).then((code) => {
                 this.code = code;
             });

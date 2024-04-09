@@ -16,12 +16,7 @@
                     :fill="readonly && !edit ? undefined : 'solid'"
                     placeholder="0000000000000000000"
                     :value="beacon.namespaceId.toString()"
-                    @change="
-                        (e) =>
-                            (beacon.namespaceId = BLEUUID.fromString(
-                                e.target.value,
-                            ))
-                    "
+                    @change="(e) => (beacon.namespaceId = BLEUUID.fromString(e.target.value))"
                 >
                     <div slot="label">Namespace ID</div>
                 </ion-input>
@@ -34,10 +29,7 @@
                     label-placement="floating"
                     :fill="readonly && !edit ? undefined : 'solid'"
                     :value="beacon.instanceId.toString()"
-                    @change="
-                        (e) =>
-                            (beacon.instanceId = BLEUUID.fromString(e.target.value))
-                    "
+                    @change="(e) => (beacon.instanceId = BLEUUID.fromString(e.target.value))"
                 >
                     <div slot="label">Instance ID</div>
                 </ion-input>
@@ -48,11 +40,7 @@
 
 <script lang="ts">
 import { Options, Prop } from 'vue-property-decorator';
-import {
-    IonRow,
-    IonCol,
-    IonInput
-} from '@ionic/vue';
+import { IonRow, IonCol, IonInput } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
 import { BLEEddystoneUID } from '@openhps/rf';
 import { BaseBeaconPage } from './BaseBeaconPage';
@@ -64,7 +52,7 @@ import GenericBeaconPage from './GenericBeaconPage.vue';
         IonRow,
         IonCol,
         IonInput,
-        GenericBeaconPage
+        GenericBeaconPage,
     },
     directives: {
         maskito,
@@ -74,7 +62,7 @@ export default class EddystoneUIDBeaconPage extends BaseBeaconPage {
     @Prop() beacon?: BLEEddystoneUID & Beacon = undefined;
 
     beaconType(): string {
-        return "Eddystone-UID";
+        return 'Eddystone-UID';
     }
 }
 </script>

@@ -316,8 +316,10 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
         },
         save(): Promise<void> {
             return new Promise((resolve, reject) => {
-                Promise.resolve(this.state === ControllerState.READY ? Promise.resolve() :
-                    this.load()).then(() => {
+                Promise.resolve(
+                    this.state === ControllerState.READY ? Promise.resolve() : this.load(),
+                )
+                    .then(() => {
                         const serialized = DataSerializer.serialize(
                             Object.fromEntries(toRaw(this.beacons).entries()),
                         );
@@ -327,7 +329,9 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                             key: 'beacon.advertising',
                             value: JSON.stringify(serialized),
                         });
-                    }).then(resolve).catch(reject);
+                    })
+                    .then(resolve)
+                    .catch(reject);
             });
         },
         async updateNotification(): Promise<void> {

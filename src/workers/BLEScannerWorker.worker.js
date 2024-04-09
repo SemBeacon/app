@@ -21,9 +21,16 @@ export default ModelBuilder.create()
     })
     .addService(
         new SemBeaconService(null, {
-            bitly: {
-                accessToken: '5acd0aa037c74dd34287db2e914246603d97c84a',
-                groupGuid: "Bo46fA1eqqx"
+            urlShortener: (url) => {
+                return new Promise((resolve, reject) => {
+                    fetch(
+                        `https://s.sembeacon.org/shorten?api=Y5Y2SRZ2zo&uri=${encodeURIComponent(url)}`,
+                    )
+                        .then((response) => {
+                            resolve(response.text());
+                        })
+                        .catch(reject);
+                });
             },
             cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
             uid: 'sembeacon-worker-service',

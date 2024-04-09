@@ -149,7 +149,7 @@ export default class MapEditorPage extends Vue {
             ? fromLonLat([location.longitude, location.latitude])
             : undefined;
     });
-    buildings = computed(() => this.environmentStore.buildings);
+    buildings = computed(() => this.environmentStore.buildings) as unknown as Building[];
     defaultCenter: number[] = [0, 0];
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];

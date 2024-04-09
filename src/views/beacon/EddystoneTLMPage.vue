@@ -41,12 +41,7 @@
 
 <script lang="ts">
 import { Options, Prop } from 'vue-property-decorator';
-import {
-    IonRow,
-    IonCol,
-    IonInput,
-    IonGrid
-} from '@ionic/vue';
+import { IonRow, IonCol, IonInput, IonGrid } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
 import { BLEEddystoneTLM } from '@openhps/rf';
 import { BaseBeaconPage } from './BaseBeaconPage';
@@ -59,7 +54,7 @@ import GenericBeaconPage from './GenericBeaconPage.vue';
         IonCol,
         IonInput,
         IonGrid,
-        GenericBeaconPage
+        GenericBeaconPage,
     },
     directives: {
         maskito,
@@ -69,7 +64,7 @@ export default class EddystoneTLMBeaconPage extends BaseBeaconPage {
     @Prop() beacon?: BLEEddystoneTLM & Beacon = undefined;
 
     beaconType(): string {
-        return "Eddystone-TLM";
+        return 'Eddystone-TLM';
     }
 }
 </script>
