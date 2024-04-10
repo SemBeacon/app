@@ -11,6 +11,8 @@ import { TimeService } from '@openhps/core';
 // List of all companies and their Bluetooth Manufacturer ID
 const BLECompanies = require('../../models/BLECompanies.json'); // eslint-disable-line
 
+export { BLECompanies };
+
 export abstract class BaseBeaconPage extends Vue {
     // Data
     readonly BLEUUID: typeof BLEUUID = BLEUUID;
@@ -106,16 +108,16 @@ export abstract class BaseBeaconPage extends Vue {
     }
 
     get manufacturer(): string {
-        if (this.beacon.manufacturerData.size === 0) {
+        if (!this.beacon.manufacturerData || this.beacon.manufacturerData.size === 0) {
             return undefined;
         }
         const manufacturerId: number = this.beacon.manufacturerData.keys().next().value;
         const manufacturerIdHex = `0x${manufacturerId.toString(16).toUpperCase().padStart(4, '0')}`;
-        const companyName = BLECompanies[manufacturerIdHex];
-        if (!companyName) {
-            return manufacturerIdHex;
-        }
-        return `${companyName} (${manufacturerIdHex})`;
+        return manufacturerIdHex;
+    }
+
+    set manufacturer(value: string) {
+        
     }
 
     beaconType(): string {
@@ -132,4 +134,8 @@ export abstract class BaseBeaconPage extends Vue {
     get position(): GeographicalPosition {
         return this.beacon.position as GeographicalPosition;
     }
+}
+
+export interface IBLECompanies {
+    [key: `0x${string}`]: string;
 }

@@ -227,6 +227,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 BLEAltBeaconBuilder.create()
                     .proximityUUID(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
                     .major(51243)
+                    .manufacturerId(0x0118)
                     .minor(14124)
                     .calibratedRSSI(-56)
                     .build(),

@@ -102,14 +102,17 @@
                     </ion-input>
                 </ion-col>
                 <ion-col v-if="beacon.manufacturerData.size > 0" size="12">
-                    <ion-input
+                    <ion-select 
                         :disabled="!edit && !readonly"
                         :readonly="readonly && !edit"
-                        label-placement="stacked"
                         :value="manufacturer"
-                    >
+                        label-placement="stacked">
                         <div slot="label">Manufacturer</div>
-                    </ion-input>
+                        <ion-select-option 
+                            v-for="manufacturer in Object.keys(BLECompanies)"
+                            :key="manufacturer"
+                            :value="manufacturer">{{ BLECompanies[manufacturer] }} ({{ manufacturer }})</ion-select-option>
+                    </ion-select>
                 </ion-col>
                 <slot name="beacon-data"> </slot>
                 <ion-col v-if="beacon && position" size="12">
@@ -137,9 +140,11 @@ import {
     IonCard,
     IonCardContent,
     IonThumbnail,
+    IonSelect,
+    IonSelectOption
 } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
-import { BaseBeaconPage } from './BaseBeaconPage';
+import { BaseBeaconPage, BLECompanies, IBLECompanies } from './BaseBeaconPage';
 import { Beacon } from '@/stores/beacon.scanning';
 import { BLEBeaconObject } from '@openhps/rf';
 
@@ -152,12 +157,15 @@ import { BLEBeaconObject } from '@openhps/rf';
         IonCard,
         IonCardContent,
         IonThumbnail,
+        IonSelect,
+        IonSelectOption
     },
     directives: {
         maskito,
     },
 })
 export default class GenericBeaconPage extends BaseBeaconPage {
+    readonly BLECompanies: IBLECompanies = BLECompanies;
     @Prop() beacon?: BLEBeaconObject & Beacon = undefined;
 
     beaconType(): string {
