@@ -167,6 +167,26 @@ import EddystoneTLMPage from './beacon/EddystoneTLMPage.vue';
 import EddystoneUIDPage from './beacon/EddystoneUIDPage.vue';
 import EddystoneURLPage from './beacon/EddystoneURLPage.vue';
 import { ref } from 'vue';
+import { addIcons } from 'ionicons';
+import { 
+    codeSlashOutline,
+    close,
+    saveSharp,
+    createSharp,
+    locateOutline,
+    stop,
+    search
+} from 'ionicons/icons';
+
+addIcons({
+    codeSlashOutline,
+    close,
+    saveSharp,
+    createSharp,
+    locateOutline,
+    stop,
+    search
+});
 
 @Options({
     components: {

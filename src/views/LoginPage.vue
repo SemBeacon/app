@@ -161,6 +161,15 @@ import { useUserStore } from '../stores/user';
 import AddListAttributeDirective from '../directives/AddListAttributeDirective';
 import { StatusBar, Animation } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
+import { 
+    logInOutline, informationCircleOutline
+} from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+
+addIcons({
+    logInOutline, 
+    informationCircleOutline
+});
 
 @Options({
     components: {

@@ -23,12 +23,13 @@ import { Vue, Options, Prop, Ref, Watch } from 'vue-property-decorator';
 import { Building, Corridor, Floor, Room, SymbolicSpace, Zone } from '@openhps/geospatial';
 import { GeographicalPosition } from '@openhps/core';
 import { isProxy, toRaw } from 'vue';
-import { Coordinate } from 'ol/coordinate';
+import type { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
-import { Vector } from 'ol/layer';
+import type { Vector } from 'ol/layer';
 
 @Options({
-    components: {},
+    components: {
+    },
 })
 export default class GeoJsonComponent extends Vue {
     @Prop() space: SymbolicSpace<GeographicalPosition>;

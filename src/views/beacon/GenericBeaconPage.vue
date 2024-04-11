@@ -96,16 +96,18 @@
                         :disabled="!edit && !readonly"
                         :readonly="readonly && !edit"
                         label-placement="stacked"
+                        :fill="readonly && !edit ? undefined : 'solid'"
                         :value="beacon.address.toString()"
                     >
                         <div slot="label">MAC Address</div>
                     </ion-input>
                 </ion-col>
-                <ion-col v-if="beacon.manufacturerData.size > 0" size="12">
+                <ion-col v-if="beacon.manufacturerData && beacon.manufacturerData.size > 0" size="12">
                     <ion-select 
-                        :disabled="!edit && !readonly"
-                        :readonly="readonly && !edit"
                         :value="manufacturer"
+                        :disabled="!edit"
+                        :fill="readonly && !edit ? undefined : 'solid'"
+                        @ionChange="(e) => manufacturer = e.detail.value"
                         label-placement="stacked">
                         <div slot="label">Manufacturer</div>
                         <ion-select-option 

@@ -49,18 +49,18 @@ import { BLESemBeacon } from '@sembeacon/openhps';
 import { isProxy, toRaw } from 'vue';
 import { Beacon, useBeaconStore } from '../../../stores/beacon.scanning';
 import moment from 'moment';
-import { Coordinate } from 'ol/coordinate';
+import type { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
 import type { Vector } from 'ol/layer';
 import type Overlay from 'ol/Overlay';
 import type { Style } from 'ol/style';
-import VectorSource from 'ol/source/Vector';
+import type VectorSource from 'ol/source/Vector';
 import type { Feature } from 'ol';
 import type { Point } from 'ol/geom';
-import { Map as OlMap } from 'ol';
+import type { Map as OlMap } from 'ol';
 
 @Options({
-    components: {},
+    components: { },
 })
 export default class BeaconMarkerComponent extends Vue {
     @Prop() beacons: Array<BLEBeaconObject & Beacon>;

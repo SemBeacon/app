@@ -4061,10 +4061,10 @@
     debug "^4.0.0"
     tslib "^2.0.1"
 
-"@ionic/core@7.8.3":
-  version "7.8.3"
-  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-7.8.3.tgz#4da064bc314ba6e9e19a99a6d800b62cbe2c5b9b"
-  integrity sha512-5pFoE8gbhbCuyQlZ7BlRk4+S4PmmqgkALw4IAhtUK1TuzsKJ2KLFBlp0rdlWS+VcKEyrec/ptVki8oN5335vRA==
+"@ionic/core@7.8.4":
+  version "7.8.4"
+  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-7.8.4.tgz#ee9e7e1e5103ed6c9f2a03f7592c0a2a4e5e79c5"
+  integrity sha512-GiQM3Gb1kjaxQyDTQfXd54p/a8cK+ccaYKH30pRpzFMborqCZwhcCUQWV1zNAUuFI8YkC5CWTi6bdHyiYuxw4w==
   dependencies:
     "@stencil/core" "^4.12.2"
     ionicons "^7.2.2"
@@ -4160,19 +4160,19 @@
     untildify "^4.0.0"
     wrap-ansi "^7.0.0"
 
-"@ionic/vue-router@^7.8.3":
-  version "7.8.3"
-  resolved "https://registry.yarnpkg.com/@ionic/vue-router/-/vue-router-7.8.3.tgz#2c751b679ca162448c64a9ae41a2e8a288becfe2"
-  integrity sha512-xcXW8Af0HmhHBcCY1+iPVQzQoq77m2SFEL1MpTHmfZvh/ouB/AOLtBbup2btY8lOJ+W66S/V8xA/gBgbW0S4Kw==
+"@ionic/vue-router@^7.8.4":
+  version "7.8.4"
+  resolved "https://registry.yarnpkg.com/@ionic/vue-router/-/vue-router-7.8.4.tgz#75472d7182289a9d3313207247d25abc1938d93e"
+  integrity sha512-cXj+cd5t4S0ChatJ5r4Y4isuexxezuqz3+UWNJN4+rfN0zceIfeOrr741bNo2I+jTE8jXJowIA3q+kW0bY5UTQ==
   dependencies:
-    "@ionic/vue" "7.8.3"
+    "@ionic/vue" "7.8.4"
 
-"@ionic/vue@7.8.3", "@ionic/vue@^7.8.3":
-  version "7.8.3"
-  resolved "https://registry.yarnpkg.com/@ionic/vue/-/vue-7.8.3.tgz#bd6aba0c11320551e87d8747af407b49a18928ee"
-  integrity sha512-GzHhSus8RT8TGOER6fgpcz29fbMgNn/R65waAPKvO3Kks9ZITtPOtTYM9xNGOHPTKAA5yfAoSch944lmAjMNLg==
+"@ionic/vue@7.8.4", "@ionic/vue@^7.8.4":
+  version "7.8.4"
+  resolved "https://registry.yarnpkg.com/@ionic/vue/-/vue-7.8.4.tgz#c993df671a42aa4a991a209790bc0943db8ffbda"
+  integrity sha512-x5qRvGo9OSjnROANbicTR1vDIFLSMo2BWSzUCbpLfp3NLbLfgdRfWLFJMbSlI+2RLhZ6d7iACCjSzoayD255cw==
   dependencies:
-    "@ionic/core" "7.8.3"
+    "@ionic/core" "7.8.4"
     ionicons "^7.0.0"
 
 "@isaacs/cliui@^8.0.2":
@@ -5357,10 +5357,18 @@
     "@openhps/rf" ">=0.1.61"
     "@openhps/video" ">=0.1.14"
 
-"@openhps/rf@>=0.1.61", "@openhps/rf@^0.1.61":
+"@openhps/rf@>=0.1.61":
   version "0.1.61"
   resolved "https://registry.yarnpkg.com/@openhps/rf/-/rf-0.1.61.tgz#4ec80bfb2775747dd3291e486f0474ba82c4e6f0"
   integrity sha512-eVK75W0E9kh1Ulhejejj6cTrJUWfmdKR42aUxOY12BZdmRQK/n5N/4A7Cx+FQsnHOv+f6geiapLLId4Szqsw8g==
+  dependencies:
+    ml-levenberg-marquardt "^4.1.3"
+    ts-md5 "^1.3.1"
+
+"@openhps/rf@^0.1.62":
+  version "0.1.62"
+  resolved "https://registry.yarnpkg.com/@openhps/rf/-/rf-0.1.62.tgz#cacd6de667a9c85ba1210e4d459e06ec7d90429d"
+  integrity sha512-W7K4lOuxb8AHMw9n7HLVx4W6kVqILOrRD6ET8ps3QaBcejuWwU1Z8hho+ViLmO6ANaQ5XLBNV32mS1oHAIJVVw==
   dependencies:
     ml-levenberg-marquardt "^4.1.3"
     ts-md5 "^1.3.1"
@@ -5479,10 +5487,10 @@
     "@inrupt/solid-client-authn-core" "^1.12.1"
     "@inrupt/solid-client-authn-node" "^1.12.1"
 
-"@sembeacon/openhps@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.4.3.tgz#6e5d5593c5ab9f429c0bd69ca55c99c7921fbdee"
-  integrity sha512-Pxsp46iV5nl6BI/CbxttZScvTUOkHS72gh1LzdaVu7yMSEqdg9saqn3vZTnZVIzW2+9/Vh4H+na0e92NW1N0Kg==
+"@sembeacon/openhps@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@sembeacon/openhps/-/openhps-1.5.1.tgz#4c06dfeb5dcefa40af71723bd4e7c74b7f42d041"
+  integrity sha512-3TXZaYjjBxtOqEw6AOxvSoriMNLavwFLFY511yLfsYVTqR63x+x/YkSkA8rH/mmVJw5t35HPOzvQlMejQC+tag==
   dependencies:
     axios "^1.6.8"
     crypto "^1.0.1"
@@ -9246,10 +9254,10 @@ cubic-spline@^3.0.3:
   resolved "https://registry.yarnpkg.com/cubic-spline/-/cubic-spline-3.0.3.tgz#c081df05ca4c850ddaac34f5dcb7a8b35521f54d"
   integrity sha512-yAvcHgrpf/k83pZiO4+R2reWOJlufgjpQhmDD3OXa8YMbjmRgjtUK8pcFOCZvJwqXaMD1isZdL7Z4ghqDPN/yw==
 
-cypress@^13.7.2:
-  version "13.7.2"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.7.2.tgz#61e841382abb20e0a9a063086ee0d850af3ef6bc"
-  integrity sha512-FF5hFI5wlRIHY8urLZjJjj/YvfCBrRpglbZCLr/cYcL9MdDe0+5usa8kTIrDHthlEc9lwihbkb5dmwqBDNS2yw==
+cypress@^13.7.3:
+  version "13.7.3"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.7.3.tgz#3e7dcd32e007676a6c8e972293c50d6ef329d991"
+  integrity sha512-uoecY6FTCAuIEqLUYkTrxamDBjMHTYak/1O7jtgwboHiTnS1NaMOoR08KcTrbRZFCBvYOiS4tEkQRmsV+xcrag==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
@@ -14789,20 +14797,25 @@ ol-contextmenu@^5.4.0:
   dependencies:
     tiny-emitter "^2.1.0"
 
-ol-ext@^4.0.15, ol-ext@^4.0.17:
+ol-ext@^4.0.15:
   version "4.0.17"
   resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-4.0.17.tgz#9f9d7cbc86718897af8439c5fb69f6b8acdc9236"
   integrity sha512-o3D+x7dzUIRyVDshmNceGgcNKX0N+Xf/vgQ1QwEIsBDeRJgraAeKtREGOPP0upnI8ldehoLMsCIiZgnsWxWAVw==
+
+ol-ext@^4.0.18:
+  version "4.0.18"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-4.0.18.tgz#87e68566bae1a7821e3a1af8b7019409ce922324"
+  integrity sha512-zzeTAoCg9IocaM7LlXiLNnVCgVmfxxLzlDTWvYn3Y2gFxtICHSfRrIQl/8vumgBjftBksVl1Fds8P5uFReTmew==
 
 ol-geocoder@^4.3.3:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/ol-geocoder/-/ol-geocoder-4.3.3.tgz#e1b756d419bd14a3a5ca36b5ec518f7a7b881a19"
   integrity sha512-uCXygiNVldMNGgi7H0pLMMMnEey8Nlx/k3brq4knCnmtapC9P1lbel7NydMNGgdymUgm1jq4T5ENvIngTJW44A==
 
-ol-mapbox-style@^12.3.0:
-  version "12.3.0"
-  resolved "https://registry.yarnpkg.com/ol-mapbox-style/-/ol-mapbox-style-12.3.0.tgz#46984378e13584bc532694868e7192f92915f0b4"
-  integrity sha512-DPGWcEeC/XNejo0N10DpVOkMr2pRSzxOYWpe9RoOPiC9Ph34jiuyRpFQsLzlnJPrRo7pdQOYSYoM+mL8QF/HBA==
+ol-mapbox-style@^12.3.1:
+  version "12.3.1"
+  resolved "https://registry.yarnpkg.com/ol-mapbox-style/-/ol-mapbox-style-12.3.1.tgz#155e93fc148e2a6bee80de5c2e26ba51069dcb34"
+  integrity sha512-pKBpKBns4YUgeFCp+aeuJtM+D2BKLc1HJmk5tFL0Nv7u7nelZnInUs/+XnSlHOa1hPBSrOyL+7CvKtegEyuYlg==
   dependencies:
     "@mapbox/mapbox-gl-style-spec" "^13.23.1"
     mapbox-to-css-font "^2.4.1"
@@ -16650,10 +16663,10 @@ safe-stable-stringify@^2.3.1:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass-loader@^14.1.1:
-  version "14.1.1"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-14.1.1.tgz#2c9d2277c5b1c5fe789cd0570c046d8ad23cb7ca"
-  integrity sha512-QX8AasDg75monlybel38BZ49JP5Z+uSKfKwF2rO7S74BywaRmGQMUBw9dtkS+ekyM/QnP+NOrRYq8ABMZ9G8jw==
+sass-loader@^14.2.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-14.2.0.tgz#0d4440170fd9c9d93684e274a5ef73dbf55f414b"
+  integrity sha512-jxmjDXD9OYNDb2bp9JvopdE6QjecQY9beTWik/6sEHrsMxyo90Gyc471A4NUz60NLs4WsAh6yVtIvhLwEZcXeg==
   dependencies:
     neo-async "^2.6.2"
 
@@ -18557,6 +18570,13 @@ vue-class-component@^8.0.0-rc.1:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-8.0.0-rc.1.tgz#db692cd97656eb9a08206c03d0b7398cdb1d9420"
   integrity sha512-w1nMzsT/UdbDAXKqhwTmSoyuJzUXKrxLE77PCFVuC6syr8acdFDAq116xgvZh9UCuV0h+rlCtxXolr3Hi3HyPQ==
 
+vue-cli-plugin-webpack-bundle-analyzer@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/vue-cli-plugin-webpack-bundle-analyzer/-/vue-cli-plugin-webpack-bundle-analyzer-4.0.0.tgz#9e2a1884f87de37e055117716399b577c6871b38"
+  integrity sha512-gEQt8RMh0j9aD591PXjuMJMoKG6Aaylsi2rZHDiDRE9zGEk7wlUMrIVGwL9bYnMAHSHkojQL4oQinM3WBxCDew==
+  dependencies:
+    webpack-bundle-analyzer "^4.2.0"
+
 vue-component-type-helpers@^2.0.0:
   version "2.0.11"
   resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-2.0.11.tgz#3d585c854c726bd3a710c13b087983a223a03b6b"
@@ -18712,6 +18732,24 @@ webidl-conversions@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-6.1.0.tgz#9111b4d7ea80acd40f5270d666621afa78b69514"
   integrity sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==
+
+webpack-bundle-analyzer@^4.2.0:
+  version "4.10.2"
+  resolved "https://registry.yarnpkg.com/webpack-bundle-analyzer/-/webpack-bundle-analyzer-4.10.2.tgz#633af2862c213730be3dbdf40456db171b60d5bd"
+  integrity sha512-vJptkMm9pk5si4Bv922ZbKLV8UTT4zib4FPgXMhgzUny0bfDDkLXAVQs3ly3fS4/TN9ROFtb0NFrm04UXFE/Vw==
+  dependencies:
+    "@discoveryjs/json-ext" "0.5.7"
+    acorn "^8.0.4"
+    acorn-walk "^8.0.0"
+    commander "^7.2.0"
+    debounce "^1.2.1"
+    escape-string-regexp "^4.0.0"
+    gzip-size "^6.0.0"
+    html-escaper "^2.0.2"
+    opener "^1.5.2"
+    picocolors "^1.0.0"
+    sirv "^2.0.3"
+    ws "^7.3.1"
 
 webpack-bundle-analyzer@^4.4.0:
   version "4.10.1"

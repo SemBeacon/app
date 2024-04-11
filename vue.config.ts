@@ -4,6 +4,12 @@ import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 import * as path from "path";	
 
 export default defineConfig({
+  pluginOptions: {
+    webpackBundleAnalyzer: {
+      openAnalyzer: false,
+      reportFilename: path.join(__dirname, "report.html")
+    }
+  },
   terser: {
     minify: 'terser',
     terserOptions: {
@@ -34,7 +40,7 @@ export default defineConfig({
       new CopyPlugin({
         patterns: [
           { 
-            from: "src/**/*.worker.js", 
+            from: "src/**/BLEScannerWorker.worker.js", 
             to: "js/workers/[name].js",
           },
         ],

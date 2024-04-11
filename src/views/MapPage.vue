@@ -45,7 +45,7 @@
                     <ion-spinner v-if="loading" name="circular"></ion-spinner>
                     <ion-icon
                         v-if="!loading"
-                        :name="beaconStore.isScanning ? 'stop' : 'play'"
+                        :name="beaconStore.isScanning ? 'stop' : 'search'"
                     ></ion-icon>
                 </ion-fab-button>
             </ion-fab>
@@ -77,7 +77,7 @@ import {
 } from '@ionic/vue';
 import { useBeaconStore } from '../stores/beacon.scanning';
 import { computed } from 'vue';
-import { stop, play } from 'ionicons/icons';
+import { stop, search } from 'ionicons/icons';
 import MapComponent from '../components/map/MapComponent.vue';
 import { useRoute } from 'vue-router';
 import { ControllerState } from '../stores/types';
@@ -92,6 +92,12 @@ import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
 import BuildingComponent from '../components/map/BuildingComponent.vue';
 import { GCS, GeographicalPosition, Vector2 } from '@openhps/core';
+import { addIcons } from 'ionicons';
+
+addIcons({
+    stop,
+    search
+});
 
 @Options({
     components: {
@@ -117,11 +123,7 @@ import { GCS, GeographicalPosition, Vector2 } from '@openhps/core';
         IonSegmentButton,
         MapComponent,
         IonSearchbar,
-    },
-    data: () => ({
-        stop,
-        play,
-    }),
+    }
 })
 export default class MapPage extends Vue {
     readonly ControllerState: typeof ControllerState = ControllerState;

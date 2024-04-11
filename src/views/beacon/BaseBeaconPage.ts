@@ -108,16 +108,15 @@ export abstract class BaseBeaconPage extends Vue {
     }
 
     get manufacturer(): string {
-        if (!this.beacon.manufacturerData || this.beacon.manufacturerData.size === 0) {
-            return undefined;
-        }
-        const manufacturerId: number = this.beacon.manufacturerData.keys().next().value;
+        const manufacturerId: number = this.beacon.manufacturerId;
         const manufacturerIdHex = `0x${manufacturerId.toString(16).toUpperCase().padStart(4, '0')}`;
         return manufacturerIdHex;
     }
 
     set manufacturer(value: string) {
-        
+        // Convert value hex string (0x1234) to number
+        const manufacturerId = parseInt(value, 16);
+        this.beacon.manufacturerId = manufacturerId;
     }
 
     beaconType(): string {

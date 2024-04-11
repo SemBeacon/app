@@ -35,6 +35,7 @@ export default ModelBuilder.create()
             cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
             uid: 'sembeacon-worker-service',
             timeout: 15000,
+            minTimeout: 60000
         }),
     )
     .from()

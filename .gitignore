@@ -33,3 +33,6 @@ npm-debug.log*
 
 /private
 .yarn
+
+legacy-report.html
+modern-report.html

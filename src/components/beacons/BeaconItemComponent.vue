@@ -192,6 +192,14 @@ import { ref } from 'vue';
 import { Ref } from 'vue-property-decorator';
 import { SimulatedBeacon } from '@/stores/beacon.advertising';
 import { User } from '@openhps/rdf';
+import { 
+    trash
+} from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+
+addIcons({
+    trash
+});
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 

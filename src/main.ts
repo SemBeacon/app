@@ -2,12 +2,16 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { createPinia } from 'pinia';
-import * as icons from 'ionicons/icons';
-import { addIcons } from 'ionicons';
-import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
-import OpenLayersMap from 'vue3-openlayers';
-
 import { IonicVue } from '@ionic/vue';
+import {
+    Map, 
+    Layers, 
+    Geometries, 
+    Styles, 
+    Interactions, 
+    MapControls, 
+    Sources,
+} from 'vue3-openlayers';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -33,14 +37,26 @@ import { SplashScreen } from '@capacitor/splash-screen';
 const app = createApp(App)
     .use(IonicVue)
     .use(createPinia())
-    .use(BootstrapIconsPlugin)
-    .use(router)
-    .use(OpenLayersMap);
+    .use(router);
+app.component('OlMap', Map.OlMap);
+app.component('OlView', Map.OlView);
+app.component('OlSourceVector', Sources.OlSourceVector);
+app.component('OlVectorLayer', Layers.OlVectorLayer);
+app.component('OlFeature', Map.OlFeature);
+app.component('OlStyle', Styles.OlStyle);
+app.component('OlStyleIcon', Styles.OlStyleIcon);
+app.component('OlStyleFill', Styles.OlStyleFill);
+app.component('OlStyleStroke', Styles.OlStyleStroke);
+app.component('OlGeomPolygon', Geometries.OlGeomPolygon);
+app.component('OlGeomPoint', Geometries.OlGeomPoint);
+app.component('OlContextMenuControl', MapControls.OlContextMenuControl);
+app.component('OlDrawInteraction', Interactions.OlDrawInteraction);
+app.component('OlModifyInteraction', Interactions.OlModifyInteraction);
+app.component('OlOverlay', Map.OlOverlay);
 
 SplashScreen.hide().then(() => {
     SplashScreen.show();
 });
 router.isReady().then(() => {
-    addIcons({ ...icons });
     app.mount('#app');
 });

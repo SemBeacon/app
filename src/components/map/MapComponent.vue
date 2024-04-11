@@ -21,12 +21,13 @@
 <script lang="ts">
 import { Vue, Options, Ref, Prop, Provide } from 'vue-property-decorator';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
-import { Map as OlMap } from 'ol';
+import type { Map as OlMap } from 'ol';
 import type { Coordinate } from 'ol/coordinate';
 import { useSettings } from '../../stores/settings';
 
 @Options({
-    components: {},
+    components: {
+    },
 })
 export default class MapComponent extends Vue {
     settings = useSettings();

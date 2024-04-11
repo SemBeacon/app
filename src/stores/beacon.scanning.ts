@@ -87,6 +87,7 @@ const beaconService = new SemBeaconService(
         cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
         uid: 'sembeacon-service',
         timeout: 15000,
+        minTimeout: 60000
     },
 );
 

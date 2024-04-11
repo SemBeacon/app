@@ -60,15 +60,23 @@
 import { Projection } from 'ol/proj';
 import { Vue, Options, Ref } from 'vue-property-decorator';
 import type { Map as OlMap } from 'ol';
-import Button from 'ol-ext/control/Button';
-import Toggle from 'ol-ext/control/Toggle';
-import Bar from 'ol-ext/control/Bar';
+import type Button from 'ol-ext/control/Button';
+import type Toggle from 'ol-ext/control/Toggle';
+import type Bar from 'ol-ext/control/Bar';
 import { Image } from 'ol/layer';
-import GeoImage from 'ol-ext/source/GeoImage';
+import type GeoImage from 'ol-ext/source/GeoImage';
 import type { Coordinate } from 'ol/coordinate';
 import type VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Polygon } from 'ol/geom';
+import type VectorSource from 'ol/source/Vector';
+import type { Polygon } from 'ol/geom';
+import { 
+    resizeOutline
+} from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+
+addIcons({
+    resizeOutline
+});
 
 enum ImageEditorState {
     MOVE,

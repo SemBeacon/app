@@ -100,12 +100,9 @@ import {
     IonRouterOutlet,
     IonSplitPane,
 } from '@ionic/vue';
-import { map, bluetooth, help, wifiOutline } from 'ionicons/icons';
-
 import { useBeaconStore } from './stores/beacon.scanning';
 import { useUserStore } from './stores/user';
 import { useLogger } from './stores/logger';
-
 import { Animation, StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
@@ -117,6 +114,25 @@ import { ControllerState } from './stores/types';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { useSettings } from './stores/settings';
 import { loadWASM } from 'onigasm';
+import { addIcons } from 'ionicons';
+
+import { 
+    map, 
+    bluetooth, 
+    help, 
+    wifiOutline,
+    logOutOutline,
+    logInOutline
+} from 'ionicons/icons';
+
+addIcons({
+    logOutOutline,
+    logInOutline,
+    map,
+    bluetooth,
+    help,
+    wifiOutline,
+});
 
 @Options({
     components: {

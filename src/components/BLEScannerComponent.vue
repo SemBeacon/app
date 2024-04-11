@@ -66,7 +66,6 @@ import {
     alertController,
 } from '@ionic/vue';
 import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { stop, search } from 'ionicons/icons';
 import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
 import { useEnvironmentStore } from '../stores/environment';
 import { Capacitor } from '@capacitor/core';
@@ -74,6 +73,14 @@ import { Toast } from '@capacitor/toast';
 import { ControllerState } from '../stores/types';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 import { BLEBeaconObject } from '@openhps/rf';
+import { 
+    stop, search
+} from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+
+addIcons({
+    stop, search
+});
 
 enum SortKey {
     RSSI,
@@ -108,11 +115,7 @@ enum SortKey {
         IonInput,
         IonButton,
         IonToggle,
-    },
-    data: () => ({
-        stop,
-        search,
-    }),
+    }
 })
 export default class BLESimulatorComponent extends Vue {
     ControllerState: any = ControllerState;

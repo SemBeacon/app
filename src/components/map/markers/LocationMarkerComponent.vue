@@ -49,11 +49,11 @@ import { computed } from 'vue';
 import { useGeolocationStore } from '../../../stores/geolocation';
 import { fromLonLat, transform } from 'ol/proj';
 import { circular } from 'ol/geom/Polygon.js';
-import { Coordinate } from 'ol/coordinate';
+import type { Coordinate } from 'ol/coordinate';
 
 @Options({
     components: {
-        BeaconMarkerComponent,
+        BeaconMarkerComponent
     },
 })
 export default class LocationMarkerComponent extends Vue {

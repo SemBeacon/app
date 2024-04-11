@@ -342,6 +342,15 @@ import { BaseBeaconPage } from './BaseBeaconPage';
 import { Beacon } from '@/stores/beacon.scanning';
 import GenericBeaconPage from './GenericBeaconPage.vue';
 import { User } from '@openhps/rdf';
+import { 
+    addCircleOutline, closeCircleOutline
+} from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+
+addIcons({
+    addCircleOutline, 
+    closeCircleOutline
+});
 
 @Options({
     components: {

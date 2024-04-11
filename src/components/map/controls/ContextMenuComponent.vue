@@ -9,7 +9,7 @@ import type { Item } from 'ol-contextmenu/dist/types';
 import { cloudUploadOutline } from 'ionicons/icons';
 
 @Options({
-    components: {},
+    components: { },
 })
 export default class ContextMenuComponent extends Vue {
     @Inject() map: Map;
