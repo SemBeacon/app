@@ -15,6 +15,7 @@ const config: CapacitorConfig = {
       '@capacitor/splash-screen',
       '@capacitor/preferences',
       'capacitor-native-settings',
+      '@capawesome-team/capacitor-android-foreground-service',
       '@capacitor/toast',
       '@capacitor/status-bar',
       '@capacitor/local-notifications',

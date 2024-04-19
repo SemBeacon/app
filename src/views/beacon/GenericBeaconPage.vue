@@ -32,11 +32,11 @@
                                     </ion-row>
                                     <ion-row v-if="readonly" :key="key">
                                         <ion-col size="6">
-                                            <h2>RSSI: {{ beacon.rssi }} <small>dBm</small></h2>
+                                            <h2>RSSI: {{ (beacon as Beacon).rssi }} <small>dBm</small></h2>
                                         </ion-col>
-                                        <ion-col v-if="beacon.distance" size="6">
+                                        <ion-col v-if="(beacon as Beacon).distance" size="6">
                                             <h2>
-                                                Distance: {{ beacon.distance }} <small>m</small>
+                                                Distance: {{ (beacon as Beacon).distance }} <small>m</small>
                                             </h2>
                                         </ion-col>
                                         <ion-col v-else size="6">
@@ -59,6 +59,40 @@
 
         <ion-grid>
             <ion-row>
+                <ion-col v-if="!readonly" size="12">
+                    <ion-select 
+                        :disabled="!edit"
+                        :value="(beacon as SimulatedBeacon).latency"
+                        :fill="!edit ? undefined : 'solid'"
+                        @ionChange="(e) => (beacon as SimulatedBeacon).latency = e.detail.value"
+                        label-placement="stacked">
+                        <div slot="label">Advertising latency</div>
+                        <ion-select-option
+                            value="lowLatency">Low latency</ion-select-option>
+                        <ion-select-option
+                            value="balanced">Balanced</ion-select-option>
+                        <ion-select-option
+                            value="lowPower">Low power</ion-select-option>
+                    </ion-select>
+                </ion-col>
+                <ion-col v-if="!readonly" size="12">
+                    <ion-select 
+                        :value="(beacon as SimulatedBeacon).power"
+                        :disabled="!edit"
+                        :fill="!edit ? undefined : 'solid'"
+                        @ionChange="(e) => (beacon as SimulatedBeacon).power = e.detail.value"
+                        label-placement="stacked">
+                        <div slot="label">Advertising power</div>
+                        <ion-select-option
+                            value="high">High</ion-select-option>
+                        <ion-select-option
+                            value="medium">Medium</ion-select-option>
+                        <ion-select-option
+                            value="low">Low</ion-select-option>
+                        <ion-select-option
+                            value="ultralow">Ultra low</ion-select-option>
+                    </ion-select>
+                </ion-col>
                 <template v-if="beaconType().startsWith('Eddystone')">
                     <ion-col v-if="beacon.calibratedRSSI || edit" size="12">
                         <ion-input
@@ -149,6 +183,7 @@ import { maskito } from '@maskito/vue';
 import { BaseBeaconPage, BLECompanies, IBLECompanies } from './BaseBeaconPage';
 import { Beacon } from '@/stores/beacon.scanning';
 import { BLEBeaconObject } from '@openhps/rf';
+import { SimulatedBeacon } from '@/stores/beacon.advertising';
 
 @Options({
     components: {
@@ -168,7 +203,7 @@ import { BLEBeaconObject } from '@openhps/rf';
 })
 export default class GenericBeaconPage extends BaseBeaconPage {
     readonly BLECompanies: IBLECompanies = BLECompanies;
-    @Prop() beacon?: BLEBeaconObject & Beacon = undefined;
+    @Prop() beacon?: BLEBeaconObject & (Beacon | SimulatedBeacon) = undefined;
 
     beaconType(): string {
         return this.type ?? 'Bluetooth';

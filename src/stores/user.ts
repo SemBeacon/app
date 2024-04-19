@@ -5,7 +5,7 @@ import { Browser } from '@capacitor/browser';
 import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembeacon/openhps';
-import { useBeaconAdvertisingStore } from './beacon.advertising';
+import { SimulatedBeacon, useBeaconAdvertisingStore } from './beacon.advertising';
 
 const DEBUG = false;
 const CLIENT_NAME = 'SemBeacon Application';
@@ -77,9 +77,11 @@ export const useUserStore = defineStore('user', {
                         .then(() => {
                             return this.createBeacon();
                         })
-                        .then((beacon) => {
+                        .then((beacon: SimulatedBeacon) => {
                             console.log('Created user beacon', beacon);
                             const beaconStore = useBeaconAdvertisingStore();
+                            beacon.latency = "balanced";
+                            beacon.power = "medium";
                             beaconStore.addSimulatedBeacon(beacon.uid, beacon);
                         })
                         .catch((err) => {

@@ -1,7 +1,7 @@
 import { Vue, Prop } from 'vue-property-decorator';
 import { BLEBeaconObject, BLEUUID } from '@openhps/rf';
 import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
-import { useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
+import { SimulatedBeacon, useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
 import moment from 'moment';
 import { useSettings } from '@/stores/settings';
 import { GeographicalPosition } from '@openhps/core';
@@ -18,7 +18,7 @@ export abstract class BaseBeaconPage extends Vue {
     readonly BLEUUID: typeof BLEUUID = BLEUUID;
 
     // Props
-    @Prop() beacon?: BLEBeaconObject & Beacon;
+    @Prop() beacon?: BLEBeaconObject & (Beacon | SimulatedBeacon);
     @Prop() edit: boolean;
     @Prop() readonly: boolean;
     @Prop() loading: boolean;
@@ -101,10 +101,10 @@ export abstract class BaseBeaconPage extends Vue {
     }
 
     lastSeen(): string {
-        if (this.beacon.lastSeen === undefined) {
+        if ((this.beacon as Beacon).lastSeen === undefined) {
             return '';
         }
-        return moment(this.beacon.lastSeen).fromNow();
+        return moment((this.beacon as Beacon).lastSeen).fromNow();
     }
 
     get manufacturer(): string {

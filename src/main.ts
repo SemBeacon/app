@@ -12,6 +12,9 @@ import {
     MapControls, 
     Sources,
 } from 'vue3-openlayers';
+import {
+    BIconWifiOff
+} from 'bootstrap-icons-vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -38,6 +41,9 @@ const app = createApp(App)
     .use(IonicVue)
     .use(createPinia())
     .use(router);
+// Bootstrap icons
+app.component('BIconWifiOff', BIconWifiOff);
+// OpenLayers components
 app.component('OlMap', Map.OlMap);
 app.component('OlView', Map.OlView);
 app.component('OlSourceVector', Sources.OlSourceVector);
