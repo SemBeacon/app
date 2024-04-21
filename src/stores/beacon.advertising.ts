@@ -39,7 +39,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
     state: (): BeaconAdvertisingState => ({
         beacons: new Map(),
         state: ControllerState.PENDING,
-        watchDog: undefined
+        watchDog: undefined,
     }),
     getters: {
         advertisingBeacons(): SimulatedBeacon[] {
@@ -57,7 +57,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 if (Capacitor.getPlatform() !== 'web') {
                     Promise.all([
                         ForegroundService.requestPermissions(),
-                        LocalNotifications.requestPermissions()
+                        LocalNotifications.requestPermissions(),
                     ])
                         .then(() => {
                             if (Capacitor.getPlatform() === 'android') {
@@ -84,11 +84,14 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                                     visibility: 1,
                                 }).catch(console.error);
                             }
-                            LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-                                if (action.actionId == 'stop') {
-                                    this.stopAdvertising();
-                                }
-                            });
+                            LocalNotifications.addListener(
+                                'localNotificationActionPerformed',
+                                (action) => {
+                                    if (action.actionId == 'stop') {
+                                        this.stopAdvertising();
+                                    }
+                                },
+                            );
                             resolve();
                         })
                         .catch(() => {
@@ -181,8 +184,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 includeTxPowerLevel: false,
                 connectable: false,
                 discoverable: true,
-                mode: beacon.latency ?? "lowLatency",
-                txPowerLevel: beacon.power ?? "high",
+                mode: beacon.latency ?? 'lowLatency',
+                txPowerLevel: beacon.power ?? 'high',
                 timeout: 0,
             };
             let scanResponseParams: any = undefined;
@@ -266,9 +269,12 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
         },
         isAdvertising(beacon: SimulatedBeacon): Promise<boolean> {
             return new Promise((resolve, reject) => {
+                if (!bluetoothle) {
+                    resolve(false);
+                }
                 bluetoothle.isAdvertising(
                     (result) => {
-                        console.log("Checked if advertising", beacon.uid, result.isAdvertising);
+                        console.log('Checked if advertising', beacon.uid, result.isAdvertising);
                         resolve(result.isAdvertising);
                     },
                     (error) => {
@@ -297,21 +303,27 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 }
             });
         },
-        addSimulatedBeacon(uid: string, beacon: BLEBeaconObject & (Partial<SimulatedBeacon> | any)): void {
-            this.buildBeacon(beacon).then((beacon) => {
-                if (!this.beacons.has(uid)) {
-                    (beacon as any).advertising = false;
-                }
-                beacon.uid = uid;
-                beacon.latency = beacon.latency ?? 'lowLatency';
-                beacon.power = beacon.power ?? 'high';
-                this.beacons.set(uid, beacon);
-                return this.save();
-            }).then(() => {
-                return this.isAdvertising(beacon);
-            }).then((advertising) => {
-                this.beacons.get(uid).advertising = advertising;  
-            });
+        addSimulatedBeacon(
+            uid: string,
+            beacon: BLEBeaconObject & (Partial<SimulatedBeacon> | any),
+        ): void {
+            this.buildBeacon(beacon)
+                .then((beacon) => {
+                    if (!this.beacons.has(uid)) {
+                        (beacon as any).advertising = false;
+                    }
+                    beacon.uid = uid;
+                    beacon.latency = beacon.latency ?? 'lowLatency';
+                    beacon.power = beacon.power ?? 'high';
+                    this.beacons.set(uid, beacon);
+                    return this.save();
+                })
+                .then(() => {
+                    return this.isAdvertising(beacon);
+                })
+                .then((advertising) => {
+                    this.beacons.get(uid).advertising = advertising;
+                });
         },
         load(): Promise<void> {
             return new Promise((resolve, reject) => {
@@ -393,7 +405,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
 
             const beaconCount = this.advertisingBeacons.length;
             if (beaconCount !== 0) {
-                ForegroundService.addListener('buttonClicked', event => {
+                ForegroundService.addListener('buttonClicked', (event) => {
                     if (event.buttonId === 1) {
                         this.stopAdvertising();
                     }
@@ -408,7 +420,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                             id: 1,
                             title: 'Stop broadcasting',
                         },
-                    ]
+                    ],
                 });
             } else {
                 await this.stopForegroundService();
@@ -420,6 +432,6 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 this.watchDog = undefined;
             }
             await ForegroundService.stopForegroundService();
-        }
+        },
     },
 });

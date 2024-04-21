@@ -2,7 +2,7 @@ import { Vue, Prop } from 'vue-property-decorator';
 import { BLEBeaconObject, BLEUUID } from '@openhps/rf';
 import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
-import moment from 'moment';
+import { formatDistanceStrict } from 'date-fns';
 import { useSettings } from '@/stores/settings';
 import { GeographicalPosition } from '@openhps/core';
 import { ref } from 'vue';
@@ -97,14 +97,18 @@ export abstract class BaseBeaconPage extends Vue {
         if (this.beacon.createdTimestamp === undefined) {
             return '';
         }
-        return moment(this.beacon.createdTimestamp).fromNow();
+        return formatDistanceStrict(new Date(this.beacon.createdTimestamp), new Date(), {
+            addSuffix: true,
+        });
     }
 
     lastSeen(): string {
         if ((this.beacon as Beacon).lastSeen === undefined) {
             return '';
         }
-        return moment((this.beacon as Beacon).lastSeen).fromNow();
+        return formatDistanceStrict(new Date((this.beacon as Beacon).lastSeen), new Date(), {
+            addSuffix: true,
+        });
     }
 
     get manufacturer(): string {

@@ -21,13 +21,12 @@ import { useGeolocationStore } from '../../../stores/geolocation';
 import { fromLonLat } from 'ol/proj';
 import type { Map } from 'ol';
 import { Coordinate } from 'ol/coordinate';
-import { 
-    locateOutline, ellipseSharp
-} from 'ionicons/icons';
+import { locateOutline, ellipseSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    locateOutline, ellipseSharp
+    locateOutline,
+    ellipseSharp,
 });
 
 @Options({

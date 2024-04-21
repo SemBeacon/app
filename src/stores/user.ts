@@ -6,6 +6,7 @@ import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembeacon/openhps';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from './beacon.advertising';
+import fetch from 'cross-fetch';
 
 const DEBUG = false;
 const CLIENT_NAME = 'SemBeacon Application';
@@ -50,6 +51,9 @@ export const useUserStore = defineStore('user', {
         isLoggedIn(): boolean {
             return this.session && this.session.info.isLoggedIn;
         },
+        fetch(): typeof _fetch {
+            return this.session ? this.session.fetch : fetch;
+        },
     },
     actions: {
         once(event: string, callback: (...args: any[]) => void) {
@@ -80,8 +84,8 @@ export const useUserStore = defineStore('user', {
                         .then((beacon: SimulatedBeacon) => {
                             console.log('Created user beacon', beacon);
                             const beaconStore = useBeaconAdvertisingStore();
-                            beacon.latency = "balanced";
-                            beacon.power = "medium";
+                            beacon.latency = 'balanced';
+                            beacon.power = 'medium';
                             beaconStore.addSimulatedBeacon(beacon.uid, beacon);
                         })
                         .catch((err) => {

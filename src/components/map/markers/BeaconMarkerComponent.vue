@@ -48,7 +48,7 @@ import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhp
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { isProxy, toRaw } from 'vue';
 import { Beacon, useBeaconStore } from '../../../stores/beacon.scanning';
-import moment from 'moment';
+import { formatDistanceStrict } from 'date-fns';
 import type { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
 import type { Vector } from 'ol/layer';
@@ -60,7 +60,7 @@ import type { Point } from 'ol/geom';
 import type { Map as OlMap } from 'ol';
 
 @Options({
-    components: { },
+    components: {},
 })
 export default class BeaconMarkerComponent extends Vue {
     @Prop() beacons: Array<BLEBeaconObject & Beacon>;
@@ -178,7 +178,9 @@ export default class BeaconMarkerComponent extends Vue {
         if (beacon.lastSeen === undefined) {
             return '';
         }
-        return moment(beacon.lastSeen).fromNow();
+        return formatDistanceStrict(new Date(beacon.lastSeen), new Date(), {
+            addSuffix: true,
+        });
     }
 
     markerIcon(beacon: BLEBeaconObject): string {

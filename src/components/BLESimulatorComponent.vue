@@ -127,13 +127,11 @@ import {
 import { useBeaconStore } from '../stores/beacon.scanning';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 import { ControllerState } from '../stores/types';
-import { 
-    addOutline
-} from 'ionicons/icons';
+import { addOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    addOutline
+    addOutline,
 });
 
 @Options({

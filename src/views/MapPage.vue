@@ -96,7 +96,7 @@ import { addIcons } from 'ionicons';
 
 addIcons({
     stop,
-    search
+    search,
 });
 
 @Options({
@@ -123,7 +123,7 @@ addIcons({
         IonSegmentButton,
         MapComponent,
         IonSearchbar,
-    }
+    },
 })
 export default class MapPage extends Vue {
     readonly ControllerState: typeof ControllerState = ControllerState;

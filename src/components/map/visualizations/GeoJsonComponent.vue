@@ -28,8 +28,7 @@ import { fromLonLat } from 'ol/proj';
 import type { Vector } from 'ol/layer';
 
 @Options({
-    components: {
-    },
+    components: {},
 })
 export default class GeoJsonComponent extends Vue {
     @Prop() space: SymbolicSpace<GeographicalPosition>;

@@ -139,14 +139,14 @@
                     </template>
                 </ion-row>
             </ion-grid>
-            <ion-toggle
-                v-if="simulator"
-                slot="end"
-                :disabled="sliding"
-                aria-label="Toggle advertising of the beacon"
-                :checked="beacon.advertising"
-                @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
-            ></ion-toggle>
+            <ion-label v-if="simulator" slot="end">
+                <ion-toggle
+                    :disabled="sliding"
+                    aria-label="Toggle advertising of the beacon"
+                    :checked="beacon.advertising"
+                    @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
+                ></ion-toggle>
+            </ion-label>
             <ion-label v-else slot="end">
                 <h2 class="rssi">{{ beacon.rssi }} <small>dBm</small></h2>
                 <small :key="key.value">{{ lastSeen() }}</small>
@@ -185,20 +185,18 @@ import {
     BLEEddystoneTLM,
 } from '@openhps/rf';
 import { BLESemBeacon } from '@sembeacon/openhps';
-import moment from 'moment';
+import { formatDistanceStrict } from 'date-fns';
 import { Beacon } from '../../stores/beacon.scanning';
 import { Serializable, TimeService } from '@openhps/core';
 import { ref } from 'vue';
 import { Ref } from 'vue-property-decorator';
 import { SimulatedBeacon } from '@/stores/beacon.advertising';
 import { User } from '@openhps/rdf';
-import { 
-    trash
-} from 'ionicons/icons';
+import { trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    trash
+    trash,
 });
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -269,7 +267,9 @@ export default class BeaconItemComponent extends Vue {
         if (this.beacon.lastSeen === undefined) {
             return '';
         }
-        return moment(this.beacon.lastSeen).fromNow();
+        return formatDistanceStrict(new Date(this.beacon.lastSeen), new Date(), {
+            addSuffix: true,
+        });
     }
 
     mounted() {

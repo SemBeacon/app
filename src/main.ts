@@ -4,17 +4,15 @@ import router from './router';
 import { createPinia } from 'pinia';
 import { IonicVue } from '@ionic/vue';
 import {
-    Map, 
-    Layers, 
-    Geometries, 
-    Styles, 
-    Interactions, 
-    MapControls, 
+    Map,
+    Layers,
+    Geometries,
+    Styles,
+    Interactions,
+    MapControls,
     Sources,
 } from 'vue3-openlayers';
-import {
-    BIconWifiOff
-} from 'bootstrap-icons-vue';
+import { BIconWifiOff } from 'bootstrap-icons-vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -37,10 +35,7 @@ import './theme/variables.css';
 
 import { SplashScreen } from '@capacitor/splash-screen';
 
-const app = createApp(App)
-    .use(IonicVue)
-    .use(createPinia())
-    .use(router);
+const app = createApp(App).use(IonicVue).use(createPinia()).use(router);
 // Bootstrap icons
 app.component('BIconWifiOff', BIconWifiOff);
 // OpenLayers components
@@ -56,8 +51,8 @@ app.component('OlStyleStroke', Styles.OlStyleStroke);
 app.component('OlGeomPolygon', Geometries.OlGeomPolygon);
 app.component('OlGeomPoint', Geometries.OlGeomPoint);
 app.component('OlContextMenuControl', MapControls.OlContextMenuControl);
-app.component('OlDrawInteraction', Interactions.OlDrawInteraction);
-app.component('OlModifyInteraction', Interactions.OlModifyInteraction);
+app.component('OlDrawInteraction', Interactions.OlInteractionDraw);
+app.component('OlModifyInteraction', Interactions.OlInteractionModify);
 app.component('OlOverlay', Map.OlOverlay);
 
 SplashScreen.hide().then(() => {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ion-card v-if="(beacon.object instanceof User)" mode="ios" class="user">
+        <ion-card v-if="beacon.object instanceof User" mode="ios" class="user">
             <div class="img-wrapper">
                 <img
                     :src="beacon.object.picture"
@@ -121,7 +121,7 @@
             :readonly="readonly"
             :loading="loading"
         >
-            <template v-if="(beacon.object instanceof User)" #beacon-card>
+            <template v-if="beacon.object instanceof User" #beacon-card>
                 <div></div>
             </template>
             <template #beacon-data>
@@ -342,14 +342,12 @@ import { BaseBeaconPage } from './BaseBeaconPage';
 import { Beacon } from '@/stores/beacon.scanning';
 import GenericBeaconPage from './GenericBeaconPage.vue';
 import { User } from '@openhps/rdf';
-import { 
-    addCircleOutline, closeCircleOutline
-} from 'ionicons/icons';
+import { addCircleOutline, closeCircleOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    addCircleOutline, 
-    closeCircleOutline
+    addCircleOutline,
+    closeCircleOutline,
 });
 
 @Options({
@@ -499,7 +497,7 @@ ion-card.user {
         -ms-transform: translateX(-50%); /* IE 9 and older */
         -moz-transform: translateX(-50%); /* Firefox */
         -o-transform: translateX(-50%); /* Opera */
-        
+
         img {
             position: relative;
             border-radius: 20px;

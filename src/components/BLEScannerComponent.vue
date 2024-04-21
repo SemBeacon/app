@@ -73,13 +73,12 @@ import { Toast } from '@capacitor/toast';
 import { ControllerState } from '../stores/types';
 import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
 import { BLEBeaconObject } from '@openhps/rf';
-import { 
-    stop, search
-} from 'ionicons/icons';
+import { stop, search } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    stop, search
+    stop,
+    search,
 });
 
 enum SortKey {
@@ -115,7 +114,7 @@ enum SortKey {
         IonInput,
         IonButton,
         IonToggle,
-    }
+    },
 })
 export default class BLESimulatorComponent extends Vue {
     ControllerState: any = ControllerState;

@@ -58,10 +58,10 @@
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <div :key="lastUpdate" v-if="beacon">
+            <div v-if="beacon" :key="lastUpdate">
                 <!-- Beacon pages -->
                 <SemBeaconPage
-                    v-if="(beacon instanceof BeaconType.BLESemBeacon)"
+                    v-if="beacon instanceof BeaconType.BLESemBeacon"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
@@ -70,8 +70,9 @@
                 >
                 </SemBeaconPage>
                 <AltBeaconPage
-                    v-else-if="(beacon instanceof BeaconType.BLEAltBeacon) ||
-                            (beacon instanceof BeaconType.BLEiBeacon)
+                    v-else-if="
+                        beacon instanceof BeaconType.BLEAltBeacon ||
+                        beacon instanceof BeaconType.BLEiBeacon
                     "
                     :beacon="beacon"
                     :edit="enabled"
@@ -80,7 +81,7 @@
                 >
                 </AltBeaconPage>
                 <EddystoneURLPage
-                    v-else-if="(beacon instanceof BeaconType.BLEEddystoneURL)"
+                    v-else-if="beacon instanceof BeaconType.BLEEddystoneURL"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
@@ -88,7 +89,7 @@
                 >
                 </EddystoneURLPage>
                 <EddystoneUIDPage
-                    v-else-if="(beacon instanceof BeaconType.BLEEddystoneUID)"
+                    v-else-if="beacon instanceof BeaconType.BLEEddystoneUID"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
@@ -96,7 +97,7 @@
                 >
                 </EddystoneUIDPage>
                 <EddystoneTLMPage
-                    v-else-if="(beacon instanceof BeaconType.BLEEddystoneTLM)"
+                    v-else-if="beacon instanceof BeaconType.BLEEddystoneTLM"
                     :beacon="beacon"
                     :edit="enabled"
                     :readonly="!simulated"
@@ -168,14 +169,14 @@ import EddystoneUIDPage from './beacon/EddystoneUIDPage.vue';
 import EddystoneURLPage from './beacon/EddystoneURLPage.vue';
 import { ref } from 'vue';
 import { addIcons } from 'ionicons';
-import { 
+import {
     codeSlashOutline,
     close,
     saveSharp,
     createSharp,
     locateOutline,
     stop,
-    search
+    search,
 } from 'ionicons/icons';
 
 addIcons({
@@ -185,7 +186,7 @@ addIcons({
     createSharp,
     locateOutline,
     stop,
-    search
+    search,
 });
 
 @Options({

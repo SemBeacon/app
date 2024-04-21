@@ -109,21 +109,16 @@ import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
 import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
 import { useGeolocationStore } from './stores/geolocation';
-import moment from 'moment';
+import { setDefaultOptions } from 'date-fns';
 import { ControllerState } from './stores/types';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { useSettings } from './stores/settings';
 import { loadWASM } from 'onigasm';
 import { addIcons } from 'ionicons';
+import { enUS } from 'date-fns/locale';
+import { formatDistance } from './utils/DateLocale';
 
-import { 
-    map, 
-    bluetooth, 
-    help, 
-    wifiOutline,
-    logOutOutline,
-    logInOutline
-} from 'ionicons/icons';
+import { map, bluetooth, help, wifiOutline, logOutOutline, logInOutline } from 'ionicons/icons';
 
 addIcons({
     logOutOutline,
@@ -244,22 +239,10 @@ export default class App extends Vue {
         this.logger.initialize();
         await this.userStore.initialize();
 
-        moment.updateLocale('en', {
-            relativeTime: {
-                future: 'in %s',
-                past: '%s',
-                s: (number) => number + 's ago',
-                ss: '%ds ago',
-                m: '1m ago',
-                mm: '%dm ago',
-                h: '1h ago',
-                hh: '%dh ago',
-                d: '1d ago',
-                dd: '%dd ago',
-                M: 'a month ago',
-                MM: '%d months ago',
-                y: 'a year ago',
-                yy: '%d years ago',
+        setDefaultOptions({
+            locale: {
+                ...enUS,
+                formatDistance,
             },
         });
 

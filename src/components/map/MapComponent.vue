@@ -26,8 +26,7 @@ import type { Coordinate } from 'ol/coordinate';
 import { useSettings } from '../../stores/settings';
 
 @Options({
-    components: {
-    },
+    components: {},
 })
 export default class MapComponent extends Vue {
     settings = useSettings();

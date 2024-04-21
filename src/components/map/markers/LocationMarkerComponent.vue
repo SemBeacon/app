@@ -53,7 +53,7 @@ import type { Coordinate } from 'ol/coordinate';
 
 @Options({
     components: {
-        BeaconMarkerComponent
+        BeaconMarkerComponent,
     },
 })
 export default class LocationMarkerComponent extends Vue {

@@ -87,7 +87,7 @@ const beaconService = new SemBeaconService(
         cors: 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=' as IriString,
         uid: 'sembeacon-service',
         timeout: 15000,
-        minTimeout: 60000
+        minTimeout: 60000,
     },
 );
 
@@ -375,7 +375,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                                         model: Model,
                                         object: BLESemBeacon,
                                         options: ResolveOptions,
-                                        existingObject?: BLESemBeacon
+                                        existingObject?: BLESemBeacon,
                                     ) => {
                                         return new Promise((resolve, reject) => {
                                             const service = model.findDataService(
@@ -457,12 +457,21 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                         model.on('error', console.error);
                         this.state = ControllerState.READY;
 
-                        service.resolve = (object: BLESemBeacon, options: ResolveOptions, existingObject?: BLESemBeacon) => {
+                        service.resolve = (
+                            object: BLESemBeacon,
+                            options: ResolveOptions,
+                            existingObject?: BLESemBeacon,
+                        ) => {
                             logger.log(
                                 'debug',
                                 `Resolving SemBeacon (${object.resourceUri ?? object.shortResourceUri}) on worker`,
                             );
-                            return this.worker.invokeMethod('resolve', object, options, existingObject);
+                            return this.worker.invokeMethod(
+                                'resolve',
+                                object,
+                                options,
+                                existingObject,
+                            );
                         };
 
                         return this.load();

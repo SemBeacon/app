@@ -32,11 +32,15 @@
                                     </ion-row>
                                     <ion-row v-if="readonly" :key="key">
                                         <ion-col size="6">
-                                            <h2>RSSI: {{ (beacon as Beacon).rssi }} <small>dBm</small></h2>
+                                            <h2>
+                                                RSSI: {{ (beacon as Beacon).rssi }}
+                                                <small>dBm</small>
+                                            </h2>
                                         </ion-col>
                                         <ion-col v-if="(beacon as Beacon).distance" size="6">
                                             <h2>
-                                                Distance: {{ (beacon as Beacon).distance }} <small>m</small>
+                                                Distance: {{ (beacon as Beacon).distance }}
+                                                <small>m</small>
                                             </h2>
                                         </ion-col>
                                         <ion-col v-else size="6">
@@ -60,37 +64,32 @@
         <ion-grid>
             <ion-row>
                 <ion-col v-if="!readonly" size="12">
-                    <ion-select 
+                    <ion-select
                         :disabled="!edit"
                         :value="(beacon as SimulatedBeacon).latency"
                         :fill="!edit ? undefined : 'solid'"
+                        label-placement="stacked"
                         @ionChange="(e) => (beacon as SimulatedBeacon).latency = e.detail.value"
-                        label-placement="stacked">
+                    >
                         <div slot="label">Advertising latency</div>
-                        <ion-select-option
-                            value="lowLatency">Low latency</ion-select-option>
-                        <ion-select-option
-                            value="balanced">Balanced</ion-select-option>
-                        <ion-select-option
-                            value="lowPower">Low power</ion-select-option>
+                        <ion-select-option value="lowLatency">Low latency</ion-select-option>
+                        <ion-select-option value="balanced">Balanced</ion-select-option>
+                        <ion-select-option value="lowPower">Low power</ion-select-option>
                     </ion-select>
                 </ion-col>
                 <ion-col v-if="!readonly" size="12">
-                    <ion-select 
+                    <ion-select
                         :value="(beacon as SimulatedBeacon).power"
                         :disabled="!edit"
                         :fill="!edit ? undefined : 'solid'"
+                        label-placement="stacked"
                         @ionChange="(e) => (beacon as SimulatedBeacon).power = e.detail.value"
-                        label-placement="stacked">
+                    >
                         <div slot="label">Advertising power</div>
-                        <ion-select-option
-                            value="high">High</ion-select-option>
-                        <ion-select-option
-                            value="medium">Medium</ion-select-option>
-                        <ion-select-option
-                            value="low">Low</ion-select-option>
-                        <ion-select-option
-                            value="ultralow">Ultra low</ion-select-option>
+                        <ion-select-option value="high">High</ion-select-option>
+                        <ion-select-option value="medium">Medium</ion-select-option>
+                        <ion-select-option value="low">Low</ion-select-option>
+                        <ion-select-option value="ultralow">Ultra low</ion-select-option>
                     </ion-select>
                 </ion-col>
                 <template v-if="beaconType().startsWith('Eddystone')">
@@ -136,18 +135,26 @@
                         <div slot="label">MAC Address</div>
                     </ion-input>
                 </ion-col>
-                <ion-col v-if="beacon.manufacturerData && beacon.manufacturerData.size > 0" size="12">
-                    <ion-select 
+                <ion-col
+                    v-if="beacon.manufacturerData && beacon.manufacturerData.size > 0"
+                    size="12"
+                >
+                    <ion-select
                         :value="manufacturer"
                         :disabled="!edit"
                         :fill="readonly && !edit ? undefined : 'solid'"
-                        @ionChange="(e) => manufacturer = e.detail.value"
-                        label-placement="stacked">
+                        label-placement="stacked"
+                        @ionChange="(e) => (manufacturer = e.detail.value)"
+                    >
                         <div slot="label">Manufacturer</div>
-                        <ion-select-option 
+                        <ion-select-option
                             v-for="manufacturer in Object.keys(BLECompanies)"
                             :key="manufacturer"
-                            :value="manufacturer">{{ BLECompanies[manufacturer] }} ({{ manufacturer }})</ion-select-option>
+                            :value="manufacturer"
+                            >{{ BLECompanies[manufacturer] }} ({{
+                                manufacturer
+                            }})</ion-select-option
+                        >
                     </ion-select>
                 </ion-col>
                 <slot name="beacon-data"> </slot>
@@ -177,7 +184,7 @@ import {
     IonCardContent,
     IonThumbnail,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
 } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
 import { BaseBeaconPage, BLECompanies, IBLECompanies } from './BaseBeaconPage';
@@ -195,7 +202,7 @@ import { SimulatedBeacon } from '@/stores/beacon.advertising';
         IonCardContent,
         IonThumbnail,
         IonSelect,
-        IonSelectOption
+        IonSelectOption,
     },
     directives: {
         maskito,

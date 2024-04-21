@@ -17,13 +17,13 @@
 <script lang="ts">
 import { IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/vue';
 import { Vue, Options } from 'vue-property-decorator';
-import { 
-    addSharp, layersSharp, homeSharp
-} from 'ionicons/icons';
+import { addSharp, layersSharp, homeSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    addSharp, layersSharp, homeSharp
+    addSharp,
+    layersSharp,
+    homeSharp,
 });
 
 @Options({

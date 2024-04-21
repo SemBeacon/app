@@ -89,18 +89,13 @@ import { useBeaconStore } from '../stores/beacon.scanning';
 import { Capacitor } from '@capacitor/core';
 import { Ref } from 'vue-property-decorator';
 import { addIcons } from 'ionicons';
-import { 
-    trashBin,
-    funnel,
-    wifi,
-    search
-} from 'ionicons/icons';
+import { trashBin, funnel, wifi, search } from 'ionicons/icons';
 
 addIcons({
     trashBin,
     funnel,
     wifi,
-    search
+    search,
 });
 
 @Options({

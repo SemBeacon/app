@@ -81,14 +81,11 @@ import { Capacitor } from '@capacitor/core';
 import BLESimulatorComponent from '../components/BLESimulatorComponent.vue';
 import { Ref } from 'vue-property-decorator';
 import { addIcons } from 'ionicons';
-import { 
-    wifi,
-    search
-} from 'ionicons/icons';
+import { wifi, search } from 'ionicons/icons';
 
 addIcons({
     wifi,
-    search
+    search,
 });
 
 @Options({

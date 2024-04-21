@@ -24,8 +24,6 @@
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Uses Bluetooth to connect and interact with peripheral BLE devices.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Uses the GPS to determine the position.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>GPS to determine position.</string>
 	<key>UIBackgroundModes</key>

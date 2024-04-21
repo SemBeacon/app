@@ -69,13 +69,11 @@ import type { Coordinate } from 'ol/coordinate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import type { Polygon } from 'ol/geom';
-import { 
-    resizeOutline
-} from 'ionicons/icons';
+import { resizeOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 addIcons({
-    resizeOutline
+    resizeOutline,
 });
 
 enum ImageEditorState {
