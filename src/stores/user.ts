@@ -8,11 +8,8 @@ import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembe
 import { SimulatedBeacon, useBeaconAdvertisingStore } from './beacon.advertising';
 import fetch from 'cross-fetch';
 
-const DEBUG = false;
 const CLIENT_NAME = 'SemBeacon Application';
-const CLIENT_ID = DEBUG
-    ? 'https://sembeacon.org/id_debug.jsonld'
-    : 'https://sembeacon.org/id.jsonld';
+const CLIENT_ID = 'https://sembeacon.org/id.jsonld';
 
 export interface UserState {
     user: User;

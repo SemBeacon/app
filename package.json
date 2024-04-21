@@ -1,8 +1,12 @@
 {
   "name": "@sembeacon/app",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "SemBeacon Application",
   "license": "Apache-2.0",
+  "author": {
+    "name": "Maxim Van de Wynckel",
+    "email": "maxim.van.de.wynckel@vub.be"
+  },
   "scripts": {
     "postinstall": "npm-run-all --parallel copy:js:* && node ./scripts/process.js",
     "copy:js:openhps": "shx cp -rf node_modules/@openhps/*/dist/web/*.* ./public/js/vendor/openhps/",

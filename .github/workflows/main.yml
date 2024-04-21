@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Android application
+        run: npm run build:android
+
+      - name: Archive APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
