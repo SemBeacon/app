@@ -16,6 +16,7 @@
     "sync": "ionic cap sync && ionic cap sync @capacitor-community/electron",
     "build": "vue-cli-service build",
     "build:android": "ionic capacitor build android --prod",
+    "build:android:debug": "ionic capacitor build android",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",

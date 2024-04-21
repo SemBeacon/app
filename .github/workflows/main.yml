@@ -18,10 +18,10 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Build Android application
-        run: npm run build:android
+        run: npm run build:android:debug
 
       - name: Archive APK
         uses: actions/upload-artifact@v2
