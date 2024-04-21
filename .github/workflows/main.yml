@@ -21,7 +21,7 @@ jobs:
         run: yarn install
 
       - name: Build Android application
-        run: npm run build:android:debug
+        run: npx cap build android
 
       - name: Archive APK
         uses: actions/upload-artifact@v2
