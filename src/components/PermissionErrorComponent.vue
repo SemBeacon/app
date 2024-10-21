@@ -23,11 +23,11 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import { IonItem, IonLabel, IonButton } from '@ionic/vue';
 import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
 
-@Options({
+@Component({
     components: {
         IonItem,
         IonLabel,

@@ -20,17 +20,17 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Inject, Prop } from 'vue-property-decorator';
+import { Vue, Component, Inject, Prop } from 'vue-facing-decorator';
 import type { Map } from 'ol';
 import { Floor, SymbolicSpace } from '@openhps/geospatial';
-import { useEnvironmentStore } from '../../stores/environment';
+import { useEnvironmentStore } from '@/stores/environment';
 import GeoJsonComponent from './visualizations/GeoJsonComponent.vue';
 import MapImageComponent from './visualizations/ImageOverlayComponent.vue';
 import BeaconMarkerComponent from './markers/BeaconMarkerComponent.vue';
-import { useBeaconStore } from '../../stores/beacon.scanning';
-import { MapObject } from '../../models/MapObject';
+import { useBeaconStore } from '@/stores/beacon.scanning';
+import { MapObject } from '@/models/MapObject';
 
-@Options({
+@Component({
     components: {
         GeoJsonComponent,
         MapImageComponent,

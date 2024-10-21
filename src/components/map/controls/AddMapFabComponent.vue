@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/vue';
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import { addSharp, layersSharp, homeSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
@@ -26,7 +26,7 @@ addIcons({
     homeSharp,
 });
 
-@Options({
+@Component({
     components: {
         IonFab,
         IonFabButton,

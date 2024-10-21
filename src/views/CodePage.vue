@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref } from 'vue-property-decorator';
+import { Vue, Component, Ref } from 'vue-facing-decorator';
 import {
     IonContent,
     IonHeader,
@@ -31,14 +31,14 @@ import {
     IonToolbar,
 } from '@ionic/vue';
 import { BLEBeaconObject } from '@openhps/rf';
-import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
+import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
 import { BLESemBeacon } from '@sembeacon/openhps';
-import EditorComponent from '../components/editor/EditorComponent.vue';
+import EditorComponent from '@/components/editor/EditorComponent.vue';
 import { useRoute } from 'vue-router';
 import { useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
 import { IriString, RDFSerializer } from '@openhps/rdf';
 
-@Options({
+@Component({
     components: {
         IonContent,
         IonHeader,

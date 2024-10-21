@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref, Watch } from 'vue-property-decorator';
+import { Vue, Component, Ref, Watch } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -75,22 +75,22 @@ import {
     IonSegmentButton,
     IonSearchbar,
 } from '@ionic/vue';
-import { useBeaconStore } from '../stores/beacon.scanning';
+import { useBeaconStore } from '@/stores/beacon.scanning';
 import { computed } from 'vue';
 import { stop, search } from 'ionicons/icons';
-import MapComponent from '../components/map/MapComponent.vue';
+import MapComponent from '@/components/map/MapComponent.vue';
 import { useRoute } from 'vue-router';
-import { ControllerState } from '../stores/types';
-import { useGeolocationStore } from '../stores/geolocation';
-import LocationMarkerComponent from '../components/map/markers/LocationMarkerComponent.vue';
-import LocationCenterComponent from '../components/map/controls/LocationCenterComponent.vue';
-import { useSettings } from '../stores/settings';
+import { ControllerState } from '@/stores/types';
+import { useGeolocationStore } from '@/stores/geolocation';
+import LocationMarkerComponent from '@/components/map/markers/LocationMarkerComponent.vue';
+import LocationCenterComponent from '@/components/map/controls/LocationCenterComponent.vue';
+import { useSettings } from '@/stores/settings';
 import { Building } from '@openhps/geospatial';
 import { Coordinate } from 'ol/coordinate';
-import { useEnvironmentStore } from '../stores/environment';
+import { useEnvironmentStore } from '@/stores/environment';
 import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
-import BuildingComponent from '../components/map/BuildingComponent.vue';
+import BuildingComponent from '@/components/map/BuildingComponent.vue';
 import { GCS, GeographicalPosition, Vector2 } from '@openhps/core';
 import { addIcons } from 'ionicons';
 
@@ -99,7 +99,7 @@ addIcons({
     search,
 });
 
-@Options({
+@Component({
     components: {
         LocationMarkerComponent,
         LocationCenterComponent,

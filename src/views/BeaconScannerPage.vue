@@ -60,8 +60,8 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
-import BLEScannerComponent from '../components/BLEScannerComponent.vue';
+import { Vue, Component, Ref } from 'vue-facing-decorator';
+import BLEScannerComponent from '@/components/BLEScannerComponent.vue';
 import {
     IonTabBar,
     IonTabButton,
@@ -84,10 +84,9 @@ import {
     IonSegmentButton,
     IonButton,
 } from '@ionic/vue';
-import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { useBeaconStore } from '../stores/beacon.scanning';
+import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
+import { useBeaconStore } from '@/stores/beacon.scanning';
 import { Capacitor } from '@capacitor/core';
-import { Ref } from 'vue-property-decorator';
 import { addIcons } from 'ionicons';
 import { trashBin, funnel, wifi, search } from 'ionicons/icons';
 
@@ -98,7 +97,7 @@ addIcons({
     search,
 });
 
-@Options({
+@Component({
     components: {
         IonButtons,
         IonContent,
@@ -122,8 +121,7 @@ addIcons({
         IonTabBar,
         IonTabButton,
         BLEScannerComponent,
-    },
-    data: () => ({}),
+    }
 })
 export default class BeaconsPage extends Vue {
     isLoading: boolean = true;

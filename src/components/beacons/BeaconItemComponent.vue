@@ -161,7 +161,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Ref } from 'vue-facing-decorator';
 import {
     IonItem,
     IonLabel,
@@ -186,10 +186,9 @@ import {
 } from '@openhps/rf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { formatDistanceStrict } from 'date-fns';
-import { Beacon } from '../../stores/beacon.scanning';
+import { Beacon } from '@/stores/beacon.scanning';
 import { Serializable, TimeService } from '@openhps/core';
 import { ref } from 'vue';
-import { Ref } from 'vue-property-decorator';
 import { SimulatedBeacon } from '@/stores/beacon.advertising';
 import { User } from '@openhps/rdf';
 import { trash } from 'ionicons/icons';
@@ -201,7 +200,7 @@ addIcons({
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
-@Options({
+@Component({
     components: {
         IonItem,
         IonLabel,

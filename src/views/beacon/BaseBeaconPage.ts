@@ -1,4 +1,4 @@
-import { Vue, Prop } from 'vue-property-decorator';
+import { Vue, Prop } from 'vue-facing-decorator';
 import { BLEBeaconObject, BLEUUID } from '@openhps/rf';
 import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
@@ -9,7 +9,7 @@ import { ref } from 'vue';
 import { TimeService } from '@openhps/core';
 
 // List of all companies and their Bluetooth Manufacturer ID
-const BLECompanies = require('../../models/BLECompanies.json'); // eslint-disable-line
+const BLECompanies = require('@/models/BLECompanies.json'); // eslint-disable-line
 
 export { BLECompanies };
 

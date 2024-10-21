@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref, Provide, Watch } from 'vue-property-decorator';
+import { Vue, Component, Ref, Provide, Watch } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -71,30 +71,30 @@ import {
     IonSegmentButton,
     IonSearchbar,
 } from '@ionic/vue';
-import { useBeaconStore } from '../stores/beacon.scanning';
+import { useBeaconStore } from '@/stores/beacon.scanning';
 import { computed } from 'vue';
 import { stop, play } from 'ionicons/icons';
-import MapComponent from '../components/map/MapComponent.vue';
+import MapComponent from '@/components/map/MapComponent.vue';
 import { useRoute } from 'vue-router';
 import { ControllerState } from '../stores/types';
-import { useGeolocationStore } from '../stores/geolocation';
-import LocationMarkerComponent from '../components/map/markers/LocationMarkerComponent.vue';
-import MapImageComponent from '../components/map/editor/MapImageComponent.vue';
-import LocationCenterComponent from '../components/map/controls/LocationCenterComponent.vue';
-import CreateBuildingModal from '../components/modals/CreateBuildingModal.vue';
-import { useSettings } from '../stores/settings';
+import { useGeolocationStore } from '@/stores/geolocation';
+import LocationMarkerComponent from '@/components/map/markers/LocationMarkerComponent.vue';
+import MapImageComponent from '@/components/map/editor/MapImageComponent.vue';
+import LocationCenterComponent from '@/components/map/controls/LocationCenterComponent.vue';
+import CreateBuildingModal from '@/components/modals/CreateBuildingModal.vue';
+import { useSettings } from '@/stores/settings';
 import { Building } from '@openhps/geospatial';
 import { Coordinate } from 'ol/coordinate';
-import { useEnvironmentStore } from '../stores/environment';
+import { useEnvironmentStore } from '@/stores/environment';
 import { Map as OlMap } from 'ol';
 import { fromLonLat } from 'ol/proj';
-import BuildingComponent from '../components/map/BuildingComponent.vue';
+import BuildingComponent from '@/components/map/BuildingComponent.vue';
 import { Absolute2DPosition, GCS, GeographicalPosition, Vector2 } from '@openhps/core';
-import ContextMenuComponent from '../components/map/controls/ContextMenuComponent.vue';
-import AddMapFabComponent from '../components/map/controls/AddMapFabComponent.vue';
-import LocationTargetComponent from '../components/map/controls/LocationTargetComponent.vue';
+import ContextMenuComponent from '@/components/map/controls/ContextMenuComponent.vue';
+import AddMapFabComponent from '@/components/map/controls/AddMapFabComponent.vue';
+import LocationTargetComponent from '@/components/map/controls/LocationTargetComponent.vue';
 
-@Options({
+@Component({
     components: {
         LocationTargetComponent,
         LocationMarkerComponent,
@@ -124,7 +124,7 @@ import LocationTargetComponent from '../components/map/controls/LocationTargetCo
         MapComponent,
         IonSearchbar,
     },
-    data: () => ({
+    provide: () => ({
         stop,
         play,
         ControllerState,
@@ -154,9 +154,7 @@ export default class MapEditorPage extends Vue {
     @Ref() mapRef?: { map: OlMap };
     @Ref() buildingRef: BuildingComponent[] = [];
     @Ref() locationCenterRef: LocationCenterComponent;
-    @Provide({
-        reactive: true,
-    })
+    @Provide()
     imageEditor: MapImageComponent;
 
     mounted() {

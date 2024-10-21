@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -104,8 +104,8 @@ import {
     actionSheetController,
     IonNote,
 } from '@ionic/vue';
-import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
+import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
+import { SimulatedBeacon, useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
 import {
     BLEAltBeacon,
     BLEAltBeaconBuilder,
@@ -124,9 +124,9 @@ import {
     SEMBEACON_FLAG_HAS_POSITION,
     SEMBEACON_FLAG_HAS_SYSTEM,
 } from '@sembeacon/openhps';
-import { useBeaconStore } from '../stores/beacon.scanning';
-import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
-import { ControllerState } from '../stores/types';
+import { useBeaconStore } from '@/stores/beacon.scanning';
+import PermissionErrorComponent from '@/components/PermissionErrorComponent.vue';
+import { ControllerState } from '@/stores/types';
 import { addOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
@@ -134,7 +134,7 @@ addIcons({
     addOutline,
 });
 
-@Options({
+@Component({
     components: {
         IonNote,
         PermissionErrorComponent,

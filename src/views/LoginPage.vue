@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -157,8 +157,8 @@ import {
     IonCol,
     toastController,
 } from '@ionic/vue';
-import { useUserStore } from '../stores/user';
-import AddListAttributeDirective from '../directives/AddListAttributeDirective';
+import { useUserStore } from '@/stores/user';
+import AddListAttributeDirective from '@/directives/AddListAttributeDirective';
 import { StatusBar, Animation } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 import { logInOutline, informationCircleOutline } from 'ionicons/icons';
@@ -169,7 +169,7 @@ addIcons({
     informationCircleOutline,
 });
 
-@Options({
+@Component({
     components: {
         IonAvatar,
         IonButtons,

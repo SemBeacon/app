@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -30,10 +30,10 @@ import {
     IonIcon,
     IonButton,
 } from '@ionic/vue';
-import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { useEnvironmentStore } from '../../../../@openhps/sembeacon/src/stores/environment';
+import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
+import { useEnvironmentStore } from '@/stores/environment';
 
-@Options({
+@Component({
     components: {
         IonButtons,
         IonContent,
@@ -50,8 +50,7 @@ import { useEnvironmentStore } from '../../../../@openhps/sembeacon/src/stores/e
         IonIcon,
         IonInput,
         IonButton,
-    },
-    data: () => ({}),
+    }
 })
 export default class EnvironmentsPage extends Vue {
     isLoading: boolean = true;

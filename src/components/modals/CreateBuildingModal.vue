@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Ref } from 'vue-property-decorator';
+import { Vue, Component, Ref } from 'vue-facing-decorator';
 import {
     IonModal,
     IonContent,
@@ -41,10 +41,10 @@ import {
     IonItem,
 } from '@ionic/vue';
 import { Map as OlMap } from 'ol';
-import { useSettings } from '../../stores/settings';
-import MapComponent from '../map/MapComponent.vue';
+import { useSettings } from '@/stores/settings';
+import MapComponent from '@/components/map/MapComponent.vue';
 
-@Options({
+@Component({
     components: {
         IonModal,
         IonContent,

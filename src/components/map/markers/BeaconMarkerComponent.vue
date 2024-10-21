@@ -43,11 +43,11 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop, Ref, Watch, Inject } from 'vue-property-decorator';
+import { Vue, Component, Prop, Ref, Watch, Inject } from 'vue-facing-decorator';
 import { BLEAltBeacon, BLEBeaconObject, BLEEddystone, BLEiBeacon } from '@openhps/rf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { isProxy, toRaw } from 'vue';
-import { Beacon, useBeaconStore } from '../../../stores/beacon.scanning';
+import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
 import { formatDistanceStrict } from 'date-fns';
 import type { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
@@ -59,7 +59,7 @@ import type { Feature } from 'ol';
 import type { Point } from 'ol/geom';
 import type { Map as OlMap } from 'ol';
 
-@Options({
+@Component({
     components: {},
 })
 export default class BeaconMarkerComponent extends Vue {

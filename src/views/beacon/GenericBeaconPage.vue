@@ -174,7 +174,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-facing-decorator';
 import {
     IonRow,
     IonCol,
@@ -192,7 +192,7 @@ import { Beacon } from '@/stores/beacon.scanning';
 import { BLEBeaconObject } from '@openhps/rf';
 import { SimulatedBeacon } from '@/stores/beacon.advertising';
 
-@Options({
+@Component({
     components: {
         IonRow,
         IonCol,

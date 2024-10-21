@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonItemGroup,
@@ -54,7 +54,7 @@ import {
     IonCol,
 } from '@ionic/vue';
 
-@Options({
+@Component({
     components: {
         IonButtons,
         IonContent,

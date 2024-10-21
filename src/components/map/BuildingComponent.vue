@@ -19,17 +19,17 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Inject, Prop, Ref } from 'vue-property-decorator';
+import { Vue, Component, Inject, Prop, Ref } from 'vue-facing-decorator';
 import type { Map } from 'ol';
 import { Building, Floor } from '@openhps/geospatial';
 import FloorSelectorComponent from './controls/FloorSelectorComponent.vue';
-import { useEnvironmentStore } from '../../stores/environment';
+import { useEnvironmentStore } from '@/stores/environment';
 import FloorComponent from './FloorComponent.vue';
 import { Coordinate } from 'ol/coordinate';
 import { GeographicalPosition } from '@openhps/core';
 import { toRaw } from 'vue';
 
-@Options({
+@Component({
     components: {
         FloorSelectorComponent,
         FloorComponent,

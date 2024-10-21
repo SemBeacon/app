@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Inject, Watch, Prop } from 'vue-property-decorator';
+import { Vue, Component, Inject, Watch, Prop } from 'vue-facing-decorator';
 import type { Map } from 'ol';
 import Bar from 'ol-ext/control/Bar';
 import Toggle from 'ol-ext/control/Toggle';
@@ -15,7 +15,7 @@ import { Floor } from '@openhps/geospatial';
 /**
  * Floor selector component
  */
-@Options({
+@Component({
     components: {},
 })
 export default class FloorSelectorComponent extends Vue {

@@ -131,7 +131,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -156,11 +156,11 @@ import {
     BLEEddystoneURL,
     BLEiBeacon,
 } from '@openhps/rf';
-import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
+import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { BLEUUID } from '@openhps/rf';
 import { maskito } from '@maskito/vue';
-import { SimulatedBeacon, useBeaconAdvertisingStore } from '../stores/beacon.advertising';
+import { SimulatedBeacon, useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
 import SemBeaconPage from './beacon/SemBeaconPage.vue';
 import GenericBeaconPage from './beacon/GenericBeaconPage.vue';
 import AltBeaconPage from './beacon/AltBeaconPage.vue';
@@ -189,7 +189,7 @@ addIcons({
     search,
 });
 
-@Options({
+@Component({
     components: {
         SemBeaconPage,
         GenericBeaconPage,

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -65,13 +65,13 @@ import {
     IonToggle,
     alertController,
 } from '@ionic/vue';
-import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { Beacon, useBeaconStore } from '../stores/beacon.scanning';
-import { useEnvironmentStore } from '../stores/environment';
+import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
+import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
+import { useEnvironmentStore } from '@/stores/environment';
 import { Capacitor } from '@capacitor/core';
 import { Toast } from '@capacitor/toast';
-import { ControllerState } from '../stores/types';
-import PermissionErrorComponent from '../components/PermissionErrorComponent.vue';
+import { ControllerState } from '@/stores/types';
+import PermissionErrorComponent from '@/components/PermissionErrorComponent.vue';
 import { BLEBeaconObject } from '@openhps/rf';
 import { stop, search } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -88,7 +88,7 @@ enum SortKey {
     DISTANCE,
 }
 
-@Options({
+@Component({
     components: {
         PermissionErrorComponent,
         IonButtons,

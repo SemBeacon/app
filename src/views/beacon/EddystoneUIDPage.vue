@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-facing-decorator';
 import { IonRow, IonCol, IonInput } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
 import { BLEEddystoneUID } from '@openhps/rf';
@@ -47,7 +47,7 @@ import { BaseBeaconPage } from './BaseBeaconPage';
 import { Beacon } from '@/stores/beacon.scanning';
 import GenericBeaconPage from './GenericBeaconPage.vue';
 
-@Options({
+@Component({
     components: {
         IonRow,
         IonCol,

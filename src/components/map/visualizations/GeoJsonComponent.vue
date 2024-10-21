@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop, Ref, Watch } from 'vue-property-decorator';
+import { Vue, Component, Prop, Ref, Watch } from 'vue-facing-decorator';
 import { Building, Corridor, Floor, Room, SymbolicSpace, Zone } from '@openhps/geospatial';
 import { GeographicalPosition } from '@openhps/core';
 import { isProxy, toRaw } from 'vue';
@@ -27,7 +27,7 @@ import type { Coordinate } from 'ol/coordinate';
 import { fromLonLat } from 'ol/proj';
 import type { Vector } from 'ol/layer';
 
-@Options({
+@Component({
     components: {},
 })
 export default class GeoJsonComponent extends Vue {

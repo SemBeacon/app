@@ -58,13 +58,13 @@
 
 <script lang="ts">
 import { Projection } from 'ol/proj';
-import { Vue, Options, Ref } from 'vue-property-decorator';
+import { Vue, Component, Ref } from 'vue-facing-decorator';
 import type { Map as OlMap } from 'ol';
-import type Button from 'ol-ext/control/Button';
-import type Toggle from 'ol-ext/control/Toggle';
-import type Bar from 'ol-ext/control/Bar';
+import Button from 'ol-ext/control/Button';
+import Toggle from 'ol-ext/control/Toggle';
+import Bar from 'ol-ext/control/Bar';
 import { Image } from 'ol/layer';
-import type GeoImage from 'ol-ext/source/GeoImage';
+import GeoImage from 'ol-ext/source/GeoImage';
 import type { Coordinate } from 'ol/coordinate';
 import type VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
@@ -82,7 +82,7 @@ enum ImageEditorState {
     POINT,
 }
 
-@Options({
+@Component({
     components: {},
 })
 export default class MapImageComponent extends Vue {

@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
     IonContent,
@@ -65,7 +65,7 @@ import {
 } from '@ionic/vue';
 import { useSettings } from '@/stores/settings';
 
-@Options({
+@Component({
     components: {
         IonButtons,
         IonContent,

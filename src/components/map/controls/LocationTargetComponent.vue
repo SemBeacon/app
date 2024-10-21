@@ -5,12 +5,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Inject } from 'vue-property-decorator';
+import { Vue, Component, Inject } from 'vue-facing-decorator';
 import type { Map } from 'ol';
 import Target from 'ol-ext/control/Target';
 import { Icon, Style } from 'ol/style';
 
-@Options({
+@Component({
     components: {},
 })
 export default class LocationTargetComponent extends Vue {

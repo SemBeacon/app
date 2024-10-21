@@ -42,16 +42,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import { GeographicalPosition } from '@openhps/core';
 import BeaconMarkerComponent from './BeaconMarkerComponent.vue';
 import { computed } from 'vue';
-import { useGeolocationStore } from '../../../stores/geolocation';
+import { useGeolocationStore } from '@/stores/geolocation';
 import { fromLonLat, transform } from 'ol/proj';
 import { circular } from 'ol/geom/Polygon.js';
 import type { Coordinate } from 'ol/coordinate';
 
-@Options({
+@Component({
     components: {
         BeaconMarkerComponent,
     },

@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component, Ref } from 'vue-facing-decorator';
 import {
     IonTabBar,
     IonTabButton,
@@ -75,11 +75,10 @@ import {
     IonSegmentButton,
     IonButton,
 } from '@ionic/vue';
-import BeaconItemComponent from '../components/beacons/BeaconItemComponent.vue';
-import { useBeaconAdvertisingStore } from '../stores/beacon.advertising';
+import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
+import { useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
 import { Capacitor } from '@capacitor/core';
-import BLESimulatorComponent from '../components/BLESimulatorComponent.vue';
-import { Ref } from 'vue-property-decorator';
+import BLESimulatorComponent from '@/components/BLESimulatorComponent.vue';
 import { addIcons } from 'ionicons';
 import { wifi, search } from 'ionicons/icons';
 
@@ -88,7 +87,7 @@ addIcons({
     search,
 });
 
-@Options({
+@Component({
     components: {
         BLESimulatorComponent,
         IonButtons,
@@ -112,8 +111,7 @@ addIcons({
         IonButton,
         IonTabBar,
         IonTabButton,
-    },
-    data: () => ({}),
+    }
 })
 export default class BeaconSimulatorPage extends Vue {
     isLoading: boolean = true;

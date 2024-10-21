@@ -85,7 +85,7 @@
 import '@openhps/rf';
 import '@openhps/geospatial';
 import 'reflect-metadata';
-import { Vue, Options } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonApp,
     IonContent,
@@ -100,23 +100,23 @@ import {
     IonRouterOutlet,
     IonSplitPane,
 } from '@ionic/vue';
-import { useBeaconStore } from './stores/beacon.scanning';
-import { useUserStore } from './stores/user';
-import { useLogger } from './stores/logger';
+import { useBeaconStore } from '@/stores/beacon.scanning';
+import { useUserStore } from '@/stores/user';
+import { useLogger } from '@/stores/logger';
 import { Animation, StatusBar } from '@capacitor/status-bar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
-import { useBeaconAdvertisingStore } from './stores/beacon.advertising';
-import { useGeolocationStore } from './stores/geolocation';
+import { useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
+import { useGeolocationStore } from '@/stores/geolocation';
 import { setDefaultOptions } from 'date-fns';
-import { ControllerState } from './stores/types';
+import { ControllerState } from '@/stores/types';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { useSettings } from './stores/settings';
+import { useSettings } from '@/stores/settings';
 import { loadWASM } from 'onigasm';
 import { addIcons } from 'ionicons';
 import { enUS } from 'date-fns/locale';
-import { formatDistance } from './utils/DateLocale';
+import { formatDistance } from '@/utils/DateLocale';
 
 import { map, bluetooth, help, wifiOutline, logOutOutline, logInOutline } from 'ionicons/icons';
 
@@ -129,7 +129,7 @@ addIcons({
     wifiOutline,
 });
 
-@Options({
+@Component({
     components: {
         IonApp,
         IonContent,

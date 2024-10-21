@@ -3,12 +3,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Inject } from 'vue-property-decorator';
+import { Vue, Component, Inject } from 'vue-facing-decorator';
 import type { Map } from 'ol';
 import type { Item } from 'ol-contextmenu/dist/types';
 import { cloudUploadOutline } from 'ionicons/icons';
 
-@Options({
+@Component({
     components: {},
 })
 export default class ContextMenuComponent extends Vue {

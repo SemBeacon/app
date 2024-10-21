@@ -36,3 +36,5 @@ npm-debug.log*
 
 legacy-report.html
 modern-report.html
+
+.pnpm-store

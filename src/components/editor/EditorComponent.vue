@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import { Options, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-facing-decorator';
 import loader from '@monaco-editor/loader';
 import { Registry } from 'monaco-textmate';
 import { wireTmGrammars } from 'monaco-editor-textmate';
@@ -12,7 +12,7 @@ import { editor } from 'monaco-editor';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
-@Options({
+@Component({
     components: {
         IonPage,
         IonHeader,

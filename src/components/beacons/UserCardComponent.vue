@@ -116,7 +116,7 @@
 
 
 <script lang="ts">
-import { Options, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-facing-decorator';
 import {
     IonRow,
     IonCol,
@@ -125,13 +125,13 @@ import {
     IonCardContent,
     IonChip,
     IonIcon,
+    IonGrid,
     IonCardHeader,
     IonCardTitle,
     IonAvatar,
     IonButton,
     IonFooter,
 } from '@ionic/vue';
-import GenericBeaconPage from './GenericBeaconPage.vue';
 import { User } from '@openhps/rdf';
 import { addCircleOutline, closeCircleOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -144,10 +144,11 @@ addIcons({
     closeCircleOutline,
 });
 
-@Options({
+@Component({
     components: {
         IonRow,
         IonCol,
+        IonGrid,
         IonInput,
         IonCard,
         IonCardContent,
@@ -158,7 +159,6 @@ addIcons({
         IonFooter,
         IonAvatar,
         IonButton,
-        GenericBeaconPage,
     },
 })
 export default class UserCardComponent extends BaseBeaconPage {

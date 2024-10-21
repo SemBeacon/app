@@ -14,10 +14,10 @@
 
 <script lang="ts">
 import { IonFab, IonFabButton, IonIcon } from '@ionic/vue';
-import { Vue, Options, Inject } from 'vue-property-decorator';
+import { Vue, Component, Inject } from 'vue-facing-decorator';
 import { GeographicalPosition } from '@openhps/core';
 import { computed } from 'vue';
-import { useGeolocationStore } from '../../../stores/geolocation';
+import { useGeolocationStore } from '@/stores/geolocation';
 import { fromLonLat } from 'ol/proj';
 import type { Map } from 'ol';
 import { Coordinate } from 'ol/coordinate';
@@ -29,7 +29,7 @@ addIcons({
     ellipseSharp,
 });
 
-@Options({
+@Component({
     components: {
         IonFab,
         IonFabButton,

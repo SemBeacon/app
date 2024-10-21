@@ -5,17 +5,17 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options, Prop, Inject, Watch } from 'vue-property-decorator';
-import { MapObject } from '../../../models/MapObject';
+import { Vue, Component, Prop, Inject, Watch } from 'vue-facing-decorator';
+import { MapObject } from '@/models/MapObject';
 import { fromLonLat } from 'ol/proj';
 import type { Coordinate } from 'ol/coordinate';
 import GeoImage from 'ol-ext/source/GeoImage';
 import GeoImageLayer from 'ol-ext/layer/GeoImage';
 import type { Map } from 'ol';
-import { HelmertTransformation } from '../../../utils/HelmertTransformation';
+import { HelmertTransformation } from '@/utils/HelmertTransformation';
 import { PolygonGeometry } from '@openhps/rdf/models';
 
-@Options({
+@Component({
     components: {},
 })
 export default class ImageOverlayComponent extends Vue {
