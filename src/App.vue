@@ -84,7 +84,6 @@
 <script lang="ts">
 import '@openhps/rf';
 import '@openhps/geospatial';
-import 'reflect-metadata';
 import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonApp,

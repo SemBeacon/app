@@ -1,17 +1,9 @@
-import { createApp } from 'vue';
+import 'reflect-metadata';
+import { createApp, defineAsyncComponent } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { createPinia } from 'pinia';
 import { IonicVue } from '@ionic/vue';
-import {
-    Map,
-    Layers,
-    Geometries,
-    Styles,
-    Interactions,
-    MapControls,
-    Sources,
-} from 'vue3-openlayers';
 import { BIconWifiOff } from 'bootstrap-icons-vue';
 
 /* Core CSS required for Ionic components to work properly */
@@ -36,24 +28,26 @@ import './theme/variables.css';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 const app = createApp(App).use(IonicVue).use(createPinia()).use(router);
+
 // Bootstrap icons
 app.component('BIconWifiOff', BIconWifiOff);
+
 // OpenLayers components
-app.component('OlMap', Map.OlMap);
-app.component('OlView', Map.OlView);
-app.component('OlSourceVector', Sources.OlSourceVector);
-app.component('OlVectorLayer', Layers.OlVectorLayer);
-app.component('OlFeature', Map.OlFeature);
-app.component('OlStyle', Styles.OlStyle);
-app.component('OlStyleIcon', Styles.OlStyleIcon);
-app.component('OlStyleFill', Styles.OlStyleFill);
-app.component('OlStyleStroke', Styles.OlStyleStroke);
-app.component('OlGeomPolygon', Geometries.OlGeomPolygon);
-app.component('OlGeomPoint', Geometries.OlGeomPoint);
-app.component('OlContextMenuControl', MapControls.OlContextMenuControl);
-app.component('OlDrawInteraction', Interactions.OlInteractionDraw);
-app.component('OlModifyInteraction', Interactions.OlInteractionModify);
-app.component('OlOverlay', Map.OlOverlay);
+app.component('OlMap', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Map.OlMap)));
+app.component('OlView', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Map.OlView)));
+app.component('OlSourceVector', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Sources.OlSourceVector)));
+app.component('OlVectorLayer', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Layers.OlVectorLayer)));
+app.component('OlFeature', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Map.OlFeature)));
+app.component('OlStyle', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Styles.OlStyle)));
+app.component('OlStyleIcon', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Styles.OlStyleIcon)));
+app.component('OlStyleFill', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Styles.OlStyleFill)));
+app.component('OlStyleStroke', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Styles.OlStyleStroke)));
+app.component('OlGeomPolygon', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Geometries.OlGeomPolygon)));
+app.component('OlGeomPoint', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Geometries.OlGeomPoint)));
+app.component('OlContextMenuControl', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.MapControls.OlContextMenuControl)));
+app.component('OlDrawInteraction', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Interactions.OlInteractionDraw)));
+app.component('OlModifyInteraction', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Interactions.OlInteractionModify)));
+app.component('OlOverlay', defineAsyncComponent(() => import('vue3-openlayers').then(m => m.Map.OlOverlay)));
 
 SplashScreen.hide().then(() => {
     SplashScreen.show();

@@ -3,9 +3,23 @@ import vue from '@vitejs/plugin-vue';
 import copy from 'rollup-plugin-copy';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import { resolve } from 'path';
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import swc from 'unplugin-swc';
 
 export default defineConfig({
+    optimizeDeps: {
+        esbuildOptions: {
+            plugins: [
+                NodeGlobalsPolyfillPlugin({
+                    process: true,
+                    buffer: true
+                }),
+                NodeModulesPolyfillPlugin(),
+            ]
+        }
+    },
     resolve: {
         alias: {
           '@': resolve(__dirname, './src'),
@@ -28,11 +42,13 @@ export default defineConfig({
         basicSsl({
             name: 'SemBeacon',
             domains: ['localhost:8085'],
-        })
+        }),
+        swc.vite()
     ],
     build: {
         rollupOptions: {
             external: [
+                'crypto',
                 'path',
                 '@openhps/core',
                 '@openhps/rf',
@@ -63,5 +79,5 @@ export default defineConfig({
         watch: {
             usePolling: true,
         }
-    },
+    }
 });

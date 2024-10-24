@@ -1,11 +1,11 @@
 {
     "name": "SemBeacon",
-    "dockerFile": "Dockerfile",
+    // "dockerFile": "Dockerfile",
+    "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:latest",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
             "version": "22"
         },
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
         "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1": {
             "platform": "34",
             "buildTools": "34.0.0",
@@ -31,12 +31,5 @@
             ]
         }
     },
-    "postCreateCommand": "pnpm install",
-    "remoteUser": "root",
-    "runArgs": [
-        "--privileged"
-    ],
-    "mounts": [
-        "source=/dev/bus/usb,target=/dev/bus/usb,type=bind"
-    ]
+    "postCreateCommand": "pnpm install"
 }

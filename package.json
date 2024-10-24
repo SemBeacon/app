@@ -75,6 +75,7 @@
     "cordova-plugin-bluetoothle": "https://github.com/SemBeacon/cordova-plugin-bluetoothle",
     "cordova-plugin-device": "^3.0.0",
     "cordova-plugin-ibeacon": "^3.8.1",
+    "cross-fetch": "^4.0.0",
     "date-fns": "4.1.0",
     "ionicons": "^7.4.0",
     "monaco-editor": "^0.52.0",
@@ -98,6 +99,8 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@eslint/compat": "^1.2.1",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.13.0",
@@ -134,6 +137,7 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.8.0",
     "typescript": "5",
+    "unplugin-swc": "^1.5.1",
     "vite": "^5.4.9",
     "vite-plugin-monaco-editor": "^1.1.0"
   }
