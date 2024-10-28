@@ -36,26 +36,12 @@
         </ion-header>
 
         <BLESimulatorComponent ref="simulatorComponent"></BLESimulatorComponent>
-
-        <ion-tab-bar slot="bottom" class="tab-selector">
-            <ion-tab-button tab="scanner" href="/beacon/scanner">
-                <ion-icon icon="search" />
-                <ion-label>Scanner</ion-label>
-            </ion-tab-button>
-
-            <ion-tab-button tab="simulator" href="/beacon/simulator">
-                <ion-icon icon="wifi" />
-                <ion-label>Simulator</ion-label>
-            </ion-tab-button>
-        </ion-tab-bar>
     </ion-page>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Ref } from 'vue-facing-decorator';
 import {
-    IonTabBar,
-    IonTabButton,
     IonButtons,
     IonContent,
     IonHeader,
@@ -109,8 +95,6 @@ addIcons({
         IonSegmentButton,
         IonInput,
         IonButton,
-        IonTabBar,
-        IonTabButton,
     }
 })
 export default class BeaconSimulatorPage extends Vue {
@@ -137,13 +121,5 @@ ion-header ion-toolbar:first-child {
     margin-top: 3em;
     padding-left: 1em;
     padding-right: 1em;
-}
-
-ion-tab-bar.tab-selector.md {
-    display: none;
-}
-
-ion-toolbar.tab-selector.ios {
-    display: none;
 }
 </style>

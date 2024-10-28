@@ -44,18 +44,6 @@
         </ion-header>
 
         <BLEScannerComponent ref="scannerComponent"></BLEScannerComponent>
-
-        <ion-tab-bar slot="bottom" class="tab-selector">
-            <ion-tab-button tab="scanner" href="/beacon/scanner">
-                <ion-icon icon="search" />
-                <ion-label>Scanner</ion-label>
-            </ion-tab-button>
-
-            <ion-tab-button tab="simulator" href="/beacon/simulator">
-                <ion-icon icon="wifi" />
-                <ion-label>Simulator</ion-label>
-            </ion-tab-button>
-        </ion-tab-bar>
     </ion-page>
 </template>
 
@@ -63,6 +51,8 @@
 import { Vue, Component, Ref } from 'vue-facing-decorator';
 import BLEScannerComponent from '@/components/BLEScannerComponent.vue';
 import {
+    IonTab,
+    IonTabs,
     IonTabBar,
     IonTabButton,
     IonButtons,
@@ -118,8 +108,6 @@ addIcons({
         IonSegmentButton,
         IonInput,
         IonButton,
-        IonTabBar,
-        IonTabButton,
         BLEScannerComponent,
     }
 })
@@ -147,13 +135,5 @@ ion-header ion-toolbar:first-child {
     margin-top: 3em;
     padding-left: 1em;
     padding-right: 1em;
-}
-
-ion-tab-bar.tab-selector.md {
-    display: none;
-}
-
-ion-toolbar.tab-selector.ios {
-    display: none;
 }
 </style>

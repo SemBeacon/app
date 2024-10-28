@@ -1,4 +1,4 @@
-import { Vue, Prop } from 'vue-facing-decorator';
+import { Vue, Prop, ComponentBase } from 'vue-facing-decorator';
 import { BLEBeaconObject, BLEUUID } from '@openhps/rf';
 import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from '@/stores/beacon.advertising';
@@ -7,12 +7,13 @@ import { useSettings } from '@/stores/settings';
 import { GeographicalPosition } from '@openhps/core';
 import { ref } from 'vue';
 import { TimeService } from '@openhps/core';
-
-// List of all companies and their Bluetooth Manufacturer ID
-const BLECompanies = require('@/models/BLECompanies.json'); // eslint-disable-line
+import BLECompanies from '@/models/BLECompanies.json';
 
 export { BLECompanies };
 
+@ComponentBase({
+    
+})
 export abstract class BaseBeaconPage extends Vue {
     // Data
     readonly BLEUUID: typeof BLEUUID = BLEUUID;

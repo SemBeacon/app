@@ -4,11 +4,10 @@
 
 <script lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import { Component, Prop, Vue, Watch } from 'vue-facing-decorator';
-import loader from '@monaco-editor/loader';
+import { Component, Prop, Vue, Watch, Vanilla } from 'vue-facing-decorator';
 import { Registry } from 'monaco-textmate';
 import { wireTmGrammars } from 'monaco-editor-textmate';
-import { editor } from 'monaco-editor';
+import { monaco } from './monaco';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -22,7 +21,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     },
 })
 export default class EditorComponent extends Vue {
-    editor: editor.IStandaloneCodeEditor;
+    @Vanilla() private editor: monaco.editor.IStandaloneCodeEditor;
     @Prop() code: string;
 
     @Watch('code')
@@ -32,41 +31,43 @@ export default class EditorComponent extends Vue {
         }
     }
 
-    mounted(): void {
-        loader
-            .init()
-            .then((monaco) => {
-                monaco.editor.setTheme(prefersDark.matches ? 'vs-dark' : 'vs');
-                const registry = new Registry({
-                    getGrammarDefinition: async () => {
-                        return {
-                            format: 'json',
-                            content: await (
-                                await fetch(`assets/grammars/turtle.tmLanguage.json`)
-                            ).text(),
-                        };
-                    },
-                });
-                const grammars = new Map();
-                grammars.set('turtle', 'source.ttl');
+    mounted(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            monaco.editor.setTheme(prefersDark.matches ? 'vs-dark' : 'vs');
 
-                monaco.languages.register({ id: 'turtle' });
-                this.editor = monaco.editor.create(
-                    document.getElementById('editor') as HTMLElement,
-                    {
-                        value: '',
-                        language: 'turtle',
-                        minimap: { enabled: false },
-                        automaticLayout: true,
-                    },
-                );
+            const registry = new Registry({
+                getGrammarDefinition: async () => {
+                    return {
+                        format: 'json',
+                        content: await (
+                            await fetch(`assets/grammars/turtle.tmLanguage.json`)
+                        ).text(),
+                    };
+                },
+            });
+            const grammars = new Map();
+            grammars.set('turtle', 'source.ttl');
 
-                if (this.code !== undefined) {
-                    this.editor.setValue(this.code);
-                }
-                return wireTmGrammars(monaco, registry, grammars, this.editor);
-            })
-            .catch(console.error);
+            monaco.languages.register({ id: 'turtle' });
+
+            this.editor = monaco.editor.create(
+                document.getElementById('editor') as HTMLElement,
+                {
+                    value: '',
+                    language: 'turtle',
+                    minimap: { enabled: false },
+                    automaticLayout: true,
+                },
+            );
+
+            if (this.code !== undefined) {
+                this.editor.setValue(this.code);
+            }
+
+            wireTmGrammars(monaco, registry, grammars, this.editor).then(() => {
+                resolve();
+            }).catch(reject);
+        });
     }
 
     get value(): string {

@@ -1,10 +1,6 @@
 [
     ".gitkeep",
-    "openhps-core.min.js",
-    "openhps-rdf.all.min.js",
-    "openhps-rf.min.js",
-    "openhps-geospatial.min.js",
-    "openhps-solid.min.js",
+    "openhps-solid.es.min.js",
     "sembeacon-openhps.min.js",
     "openhps-core.es.min.js",
     "openhps-rdf.all.es.min.js",

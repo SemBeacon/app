@@ -14,7 +14,7 @@ export default defineConfig({
             plugins: [
                 NodeGlobalsPolyfillPlugin({
                     process: true,
-                    buffer: true
+                    buffer: false,
                 }),
                 NodeModulesPolyfillPlugin(),
             ]
@@ -43,30 +43,27 @@ export default defineConfig({
             name: 'SemBeacon',
             domains: ['localhost:8085'],
         }),
-        swc.vite()
+        swc.vite(),
     ],
     build: {
         rollupOptions: {
+            output: {
+                paths: {
+                    '@openhps/core': '/js/vendor/openhps/openhps-core.es.min.js',
+                    '@openhps/rf': '/js/vendor/openhps/openhps-rf.es.min.js',
+                    '@openhps/geospatial': '/js/vendor/openhps/openhps-geospatial.es.min.js',
+                    '@openhps/rdf': '/js/vendor/openhps/openhps-rdf.all.es.min.js',
+                    '@sembeacon/openhps': '/js/vendor/openhps/sembeacon-openhps.es.min.js'
+                }
+            },
             external: [
                 'crypto',
-                'path',
                 '@openhps/core',
                 '@openhps/rf',
                 '@openhps/geospatial',
                 '@openhps/rdf',
-                '@sembeacon/openhps',
-                '@openhps/solid/browser'
+                '@sembeacon/openhps'
             ],
-            output: {
-                globals: {
-                    '@openhps/core': 'OpenHPS.core',
-                    '@openhps/rf': 'OpenHPS.rf',
-                    '@openhps/geospatial': 'OpenHPS.geospatial',
-                    '@openhps/rdf': 'OpenHPS.rdf',
-                    '@sembeacon/openhps': 'SemBeacon.openhps',
-                    '@openhps/solid/browser': 'OpenHPS.solid'
-                }
-            }
         },
         terserOptions: {
             keep_classnames: true,
