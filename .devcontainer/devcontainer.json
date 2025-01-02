@@ -1,10 +1,9 @@
 {
-    "name": "SemBeacon",
-    // "dockerFile": "Dockerfile",
-    "image": "mcr.microsoft.com/vscode/devcontainers/typescript-node:latest",
+    "name": "SemBeacon Application",
+    "dockerFile": "Dockerfile",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "22"
+            "version": "20"
         },
         "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1": {
             "platform": "34",
