@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "SemBeacon Application",
     "dockerFile": "Dockerfile",
@@ -31,4 +32,39 @@
         }
     },
     "postCreateCommand": "pnpm install"
+=======
+{
+    "name": "SemBeacon",
+    "dockerFile": "Dockerfile",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20"
+        },
+        "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1": {
+            "platform": "34",
+            "buildTools": "34.0.0",
+            "base_packages": []
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-vscode.vscode-typescript-next",
+                "msjsdiag.debugger-for-chrome",
+                "ionic.ionic",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "Ionic.ionic",
+                "Vue.volar",
+                "hollowtree.vue-snippets",
+                "johnpapa.vscode-peacock",
+                "PKief.material-icon-theme",
+                "github.vscode-github-actions"
+            ]
+        }
+    },
+    "postCreateCommand": "pnpm install -y"
+>>>>>>> refs/remotes/origin/main
 }
