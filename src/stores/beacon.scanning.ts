@@ -210,12 +210,12 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .calibratedRSSI(-56)
                     .build(),
                 BLESemBeaconBuilder.create()
-                    .resourceUri('https://solid.dyn.hofmannsnet.de/jan/profile/card#me')
+                    .resourceUri('https://schmid.solidcommunity.net/profile/card#me')
                     .instanceId(0x01)
                     .calibratedRSSI(-56)
                     .build(),
                 BLESemBeaconBuilder.create()
-                    .resourceUri('https://schmid.solidcommunity.net/profile/card#me')
+                    .resourceUri('https://solid.maximvdw.be/environments/experiments/fosdem2025.ttl#MyPhone')
                     .instanceId(0x01)
                     .calibratedRSSI(-56)
                     .build(),

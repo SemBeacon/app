@@ -205,7 +205,8 @@ export default class MapPage extends Vue {
     handleViewChange(event: any) {
         this.zoom = event.target.getZoom();
         const buildingDistances = this._buildingDistances();
-        this.buildingRef.forEach((component) => {
+        if (this.buildingRef) {
+            this.buildingRef.forEach((component) => {
             if (
                 component.building === buildingDistances[0].building &&
                 this.zoom > 16 &&
@@ -216,6 +217,7 @@ export default class MapPage extends Vue {
                 component.setFocus(false);
             }
         });
+        }
         this.following = false;
     }
 

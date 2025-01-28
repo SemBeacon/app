@@ -7,6 +7,7 @@ import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembeacon/openhps';
 import { SimulatedBeacon, useBeaconAdvertisingStore } from './beacon.advertising';
 import fetch from 'cross-fetch';
+import { Toast } from '@capacitor/toast';
 
 const CLIENT_NAME = 'SemBeacon Application';
 const CLIENT_ID = 'https://sembeacon.org/id.jsonld';
@@ -26,9 +27,14 @@ const service = new SolidClientService({
     restorePreviousSession: true,
     handleRedirect: (redirectUrl: string) => {
         // Use @capacitor/browser
+        Browser.addListener('browserFinished', () => {
+            console.log('Browser finished');
+            throw new Error('User cancelled login');
+        });
         Browser.open({
             url: redirectUrl,
             windowName: '_self',
+            presentationStyle: 'popover',
         });
     },
 });
@@ -110,6 +116,9 @@ export const useUserStore = defineStore('user', {
                     .logout(this.session)
                     .then(() => {
                         this.user = undefined;
+                        Toast.show({
+                            text: `Logged out from ${this.session.info.webId}`,
+                        });
                         resolve();
                     })
                     .catch(reject);

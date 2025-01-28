@@ -181,25 +181,48 @@
                     </ion-chip>
 
                     <ion-chip
-                        v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)"
+                        v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_OBSERVABLE)"
                         color="primary"
                         @click="
                             () => {
                                 if (!edit) return;
                                 beacon.flags =
-                                    beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY;
+                                    beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_OBSERVABLE;
                             }
                         "
                     >
-                        <ion-label>HAS_TELEMETRY</ion-label>
+                        <ion-label>HAS_OBSERVABLE_DATA</ion-label>
                         <ion-icon v-if="edit" icon="close-circle-outline"></ion-icon>
                     </ion-chip>
                     <ion-chip
                         v-else-if="edit"
                         color="success"
-                        @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_TELEMETRY)"
+                        @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_OBSERVABLE)"
                     >
-                        <ion-label>HAS_TELEMETRY</ion-label>
+                        <ion-label>HAS_OBSERVABLE_DATA</ion-label>
+                        <ion-icon icon="add-circle-outline"></ion-icon>
+                    </ion-chip>
+
+                    <ion-chip
+                        v-if="beacon.hasFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_ACTUATOR)"
+                        color="primary"
+                        @click="
+                            () => {
+                                if (!edit) return;
+                                beacon.flags =
+                                    beacon.flags ^ BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_ACTUATOR;
+                            }
+                        "
+                    >
+                        <ion-label>HAS_ACTUATOR</ion-label>
+                        <ion-icon v-if="edit" icon="close-circle-outline"></ion-icon>
+                    </ion-chip>
+                    <ion-chip
+                        v-else-if="edit"
+                        color="success"
+                        @click="beacon.setFlag(BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_ACTUATOR)"
+                    >
+                        <ion-label>HAS_ACTUATOR</ion-label>
                         <ion-icon icon="add-circle-outline"></ion-icon>
                     </ion-chip>
 

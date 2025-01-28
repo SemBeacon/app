@@ -78,6 +78,7 @@ export const useEnvironmentStore = defineStore('environments', {
                 driver
                     .queryBindings(query)
                     .then((bindings) => {
+                        console.log(bindings, query);
                         bindings.forEach((binding) => {
                             const spaceURI = (binding.get('space') as NamedNode).id as IriString;
                             const space: SymbolicSpace<any> = RDFSerializer.deserializeFromStore(

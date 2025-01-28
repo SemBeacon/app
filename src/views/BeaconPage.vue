@@ -239,6 +239,8 @@ export default class BeaconPage extends Vue {
     onUpdate(beacon: BLEBeaconObject & Partial<Beacon>): void {
         this.beacon = beacon;
         this.lastUpdate = Date.now();
+        // Save beacon
+        this.saveBeacon();
     }
 
     beforeMount(): void {
