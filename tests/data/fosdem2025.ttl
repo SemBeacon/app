@@ -1,0 +1,80 @@
+@prefix : <https://solid.maximvdw.be/environments/experiments/fosdem2025.ttl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix ssn: <http://www.w3.org/ns/ssn/>.
+@prefix sosa: <http://www.w3.org/ns/sosa/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+# Common vocabularies for describing indoor environments
+@prefix ogc: <http://www.opengis.net/ont/geosparql#>.
+@prefix seas: <https://w3id.org/seas/>.
+@prefix schema: <http://schema.org/>.
+# POSO Ontology
+@prefix poso: <http://purl.org/poso/>.
+@prefix posoc: <http://purl.org/poso/common/>.
+# Units and values
+@prefix qudt: <http://qudt.org/schema/qudt/>.
+@prefix unit: <http://qudt.org/vocab/unit/>.
+# SemBeacon beacon
+@prefix sembeacon: <http://purl.org/sembeacon/>.
+
+:MyPhone a sembeacon:SemBeacon;
+    rdfs:label "Maxim's Phone" ;
+    rdfs:seeAlso <https://solid.maximvdw.be/profile/card#me> ;
+    posoc:hasReferenceRSSI [ a poso:RelativeSignalStrength ;
+        poso:hasRSS [ a qudt:QuantityValue ;
+            qudt:unit unit:DeciB_M ;
+            qudt:numericValue -56
+        ];
+        poso:hasRelativeDistance [ a qudt:QuantityValue ;
+            qudt:unit unit:M ;
+            qudt:numericValue 1
+        ]
+    ];
+    ogc:sfWithin :AW;
+    sembeacon:namespace :AW ;
+    sembeacon:instanceId "04cc38e7"^^xsd:hexBinary .
+
+:AW a ogc:SpatialObject, ssn:Deployment, seas:Building ;
+    ogc:hasGeometry [ a ogc:Geometry ;
+        ogc:asWKT "POLYGON ((4.380417104254519 50.81225044161161, 4.38062325666894 50.811983200662894, 4.38109773444711 50.81212690101478, 4.380895672358832 50.81239310733352, 4.380417104254519 50.81225044161161))"^^ogc:wktLiteral ;
+        ogc:coordinateDimension 3 ;
+        ogc:spatialDimension 3 ;
+        ogc:dimension 3
+    ];
+    rdfs:label "AW" ;
+    sembeacon:namespaceId "a6b115c4249640579c39095ba08369fd"^^xsd:hexBinary .
+
+:AW_1 a ogc:SpatialObject, ssn:Deployment, schema:Accommodation, seas:Floor ;
+  ogc:sfWithin :AW ;
+  schema:hasMap [ a schema:Map ;
+    schema:mapType "floorPlan" ;
+    schema:image "https://fosdem.org/2025/assets/campusmap-6166e45e7e736823c218c45ac65e02f5f7237111253db302da17bbaa0f4b5683.png" ; 
+    schema:spatialCoverage [ a schema:Place ;
+      ogc:hasGeometry [ a ogc:Geometry ;
+        ogc:asWKT "POLYGON ((4.376356 50.814728, 4.380767 50.809375, 4.387261 50.811175, 4.382692 50.816981))"^^ogc:wktLiteral ;
+        ogc:coordinateDimension 3 ;
+        ogc:spatialDimension 3 ;
+        ogc:dimension 3 ;
+      ];
+    ]
+  ] ;
+  schema:floorLevel "3";
+  ogc:hasGeometry [ a ogc:Geometry ;
+    ogc:asWKT "POLYGON ((4.380417104254519 50.81225044161161, 4.38062325666894 50.811983200662894, 4.38109773444711 50.81212690101478, 4.380895672358832 50.81239310733352, 4.380417104254519 50.81225044161161))"^^ogc:wktLiteral ;
+    ogc:coordinateDimension 3 ;
+    ogc:spatialDimension 3 ;
+    ogc:dimension 3
+  ] ;
+  rdfs:label "AW1" .
+
+:AW_2 a ogc:SpatialObject, ssn:Deployment, schema:Accommodation, seas:Floor ;
+  ogc:sfWithin :AW ;
+  schema:floorLevel "3" ;
+  ogc:hasGeometry [ a ogc:Geometry ;
+    ogc:asWKT "POLYGON ((4.380417104254519 50.81225044161161, 4.38062325666894 50.811983200662894, 4.38109773444711 50.81212690101478, 4.380895672358832 50.81239310733352, 4.380417104254519 50.81225044161161))"^^ogc:wktLiteral ;
+    ogc:coordinateDimension 3 ;
+    ogc:spatialDimension 3 ;
+    ogc:dimension 3
+  ] ;
+  rdfs:label "AW2" .

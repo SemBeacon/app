@@ -396,6 +396,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .to(
                         new CallbackSinkNode(
                             (frame: DataFrame) => {
+
                                 // Add beacons
                                 frame.getObjects().forEach((beacon: BLEBeaconObject) => {
                                     if (beacon instanceof BLEBeaconObject) {

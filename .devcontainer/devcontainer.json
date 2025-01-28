@@ -16,6 +16,11 @@
             "base_packages": []
         }
     },
+    "containerEnv": {
+        "SIGNING_STORE_PASSWORD": "${localEnv:SIGNING_STORE_PASSWORD}",
+        "SIGNING_KEY_PASSWORD": "${localEnv:SIGNING_KEY_PASSWORD}",
+        "SIGNING_KEY_ALIAS": "${localEnv:SIGNING_KEY_ALIAS}"
+    },
     "forwardPorts": [
         8085
     ],
@@ -34,7 +39,9 @@
                 "hollowtree.vue-snippets",
                 "johnpapa.vscode-peacock",
                 "PKief.material-icon-theme",
-                "github.vscode-github-actions"
+                "github.vscode-github-actions",
+                "ms-azuretools.vscode-docker",
+                "donjayamanne.git-extension-pack"
             ]
         }
     },

@@ -38,3 +38,6 @@ legacy-report.html
 modern-report.html
 
 .pnpm-store
+.env
+
+android/keystore

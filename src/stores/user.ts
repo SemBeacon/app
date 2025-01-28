@@ -25,11 +25,11 @@ const service = new SolidClientService({
     }),
     redirectUrl,
     restorePreviousSession: true,
-    handleRedirect: (redirectUrl: string) => {
+    handleRedirect: (redirectUrl: string, callback: (error?: Error) => void) => {
         // Use @capacitor/browser
         Browser.addListener('browserFinished', () => {
             console.log('Browser finished');
-            throw new Error('User cancelled login');
+            callback(new Error('User cancelled login'));
         });
         Browser.open({
             url: redirectUrl,

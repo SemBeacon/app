@@ -198,6 +198,8 @@ export default class LoginPage extends Vue {
         'https://solidweb.org/',
         'https://login.inrupt.com/',
         'https://solidcommunity.net/',
+        'https://datapod.igrant.io/',
+        'https://solid.redpencil.io/'
     ];
     remember: boolean = true;
     loading: boolean = false;
@@ -247,7 +249,7 @@ export default class LoginPage extends Vue {
         this.loading = true;
         toastController
             .create({
-                message: `Logging in with ${this.selectedIssuer}`,
+                message: `Logging in with ${this.selectedIssuer ?? 'default provider'}`,
                 duration: 5000,
                 color: 'light',
             })
