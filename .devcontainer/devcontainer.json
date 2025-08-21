@@ -3,23 +3,26 @@
     "dockerFile": "Dockerfile",
     "runArgs": [
         "--privileged",
-        "--device=/dev/bus/usb",
-        "--network=host"
+        "--device=/dev/bus/usb:/dev/bus/usb"
     ],
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "20"
+            "version": "22"
         },
-        "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1": {
-            "platform": "34",
-            "buildTools": "34.0.0",
+        "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1.2.0": {
+            "platform": "35",
+            "build_tools": "35.0.0",
             "base_packages": []
+        },
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "21"
         }
     },
     "containerEnv": {
         "SIGNING_STORE_PASSWORD": "${localEnv:SIGNING_STORE_PASSWORD}",
         "SIGNING_KEY_PASSWORD": "${localEnv:SIGNING_KEY_PASSWORD}",
-        "SIGNING_KEY_ALIAS": "${localEnv:SIGNING_KEY_ALIAS}"
+        "SIGNING_KEY_ALIAS": "${localEnv:SIGNING_KEY_ALIAS}",
+        "ANDROID_ADB_SERVER_ADDRESS": "host.docker.internal"
     },
     "forwardPorts": [
         8085
@@ -45,5 +48,5 @@
             ]
         }
     },
-    "postCreateCommand": "pnpm install -y"
+    "postCreateCommand": "pnpm install"
 }

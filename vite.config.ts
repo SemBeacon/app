@@ -58,6 +58,7 @@ export default defineConfig({
             },
             external: [
                 'crypto',
+                'path',
                 '@openhps/core',
                 '@openhps/rf',
                 '@openhps/geospatial',

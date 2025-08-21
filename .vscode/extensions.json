@@ -1,6 +1,6 @@
 {
-    "recommendations": [
-        "ionic.ionic",
-        "vue.volar"
-    ]
+  "recommendations": [
+    "vue.volar",
+    "Webnative.webnative"
+  ]
 }

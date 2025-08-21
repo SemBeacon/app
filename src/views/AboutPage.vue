@@ -34,9 +34,11 @@
                         </picture>
                     </ion-label>
                     <ion-label class="ion-text-wrap">
-                        The application was developed by PhD candidate Maxim Van de Wynckel of the
+                        The application was developed by Dr. Maxim Van de Wynckel of the
                         Web & Information Systems Engineering lab at the Vrije Universiteit Brussel
                         under the supervision of Prof. Dr. Beat Signer.
+
+                        It is currently being maintained by MVdW-Software.
                     </ion-label>
                 </ion-content>
             </div>
