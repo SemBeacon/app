@@ -1,82 +1,116 @@
 PODS:
-  - Capacitor (5.5.0):
+  - Capacitor (7.4.3):
     - CapacitorCordova
-  - CapacitorApp (5.0.6):
+  - CapacitorApp (7.0.2):
     - Capacitor
-  - CapacitorBrowser (5.1.0):
+  - CapacitorBrowser (7.0.2):
     - Capacitor
-  - CapacitorCommunityBluetoothLe (3.0.2):
+  - CapacitorCommunityBluetoothLe (7.1.1):
     - Capacitor
-  - CapacitorCordova (5.5.0)
-  - CapacitorDevice (5.0.6):
+  - CapacitorCordova (7.4.3)
+  - CapacitorDevice (7.0.2):
     - Capacitor
-  - CapacitorFilesystem (5.1.4):
+  - CapacitorFilesystem (7.1.4):
     - Capacitor
-  - CapacitorGeolocation (5.0.6):
+    - IONFilesystemLib (~> 1.0.1)
+  - CapacitorGeolocation (7.1.5):
     - Capacitor
-  - CapacitorLocalNotifications (5.0.6):
+    - IONGeolocationLib (= 1.0.1)
+  - CapacitorLocalNotifications (7.0.2):
     - Capacitor
-  - CapacitorStatusBar (5.0.6):
+  - CapacitorNativeSettings (7.0.2):
     - Capacitor
-  - CapacitorToast (5.0.6):
+  - CapacitorPreferences (7.0.2):
     - Capacitor
-  - CordovaPlugins (5.5.0):
+  - CapacitorSplashScreen (7.0.2):
+    - Capacitor
+  - CapacitorStatusBar (7.0.2):
+    - Capacitor
+  - CapacitorToast (7.0.2):
+    - Capacitor
+  - CordovaPlugins (7.4.3):
     - CapacitorCordova
+  - CordovaPluginsResources (0.0.105)
+  - IONFilesystemLib (1.0.1)
+  - IONGeolocationLib (1.0.1)
 
 DEPENDENCIES:
-  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
-  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
-  - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
-  - "CapacitorCommunityBluetoothLe (from `../../node_modules/@capacitor-community/bluetooth-le`)"
-  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
-  - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
-  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
-  - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
-  - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
-  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
-  - "CapacitorToast (from `../../node_modules/@capacitor/toast`)"
+  - "Capacitor (from `../../node_modules/.pnpm/@capacitor+ios@7.4.3_@capacitor+core@7.4.3/node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/.pnpm/@capacitor+app@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/app`)"
+  - "CapacitorBrowser (from `../../node_modules/.pnpm/@capacitor+browser@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/browser`)"
+  - "CapacitorCommunityBluetoothLe (from `../../node_modules/.pnpm/@capacitor-community+bluetooth-le@7.1.1_@capacitor+core@7.4.3/node_modules/@capacitor-community/bluetooth-le`)"
+  - "CapacitorCordova (from `../../node_modules/.pnpm/@capacitor+ios@7.4.3_@capacitor+core@7.4.3/node_modules/@capacitor/ios`)"
+  - "CapacitorDevice (from `../../node_modules/.pnpm/@capacitor+device@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/device`)"
+  - "CapacitorFilesystem (from `../../node_modules/.pnpm/@capacitor+filesystem@7.1.4_@capacitor+core@7.4.3/node_modules/@capacitor/filesystem`)"
+  - "CapacitorGeolocation (from `../../node_modules/.pnpm/@capacitor+geolocation@7.1.5_@capacitor+core@7.4.3/node_modules/@capacitor/geolocation`)"
+  - "CapacitorLocalNotifications (from `../../node_modules/.pnpm/@capacitor+local-notifications@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/local-notifications`)"
+  - "CapacitorNativeSettings (from `../../node_modules/.pnpm/capacitor-native-settings@7.0.2_@capacitor+core@7.4.3/node_modules/capacitor-native-settings`)"
+  - "CapacitorPreferences (from `../../node_modules/.pnpm/@capacitor+preferences@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/preferences`)"
+  - "CapacitorSplashScreen (from `../../node_modules/.pnpm/@capacitor+splash-screen@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/splash-screen`)"
+  - "CapacitorStatusBar (from `../../node_modules/.pnpm/@capacitor+status-bar@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/status-bar`)"
+  - "CapacitorToast (from `../../node_modules/.pnpm/@capacitor+toast@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/toast`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+  - CordovaPluginsResources (from `../capacitor-cordova-ios-plugins`)
+
+SPEC REPOS:
+  trunk:
+    - IONFilesystemLib
+    - IONGeolocationLib
 
 EXTERNAL SOURCES:
   Capacitor:
-    :path: "../../node_modules/@capacitor/ios"
+    :path: "../../node_modules/.pnpm/@capacitor+ios@7.4.3_@capacitor+core@7.4.3/node_modules/@capacitor/ios"
   CapacitorApp:
-    :path: "../../node_modules/@capacitor/app"
+    :path: "../../node_modules/.pnpm/@capacitor+app@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/app"
   CapacitorBrowser:
-    :path: "../../node_modules/@capacitor/browser"
+    :path: "../../node_modules/.pnpm/@capacitor+browser@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/browser"
   CapacitorCommunityBluetoothLe:
-    :path: "../../node_modules/@capacitor-community/bluetooth-le"
+    :path: "../../node_modules/.pnpm/@capacitor-community+bluetooth-le@7.1.1_@capacitor+core@7.4.3/node_modules/@capacitor-community/bluetooth-le"
   CapacitorCordova:
-    :path: "../../node_modules/@capacitor/ios"
+    :path: "../../node_modules/.pnpm/@capacitor+ios@7.4.3_@capacitor+core@7.4.3/node_modules/@capacitor/ios"
   CapacitorDevice:
-    :path: "../../node_modules/@capacitor/device"
+    :path: "../../node_modules/.pnpm/@capacitor+device@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/device"
   CapacitorFilesystem:
-    :path: "../../node_modules/@capacitor/filesystem"
+    :path: "../../node_modules/.pnpm/@capacitor+filesystem@7.1.4_@capacitor+core@7.4.3/node_modules/@capacitor/filesystem"
   CapacitorGeolocation:
-    :path: "../../node_modules/@capacitor/geolocation"
+    :path: "../../node_modules/.pnpm/@capacitor+geolocation@7.1.5_@capacitor+core@7.4.3/node_modules/@capacitor/geolocation"
   CapacitorLocalNotifications:
-    :path: "../../node_modules/@capacitor/local-notifications"
+    :path: "../../node_modules/.pnpm/@capacitor+local-notifications@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/local-notifications"
+  CapacitorNativeSettings:
+    :path: "../../node_modules/.pnpm/capacitor-native-settings@7.0.2_@capacitor+core@7.4.3/node_modules/capacitor-native-settings"
+  CapacitorPreferences:
+    :path: "../../node_modules/.pnpm/@capacitor+preferences@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/preferences"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/.pnpm/@capacitor+splash-screen@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
-    :path: "../../node_modules/@capacitor/status-bar"
+    :path: "../../node_modules/.pnpm/@capacitor+status-bar@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/status-bar"
   CapacitorToast:
-    :path: "../../node_modules/@capacitor/toast"
+    :path: "../../node_modules/.pnpm/@capacitor+toast@7.0.2_@capacitor+core@7.4.3/node_modules/@capacitor/toast"
   CordovaPlugins:
+    :path: "../capacitor-cordova-ios-plugins"
+  CordovaPluginsResources:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: 57890b363df14d5d2d5d8461aa23e886cb34da2a
-  CapacitorApp: 024e1b1bea5f883d79f6330d309bc441c88ad04a
-  CapacitorBrowser: 7a0fb6a1011abfaaf2dfedfd8248f942a8eda3d6
-  CapacitorCommunityBluetoothLe: 83b0de348b2ec461e0f9fa0e48c9e79c8378ddb0
-  CapacitorCordova: 3d3908a3d208a11a75f9df3b18c4405c4de76e1d
-  CapacitorDevice: 2c968f98a1ec4d22357418c1521e7ddc46c675e6
-  CapacitorFilesystem: af704badfbc69f6f8623d9ed313e5490e3723dcb
-  CapacitorGeolocation: 7be5f77abc205c0efe319fff8587a7183e7b0240
-  CapacitorLocalNotifications: c2d8b14794064fd4814b1d6c4ddbac8029afa295
-  CapacitorStatusBar: 565c0a1ebd79bb40d797606a8992b4a105885309
-  CapacitorToast: bb0d79b78d9c27c0199b57f735dd50b8fc363489
-  CordovaPlugins: 03cbd376b4d781ad833d0080379d85c15e139620
+  Capacitor: b4741ca7affb32c1b70debd03df92cbf522d8a80
+  CapacitorApp: efc1e9748a8ea5d3e789cd82a4f451341cc7ac93
+  CapacitorBrowser: 45c681e7abc3b4384e54eb52bafeef1347d98fa8
+  CapacitorCommunityBluetoothLe: 72131129102a589c8cebe04e2a8f28d4e328e78c
+  CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
+  CapacitorDevice: a50a45f0d075e55e2392c7a4be5404d4f69515de
+  CapacitorFilesystem: ac0a386949ed6c295a3dffa129ecd26b881ae5be
+  CapacitorGeolocation: b96474c3259dd4a294227ea8ec19140b1837cceb
+  CapacitorLocalNotifications: 0964df8c14ec51aadf2bb4fd6d55fdb1ccfd6721
+  CapacitorNativeSettings: f5511eb94cb5700ac4edf54f992d2c0dda1857d6
+  CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
+  CapacitorSplashScreen: 8d6c8cb0542a8e81585c593815db8785ed8ce454
+  CapacitorStatusBar: 5526833b87fa9c96a2a90c1322bb1f663c04505f
+  CapacitorToast: e32c2b61a70d6fbd0633309c0807b4b9811768b4
+  CordovaPlugins: fd0e1ef061a616d065be64668e2308138fe313fd
+  CordovaPluginsResources: da93847212bf7b16ba770e4d6c3e7dba820174c7
+  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
+  IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
 
-PODFILE CHECKSUM: 12123badd53a63b4eab8d1707fb50d00a27e50cc
+PODFILE CHECKSUM: 22e02e8cfa60c8418a02dc823a19eed14cc641c4
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.16.2

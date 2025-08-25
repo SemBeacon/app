@@ -1,6 +1,6 @@
 <template>
     <ion-page>
-        <ion-header :translucent="true">
+        <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
                     <ion-back-button></ion-back-button>
@@ -38,7 +38,7 @@
                             fill="outline"
                             helper-text="A Solid ID provider is a service that provides you with a Solid Pod."
                             @keyup.enter="login()"
-                            @ionChange="selectedIssuer = $event.detail.value"
+                            @change="onIssuerChange"
                         >
                         </ion-input>
 
@@ -49,35 +49,6 @@
                         </datalist>
                     </ion-col>
                 </ion-row>
-
-                <!-- <ion-row responsive-sm>
-                    <ion-col>
-                        <ion-checkbox 
-                            :disabled="loading"
-                            v-model="remember" label-placement="end"
-                            >Remember me</ion-checkbox
-                        >
-                    </ion-col>
-                </ion-row>
-
-                <ion-row responsive-sm>
-                    <ion-col>
-                        <ion-card color="secondary" class="info-card">
-                            <ion-card-content>
-                                <ion-row>
-                                    <ion-col size="auto">
-                                        <ion-icon name="information-circle-outline"></ion-icon>
-                                    </ion-col>
-                                    <ion-col>
-                                        If this box is checked, SemBeacon will request a refresh
-                                        token and use it to automatically refresh your access token
-                                        when it expires.
-                                    </ion-col>
-                                </ion-row>
-                            </ion-card-content>
-                        </ion-card>
-                    </ion-col>
-                </ion-row> -->
 
                 <ion-row responsive-sm>
                     <ion-col>
@@ -204,9 +175,12 @@ export default class LoginPage extends Vue {
     remember: boolean = true;
     loading: boolean = false;
 
+    onIssuerChange(event: CustomEvent) {
+        this.selectedIssuer = (event.target as HTMLInputElement).value;
+    }
+
     async created() {
-        this.userStore.on('error', (error: string) => {
-            console.error('Error', error);
+        this.userStore.on('error', (error) => {
             toastController
                 .create({
                     message: error,
@@ -247,6 +221,7 @@ export default class LoginPage extends Vue {
 
     login(): void {
         this.loading = true;
+        console.log(`Logging in with ${this.selectedIssuer ?? 'default provider'}`);
         toastController
             .create({
                 message: `Logging in with ${this.selectedIssuer ?? 'default provider'}`,

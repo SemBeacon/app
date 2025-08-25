@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@awesome-cordova-plugins/bluetooth-le':
+        specifier: ^8.1.0
+        version: 8.1.0(@awesome-cordova-plugins/core@8.1.0(rxjs@7.8.1))(rxjs@7.8.1)
       '@awesome-cordova-plugins/core':
         specifier: ^8.1.0
         version: 8.1.0(rxjs@7.8.1)
@@ -74,6 +77,9 @@ importers:
       '@capawesome-team/capacitor-android-foreground-service':
         specifier: ^7.0.1
         version: 7.0.1(@capacitor/core@7.4.3)
+      '@capawesome/capacitor-android-edge-to-edge-support':
+        specifier: ^7.2.3
+        version: 7.2.3(@capacitor/core@7.4.3)
       '@ionic/core':
         specifier: ^8.7.3
         version: 8.7.3
@@ -351,6 +357,12 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
+
+  '@awesome-cordova-plugins/bluetooth-le@8.1.0':
+    resolution: {integrity: sha512-GemrOVxAxZcBSmk9b27A3xTX8+2bqCAdXIUYcnDOpd74W+cj2oaccpMVnaF9OljbM3Fq+IbK5ujq13wU5/hPWw==}
+    peerDependencies:
+      '@awesome-cordova-plugins/core': ^8.0.2
+      rxjs: ^5.5.0 || ^6.5.0 || ^7.3.0
 
   '@awesome-cordova-plugins/core@8.1.0':
     resolution: {integrity: sha512-7NkUC2FcXSlIuIH2xc1miIdN8/by2uewrIg5JBWauN1KCzCXLhCwZ39C8nBsWxCloAxCvec+MMU5SzJGGWfjTg==}
@@ -1149,6 +1161,11 @@ packages:
 
   '@capawesome-team/capacitor-android-foreground-service@7.0.1':
     resolution: {integrity: sha512-JjeINYZ5SL81TV1D2WYIE2fmd1MlxHbIzB2gsNKINt9Ge3gkbdh7P/Urb3gSPPz4UWJoUFiCLFaHBRJvu+EP6Q==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
+  '@capawesome/capacitor-android-edge-to-edge-support@7.2.3':
+    resolution: {integrity: sha512-WtwXeU5Clg13t3SO6JvtIfJlpO+E48tHC+vNmC519zcS6GV9URl705UOvwOOvEyh6GFxAi2dHi8lj8iqIOYCdA==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -9429,6 +9446,12 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
 
+  '@awesome-cordova-plugins/bluetooth-le@8.1.0(@awesome-cordova-plugins/core@8.1.0(rxjs@7.8.1))(rxjs@7.8.1)':
+    dependencies:
+      '@awesome-cordova-plugins/core': 8.1.0(rxjs@7.8.1)
+      '@types/cordova': 11.0.3
+      rxjs: 7.8.1
+
   '@awesome-cordova-plugins/core@8.1.0(rxjs@7.8.1)':
     dependencies:
       '@types/cordova': 11.0.3
@@ -10498,6 +10521,10 @@ snapshots:
       '@capacitor/core': 7.4.3
 
   '@capawesome-team/capacitor-android-foreground-service@7.0.1(@capacitor/core@7.4.3)':
+    dependencies:
+      '@capacitor/core': 7.4.3
+
+  '@capawesome/capacitor-android-edge-to-edge-support@7.2.3(@capacitor/core@7.4.3)':
     dependencies:
       '@capacitor/core': 7.4.3
 

@@ -144,7 +144,7 @@
                     :disabled="sliding"
                     aria-label="Toggle advertising of the beacon"
                     :checked="beacon.advertising"
-                    @ionChange="(e) => $emit('simulateToggle', beacon, e.target.checked)"
+                    @ionInput="(e) => $emit('simulateToggle', beacon, e.target.checked)"
                 ></ion-toggle>
             </ion-label>
             <ion-label v-else slot="end">

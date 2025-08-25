@@ -28,6 +28,7 @@
     "update:dependencies": "ncu -u"
   },
   "dependencies": {
+    "@awesome-cordova-plugins/bluetooth-le": "^8.1.0",
     "@awesome-cordova-plugins/core": "^8.1.0",
     "@awesome-cordova-plugins/ibeacon": "^8.1.0",
     "@capacitor-community/bluetooth-le": "^7.1.1",
@@ -50,6 +51,7 @@
     "@capacitor/status-bar": "^7.0.2",
     "@capacitor/toast": "^7.0.2",
     "@capawesome-team/capacitor-android-foreground-service": "^7.0.1",
+    "@capawesome/capacitor-android-edge-to-edge-support": "^7.2.3",
     "@ionic/core": "^8.7.3",
     "@ionic/vue": "^8.7.3",
     "@ionic/vue-router": "^8.7.3",

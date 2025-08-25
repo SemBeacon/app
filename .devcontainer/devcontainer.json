@@ -9,13 +9,13 @@
         "ghcr.io/devcontainers/features/node:1": {
             "version": "22"
         },
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "21"
+        },
         "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1.2.0": {
             "platform": "35",
             "build_tools": "35.0.0",
             "base_packages": []
-        },
-        "ghcr.io/devcontainers/features/java:1": {
-            "version": "21"
         }
     },
     "containerEnv": {

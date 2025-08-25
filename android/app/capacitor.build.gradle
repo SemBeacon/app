@@ -22,6 +22,7 @@ dependencies {
     implementation project(':capacitor-browser')
     implementation project(':capacitor-app')
     implementation project(':capacitor-community-bluetooth-le')
+    implementation project(':capawesome-capacitor-android-edge-to-edge-support')
 
 }
 
