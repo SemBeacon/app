@@ -43,6 +43,15 @@ import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 import { Floor } from '@openhps/geospatial';
 import { IriString } from '@openhps/rdf';
 
+// A list of common iBeacon UUIDS
+const COMMON_UUIDS = [
+    '53b71dca-eb49-4ba6-a697-59f3acd184b1',
+    '77f340db-ac0d-20e8-aa3a-f656a29f236c', // Demo
+    'f7826da6-4fa2-4e98-8024-bc5b71e0893e', // Kontakt.io
+    'b9407f30-f5f8-466e-aff9-25556b57fe6d', // Estimote
+    '2f234454-cf6d-4a0f-adf2-f4911ba9ffa6', // Radius Networks
+];
+
 export interface BeaconScan {
     results: number;
 }
@@ -101,13 +110,16 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 uid: 'ble',
                 processRaw: false,
                 scanMode: ScanMode.SCAN_MODE_BALANCED,
+                uuids: Capacitor.getPlatform() === 'ios' ? [
+                    '0000feaa-0000-1000-8000-00805f9b34fb', // Eddystone (UID, URL, TLM, EID)
+                ] : undefined,
             }),
             ...(Capacitor.getPlatform() === 'ios'
                 ? [
                       new BLEiBeaconSourceNode({
                           uid: 'ble-ibeacon',
                           debug: true,
-                          uuids: ['53b71dca-eb49-4ba6-a697-59f3acd184b1'],
+                          uuids: COMMON_UUIDS,
                       }),
                   ]
                 : []),

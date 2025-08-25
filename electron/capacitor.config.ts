@@ -26,7 +26,8 @@ const config: CapacitorConfig & CapacitorElectronConfig = {
       '@capacitor/browser',
       '@capacitor/app',
       '@capacitor-community/bluetooth-le',
-      'cordova-plugin-bluetoothle'
+      'cordova-plugin-bluetoothle',
+      '@capawesome/capacitor-android-edge-to-edge-support'
     ]
   },
   ios: {
@@ -62,6 +63,12 @@ const config: CapacitorConfig & CapacitorElectronConfig = {
     LocalNotifications: {
       smallIcon: "ic_stat_icon",
       iconColor: "#488AFF",
+    },
+    EdgeToEdge: {
+      backgroundColor: "#363795"
+    },
+    StatusBar: {
+      overlaysWebView: false,
     }
   }
 };

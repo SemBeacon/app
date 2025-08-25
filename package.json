@@ -24,7 +24,7 @@
     "start:ios": "ionic capacitor run ios -l --external",
     "start:electron": "ionic capacitor open @capacitor-community/electron",
     "resources": "npx @capacitor/assets generate --splashBackgroundColor #363795 --ios --android --pwa",
-    "version": "capacitor-set-version -v 1.8.0 -b 11",
+    "version": "capacitor-set-version -v 1.8.0 -b 12",
     "update:dependencies": "ncu -u"
   },
   "dependencies": {

@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "Default-736h.png",
+      "filename" : "Default-Portrait@2x~ipad.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Default-Landscape-736h.png",
+      "filename" : "Default-Landscape@2x~ipad.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

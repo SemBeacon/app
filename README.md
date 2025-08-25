@@ -16,6 +16,7 @@ First verify that adb can find the device using `adb devices`. The command `npx 
 ## Production
 1. Set the `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS`, and `SIGNING_KEY_PASSWORD` environment variables.
 2. `npx cap build android --androidreleasetype APK --keystorepath keystore/sembeacon.jks --keystorepass $SIGNING_STORE_PASSWORD --keystorealias $SIGNING_KEY_ALIAS --keystorealiaspass $SIGNING_KEY_PASSWORD` (change with AAB for Google Play Store)
+3. `adb install -r android/app/build/outputs/apk/release/app`
 
 ## Contributing
 We welcome contributions to improve the SemBeacon application. Please refer to the [Contributing Guide](./CONTRIBUTING.md) for more details.
