@@ -48,10 +48,10 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/BeaconPage.vue'),
     },
     {
-        name: 'about',
-        path: '/about',
-        component: () => import('../views/AboutPage.vue'),
-    },
+        name: 'settings',
+        path: '/settings',
+        component: () => import('../views/SettingsPage.vue'),
+    }
 ];
 
 const router = createRouter({

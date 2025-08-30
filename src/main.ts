@@ -33,6 +33,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
 
 // Import OpenLayers components directly
 import { Map, Sources, Layers, Styles, Geometries, Interactions, MapControls } from 'vue3-openlayers';
+import { setActivePinia, getActivePinia } from 'pinia';
 
 const app = createApp(App).use(IonicVue).use(createPinia()).use(router);
 
@@ -85,3 +86,12 @@ router.isReady().then(() => {
     globalThis.__dirname = import.meta.url;
     app.mount('#app');
 });
+
+declare global {
+    interface Window {
+        SemBeacon?: any;
+    }
+}
+
+window.SemBeacon = window.SemBeacon || {};
+window.SemBeacon.stores = {};

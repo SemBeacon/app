@@ -1,7 +1,7 @@
 <template>
     <ion-page>
         <ion-header>
-            <ion-toolbar>
+            <ion-toolbar id="login-toolbar">
                 <ion-buttons slot="start">
                     <ion-back-button></ion-back-button>
                 </ion-buttons>
@@ -205,16 +205,17 @@ export default class LoginPage extends Vue {
 
     async mounted() {
         if (Capacitor.getPlatform() !== 'web') {
-            await StatusBar.hide({
-                animation: Animation.None,
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            await StatusBar.setBackgroundColor({
+                color: isDark ? '#222428' : '#ffffff', // Use dark or light background color
             });
         }
     }
 
     async unmounted() {
         if (Capacitor.getPlatform() !== 'web') {
-            await StatusBar.show({
-                animation: Animation.None,
+            await StatusBar.setBackgroundColor({
+                color: '#363795',
             });
         }
     }
@@ -281,5 +282,13 @@ img.logo {
 
 .info-card ion-icon[name='information-circle-outline'] {
     zoom: 1.5;
+}
+
+#login-toolbar ion-back-button {
+    --color: black;
+}
+
+.dark #login-toolbar ion-back-button {
+    --color: white;
 }
 </style>

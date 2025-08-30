@@ -3,7 +3,7 @@
         <ion-fab-button
             size="small"
             color="light"
-            :disabled="location === undefined"
+            :disabled="disabled"
             @click="toggleFollow"
         >
             <ion-icon v-if="following" class="active" size="small" name="ellipse-sharp"></ion-icon>
@@ -23,6 +23,7 @@ import type { Map } from 'ol';
 import { Coordinate } from 'ol/coordinate';
 import { locateOutline, ellipseSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { Capacitor } from '@capacitor/core';
 
 addIcons({
     locateOutline,
@@ -39,7 +40,7 @@ addIcons({
 export default class LocationCenterComponent extends Vue {
     @Inject() map: Map;
     geolocationStore = useGeolocationStore();
-    following: boolean = true;
+    following: boolean = false;
 
     location = computed(() => {
         const location: GeographicalPosition = this.geolocationStore.location;
@@ -50,8 +51,15 @@ export default class LocationCenterComponent extends Vue {
 
     mounted(): void {}
 
+    get disabled(): boolean {
+        return this.location === undefined && Capacitor.getPlatform() !== 'ios';
+    }
+
     toggleFollow(): void {
         if (!this.following) {
+            if (!this.geolocationStore.running) {
+                this.geolocationStore.start();
+            }
             this.flyTo(this.location as unknown as Coordinate, () => {
                 this.following = true;
             });
@@ -79,7 +87,7 @@ export default class LocationCenterComponent extends Vue {
 
 <style scoped>
 #location-center {
-    margin-bottom: 4em;
+    margin-bottom: calc(4em + var(--ion-safe-area-bottom, 0));
 }
 #location-center ion-icon {
     position: absolute;

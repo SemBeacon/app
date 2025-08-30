@@ -5,8 +5,14 @@ export interface SettingsState {
     version: number;
     data: {
         theme: 'LIGHT' | 'DARK' | 'SYSTEM';
+        uuids: Record<string, {
+            name: string;
+            automatic?: boolean;
+        }>
     };
 }
+
+const CURRENT_VERSION: number = 2;
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -16,9 +22,10 @@ Preferences.keys().then((keys) => {
 
 export const useSettings = defineStore('settings', {
     state: (): SettingsState => ({
-        version: 1,
+        version: CURRENT_VERSION,
         data: {
             theme: 'SYSTEM',
+            uuids: {}
         },
     }),
     getters: {
@@ -70,10 +77,11 @@ export const useSettings = defineStore('settings', {
                     .then((result) => {
                         try {
                             const value = JSON.parse(result.value);
-                            if (value && value.version === 1) {
+                            if (value && value.version === CURRENT_VERSION) {
                                 this.data = value.data;
                                 resolve();
                             } else {
+                                this.populate();
                                 return this.save();
                             }
                         } catch (err) {
@@ -86,5 +94,25 @@ export const useSettings = defineStore('settings', {
                     .catch(reject);
             });
         },
+        populate(): void {
+            // Add uuids
+            this.data.uuids = {
+                '77f340db-ac0d-20e8-aa3a-f656a29f236c': {
+                    name: 'SemBeacon DEMO'
+                },
+                'f7826da6-4fa2-4e98-8024-bc5b71e0893e': {
+                    name: 'Kontakt.io'
+                },
+                'b9407f30-f5f8-466e-aff9-25556b57fe6d': {
+                    name: 'Estimote'
+                },
+                '2f234454-cf6d-4a0f-adf2-f4911ba9ffa6': {
+                    name: 'Radius Networks'
+                },
+                'e2c56db5-dffb-48d2-b060-d0f5a71096e0': {
+                    name: 'Generic'
+                },
+            };
+        }
     },
 });

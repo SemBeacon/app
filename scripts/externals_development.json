@@ -1,11 +1,11 @@
 [
     ".gitkeep",
-    { "original": "openhps-solid.es.js", "rename": "openhps-solid.es.min.js" },
-    { "original": "sembeacon-openhps.js", "rename": "sembeacon-openhps.min.js" },
-    { "original": "openhps-core.es.js", "rename": "openhps-core.es.min.js" },
-    { "original": "openhps-rdf.all.es.js", "rename": "openhps-rdf.all.es.min.js" },
-    { "original": "openhps-rf.es.js", "rename": "openhps-rf.es.min.js" },
-    { "original": "openhps-geospatial.es.js", "rename": "openhps-geospatial.es.min.js" },
-    { "original": "sembeacon-openhps.es.js", "rename": "sembeacon-openhps.es.min.js" },
-    { "original": "worker.openhps-core.es.js", "rename": "worker.openhps-core.es.min.js" }
+    { "original": "openhps-solid.es.js", "rename": "openhps-solid.es.min.js", "map": true },
+    { "original": "sembeacon-openhps.js", "rename": "sembeacon-openhps.min.js", "map": true },
+    { "original": "openhps-core.es.js", "rename": "openhps-core.es.min.js", "map": true },
+    { "original": "openhps-rdf.all.es.js", "rename": "openhps-rdf.all.es.min.js", "map": true },
+    { "original": "openhps-rf.es.js", "rename": "openhps-rf.es.min.js", "map": true },
+    { "original": "openhps-geospatial.es.js", "rename": "openhps-geospatial.es.min.js", "map": true },
+    { "original": "sembeacon-openhps.es.js", "rename": "sembeacon-openhps.es.min.js", "map": true },
+    { "original": "worker.openhps-core.es.js", "rename": "worker.openhps-core.es.min.js", "map": true }
 ]

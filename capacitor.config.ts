@@ -49,8 +49,6 @@ const config: CapacitorConfig & CapacitorElectronConfig = {
       'cordova-plugin-device',
     ]
   },
-  electron: {
-  },
   plugins: {
     SplashScreen: {
       backgroundColor: "#363795",

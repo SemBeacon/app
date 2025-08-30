@@ -8,7 +8,7 @@
         <!-- Projection view -->
         <ol-view
             :center="center"
-            zoom="18"
+            :zoom="1"
             projection="EPSG:3857"
             :enable-rotation="false"
             @change="handleViewChange"

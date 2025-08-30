@@ -248,6 +248,13 @@ ion-segment-button {
     --background: #363795;
     --color: #ffffff;
   }
+
+  .ios ion-toolbar, ion-fab-button, ion-menu-button, ion-back-button {
+    --color: #ffffff;
+  }
+  .ios ion-toolbar ion-button {
+    --color: #ffffff;
+  }
   
   body.dark ion-segment {
     --background: #363795;
@@ -258,3 +265,7 @@ ion-segment-button {
     --color: #babbff;
     --background-focused: #484abd;
   }
+
+ion-fab {
+  margin-bottom: var(--ion-safe-area-bottom, 0);
+}

@@ -120,20 +120,6 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                             reject(error);
                         },
                     );
-                } else if (platform === 'ios') {
-                    bluetoothle.requestPermission(
-                        (result) => {
-                            if (!result.requestPermission) {
-                                reject(new Error('No permission'));
-                            } else {
-                                resolve();
-                            }
-                        },
-                        (error) => {
-                            logger.log('error', error);
-                            reject(error);
-                        },
-                    );
                 } else {
                     resolve();
                 }
@@ -141,11 +127,16 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
         },
         initialize(): Promise<void> {
             this.state = ControllerState.INITIALIZING;
+            if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'web') {
+                return Promise.resolve();
+            }
+
             return new Promise((resolve, reject) => {
                 const logger = useLogger();
                 this.load()
                     .then(() => {
                         if (!bluetoothle) {
+                            logger.log('error', 'BluetoothLE not available');
                             this.state = ControllerState.DISABLED;
                             return resolve();
                         }
@@ -155,12 +146,15 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                     })
                     .then(() => {
                         logger.log('info', 'Initializing Bluetooth advertiser ...');
+                        
                         bluetoothle.initialize(
                             (result) => {
                                 if (result.status !== 'enabled') {
                                     this.state = ControllerState.DISABLED;
+                                    logger.log('warn', `Bluetooth is disabled (${result.status})!`);
                                     return reject(new Error(`Bluetooth is disabled!`));
                                 }
+                                logger.log('info', `Bluetooth initialized (${result.status})`);
                                 this.state = ControllerState.READY;
                             },
                             {
@@ -171,6 +165,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                         );
                     })
                     .catch((error: Error) => {
+                        logger.log('error', error);
                         this.state = ControllerState.NO_PERMISSION;
                         reject(error);
                     });
@@ -202,7 +197,6 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             if (beacon.services.length > 0) {
                 const service = beacon.services[0];
                 const data = {
-                    services: [service.uuid.toString()], // iOS
                     service: service.uuid.toString(), // Android
                     serviceData: bluetoothle.bytesToEncodedString(service.data),
                     includeDeviceName: false,
@@ -220,6 +214,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             }
 
             const logger = useLogger();
+            logger.log('debug', `Initializing Bluetooth advertising for ${beacon.constructor.name}...`);
             bluetoothle.startAdvertising(
                 () => {
                     logger.log('info', `${beacon.constructor.name} advertising started!`);

@@ -93,6 +93,7 @@ import { fromLonLat } from 'ol/proj';
 import BuildingComponent from '@/components/map/BuildingComponent.vue';
 import { GCS, GeographicalPosition, Vector2 } from '@openhps/core';
 import { addIcons } from 'ionicons';
+import { Capacitor } from '@capacitor/core';
 
 addIcons({
     stop,
@@ -155,7 +156,9 @@ export default class MapPage extends Vue {
         this.geolocationStore
             .initialize()
             .then(() => {
-                return this.geolocationStore.start();
+                if (Capacitor.getPlatform() !== "ios") {
+                    return this.geolocationStore.start();
+                }
             })
             .catch(console.error);
     }

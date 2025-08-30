@@ -14,11 +14,13 @@ import { GeolocationSourceNode } from '@openhps/capacitor-geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ControllerState } from './types';
 import { SensorSourceNode } from '@openhps/capacitor-sensors';
+import { useLogger } from './logger';
 
 export const useGeolocationStore = defineStore('geolocation', {
     state: () => ({
         position: undefined,
         model: undefined,
+        running: false,
         sources: [
             new GeolocationSourceNode({
                 interval: 15000,
@@ -39,14 +41,25 @@ export const useGeolocationStore = defineStore('geolocation', {
     },
     actions: {
         start(): void {
-            this.sources[0].start();
-            this.sources[1].start();
+            this.running = true;
+            if (Capacitor.getPlatform() === 'ios') {
+                SensorSourceNode.requestPermissions().then(() => {
+                    this.sources[0].start();
+                    this.sources[1].start();
+                });
+            } else {
+                this.sources[0].start();
+                this.sources[1].start();
+            }
         },
         stop(): void {
+            this.running = false;
             this.sources[0].stop();
             this.sources[1].stop();
         },
         initialize(): Promise<void> {
+            window.SemBeacon.stores.geolocation = this;
+            const logger = useLogger();
             this.state = ControllerState.INITIALIZING;
             return new Promise((resolve, reject) => {
                 ModelBuilder.create()
@@ -86,14 +99,16 @@ export const useGeolocationStore = defineStore('geolocation', {
                         }
                     })
                     .then(() => {
+                        logger.log('info', 'Geolocation initialized successfully');
                         this.state = ControllerState.READY;
                         resolve();
                     })
                     .catch((err) => {
+                        logger.log('error', `Geolocation initialization failed: ${err.message}`);
                         this.state = ControllerState.NO_PERMISSION;
                         reject(err);
                     });
             });
-        },
+        }
     },
 });

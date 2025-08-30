@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Default-Portrait@2x~ipad.png",
+      "filename" : "splash.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Default-Landscape@2x~ipad.png",
+      "filename" : "splashx2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Default-Landscape@~ipadpro.png",
+      "filename" : "splashx3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

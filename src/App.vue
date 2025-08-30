@@ -41,14 +41,34 @@
                             </ion-item>
                         </ion-menu-toggle>
 
-                        <ion-menu-toggle v-for="(p, i) in appPages" :key="i" auto-hide="false">
+                        <ion-menu-toggle
+                            v-for="(p, i) in filteredAppPages"
+                            :key="i"
+                            auto-hide="false"
+                        >
                             <ion-item
+                                v-if="!p.external"
                                 router-direction="root"
                                 :router-link="p.url"
                                 lines="none"
                                 detail="false"
                                 class="hydrated"
                                 :class="{ selected: $route.name === p.name }"
+                            >
+                                <ion-icon
+                                    slot="start"
+                                    aria-hidden="true"
+                                    :ios="p.iosIcon"
+                                    :md="p.mdIcon"
+                                ></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                            </ion-item>
+                            <ion-item
+                                v-else
+                                lines="none"
+                                detail="false"
+                                class="hydrated"
+                                @click="openExternal(p.url)"
                             >
                                 <ion-icon
                                     slot="start"
@@ -117,7 +137,8 @@ import { addIcons } from 'ionicons';
 import { enUS } from 'date-fns/locale';
 import { formatDistance } from '@/utils/DateLocale';
 
-import { map, bluetooth, help, wifiOutline, logOutOutline, logInOutline } from 'ionicons/icons';
+import { map, bluetooth, help, wifiOutline, logOutOutline, logInOutline, settingsOutline } from 'ionicons/icons';
+import { Browser } from '@capacitor/browser';
 
 addIcons({
     logOutOutline,
@@ -126,6 +147,7 @@ addIcons({
     bluetooth,
     help,
     wifiOutline,
+    settingsOutline
 });
 
 @Component({
@@ -178,13 +200,33 @@ export default class App extends Vue {
             mdIcon: map,
         },
         {
+            name: 'settings',
+            title: 'Settings',
+            url: '/settings',
+            iosIcon: settingsOutline,
+            mdIcon: settingsOutline,
+        },
+        {
             name: 'about',
             title: 'About',
-            url: '/about',
+            url: 'https://sembeacon.org',
             iosIcon: help,
             mdIcon: help,
+            external: true,
         },
     ];
+
+    get filteredAppPages(): any[] {
+        return this.appPages.filter((p) => {
+            if (p.name === 'simulator' && Capacitor.getPlatform() === 'ios') {
+                return false;
+            }
+            if (p.name === 'settings') {
+                return Capacitor.getPlatform() === 'ios';
+            }
+            return true;
+        });
+    }
 
     get logoSrc(): string {
         return this.settings.darkMode ? '/assets/logo/logo_alpha.svg' : '/assets/logo/logo.svg';
@@ -224,6 +266,9 @@ export default class App extends Vue {
     }
 
     async beforeMount() {
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
         await loadWASM('/js/vendor/onigasm/onigasm.wasm');
     }
 
@@ -283,6 +328,12 @@ export default class App extends Vue {
             CapacitorApp.addListener('resume', () => {
                 this.handlePermissions();
             });
+        });
+    }
+
+    async openExternal(url: string): Promise<void> {
+        return new Promise((resolve) => {
+            Browser.open({ url }).then(() => resolve()).catch(() => resolve());
         });
     }
 }
@@ -462,5 +513,9 @@ ion-menu.ios ion-list-header img {
     ion-label {
         font-weight: bold;
     }
+}
+
+.ios .profile {
+    display: none;
 }
 </style>

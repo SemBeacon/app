@@ -25,14 +25,18 @@ export const useLogger = defineStore('logging', {
                 });
             });
         },
-        log(level: string, message: string | any) {
+        log(level: string, message: string | any, error?: Error) {
             const timestamp = Date.now();
             this.logs.push({
                 timestamp,
                 level,
                 message,
+                error,
             });
             console.log(level, message);
+            if (error) {
+                console.error(error.stack);
+            }
             this.save();
         },
         save(): Promise<void> {

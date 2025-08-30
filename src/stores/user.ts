@@ -8,6 +8,7 @@ import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembe
 import { SimulatedBeacon, useBeaconAdvertisingStore } from './beacon.advertising';
 import fetch from 'cross-fetch';
 import { Toast } from '@capacitor/toast';
+import { useLogger } from './logger';
 
 const CLIENT_NAME = 'SemBeacon Application';
 const CLIENT_ID = 'https://sembeacon.org/id.jsonld';
@@ -26,11 +27,13 @@ const service = new SolidClientService({
     redirectUrl,
     restorePreviousSession: true,
     handleRedirect: (redirectUrl: string, callback: (error?: Error) => void) => {
+        const logger = useLogger();
         // Use @capacitor/browser
         Browser.addListener('browserFinished', () => {
-            console.log('Browser finished');
+            logger.log('info', 'Browser finished');
             callback(new Error('User cancelled login'));
         });
+        logger.log('info', `Opening browser for login at ${redirectUrl}`);
         Browser.open({
             url: redirectUrl,
             windowName: '_self',

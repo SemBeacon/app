@@ -28,7 +28,7 @@
                 :key="beacon.uid"
                 :beacon="beacon"
                 simulator="true"
-                :disabled="beaconStore.state !== ControllerState.READY"
+                :disabled="isBeaconStoreDisabled"
                 @simulateToggle="toggleAdvertising"
                 @clickBeacon="() => $router.push(`/beacon/edit/${beacon.uid}`)"
                 @deleteBeacon="deleteBeacon"
@@ -44,7 +44,7 @@
             </ion-card-header>
 
             <ion-card-content>
-                Sign in to your Solid Pod to advertise your WebID to nearby users.
+                Optionally sign in to your Solid Pod to advertise your WebID to nearby users.
             </ion-card-content>
 
             <ion-button fill="clear" @click="$router.push('/login')">Sign in</ion-button>
@@ -129,6 +129,7 @@ import PermissionErrorComponent from '@/components/PermissionErrorComponent.vue'
 import { ControllerState } from '@/stores/types';
 import { addOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { useLogger } from '@/stores/logger';
 
 addIcons({
     addOutline,
@@ -169,6 +170,11 @@ export default class BLESimulatorComponent extends Vue {
     beaconStore = useBeaconAdvertisingStore();
     beaconScannerStore = useBeaconStore();
     downloading: boolean = false;
+
+    get isBeaconStoreDisabled(): boolean {
+        console.log('[BLESimulatorComponent] isBeaconStoreDisabled:', this.beaconStore.state !== ControllerState.READY);
+        return this.beaconStore.state !== ControllerState.READY;
+    }
 
     get beacons(): SimulatedBeacon[] {
         return Array.from(this.beaconStore.beacons.values() as any);
@@ -268,6 +274,8 @@ export default class BLESimulatorComponent extends Vue {
     }
 
     toggleAdvertising(beacon: SimulatedBeacon, advertising: boolean): void {
+        const logger = useLogger();
+        logger.log('debug', `Toggling advertising for ${beacon.constructor.name} to ${advertising}...`);
         if (advertising) {
             this.beaconStore.startAdvertising(beacon);
         } else {
