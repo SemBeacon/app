@@ -1,25 +1,43 @@
 // ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
+// Custom Cypress commands for SemBeacon app testing
 // ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+/**
+ * Navigate to the beacon scanner page
+ */
+Cypress.Commands.add('goToScanner', () => {
+    cy.visit('/beacon/scanner');
+    cy.get('ion-title').should('contain', 'Beacon');
+});
+
+/**
+ * Navigate to the beacon simulator page
+ */
+Cypress.Commands.add('goToSimulator', () => {
+    cy.visit('/beacon/simulator');
+    cy.get('ion-title').should('contain', 'Beacon');
+});
+
+/**
+ * Navigate to the map page
+ */
+Cypress.Commands.add('goToMap', () => {
+    cy.visit('/map');
+    cy.get('ion-title').should('contain', 'Beacon Map');
+});
+
+/**
+ * Navigate to the settings page
+ */
+Cypress.Commands.add('goToSettings', () => {
+    cy.visit('/settings');
+    cy.get('ion-title').should('contain', 'Settings');
+});
+
+/**
+ * Navigate to the login page
+ */
+Cypress.Commands.add('goToLogin', () => {
+    cy.visit('/login');
+    cy.get('ion-title').should('contain', 'Sign in');
+});
