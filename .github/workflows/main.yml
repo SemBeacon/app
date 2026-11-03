@@ -53,7 +53,7 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: npx cap build android --androidreleasetype APK --keystorepath keystore/sembeacon.jks --keystorepass "$SIGNING_STORE_PASSWORD" --keystorealias "$SIGNING_KEY_ALIAS" --keystorealiaspass "$SIGNING_KEY_PASSWORD"
+        run: npx cap build android --androidreleasetype APK --keystorepath "${{ steps.decode_keystore.outputs.filePath }}" --keystorepass "$SIGNING_STORE_PASSWORD" --keystorealias "$SIGNING_KEY_ALIAS" --keystorealiaspass "$SIGNING_KEY_PASSWORD"
 
       - name: Archive APK
         uses: actions/upload-artifact@v4
