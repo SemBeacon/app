@@ -33,6 +33,8 @@ export default defineConfig({
             include: ['src/**/*.{ts,vue}'],
             exclude: ['src/ontologies/**', 'src/components.d.ts', 'src/**/*.d.ts'],
             reporter: ['text-summary', 'html', 'lcov'],
+            // Floor at the current level (views are covered by e2e); raise with new tests
+            thresholds: { statements: 18, branches: 10, functions: 12, lines: 18 },
         },
     },
 });
