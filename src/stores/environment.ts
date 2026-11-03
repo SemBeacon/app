@@ -14,7 +14,7 @@ import { Building, Floor, SymbolicSpace, SymbolicSpaceService } from '@openhps/g
 import { DataSerializer, GeographicalPosition } from '@openhps/core';
 import { Preferences } from '@capacitor/preferences';
 import { toRaw, type Raw } from 'vue';
-import { PiniaDataService } from '@/utils/PiniaDataService';
+import { PiniaDataService } from './PiniaDataService';
 import { MapObject } from '@/models/MapObject';
 
 let spaceService: SymbolicSpaceService<any>;

@@ -42,6 +42,40 @@ export default defineConfigWithVueTs(
         },
     },
     {
+        // Layering: services and utilities are framework-free and do not know the UI or
+        // the stores (dependencies point views/components → stores → services → utils)
+        files: [
+            'src/services/**/*.ts',
+            'src/utils/**/*.ts',
+            'src/demo/demoBeacons.ts',
+            'src/config.ts',
+        ],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            group: [
+                                '@/stores/*',
+                                '@/views/*',
+                                '@/components/*',
+                                '**/stores/*',
+                                '**/views/*',
+                                '**/components/*',
+                            ],
+                            message: 'Services and utilities must not depend on stores or UI.',
+                        },
+                        {
+                            group: ['vue', 'pinia', '@ionic/*'],
+                            message: 'Services and utilities must stay framework-free.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
         files: ['src/workers/**/*.js'],
         languageOptions: {
             globals: {
