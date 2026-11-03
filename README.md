@@ -6,7 +6,77 @@
 The SemBeacon application showcases the capabilities of the SemBeacon platform. It provides a comprehensive example of how to integrate and utilize SemBeacon's features for real-time location tracking and data analysis. This application is designed to help developers understand the potential of SemBeacon and how it can be applied to various use cases.
 
 ## Development
-1. Start `adb -a nodaemon server start` on the host
+```bash
+yarn install        # also copies the OpenHPS browser bundles to public/js/vendor
+yarn dev            # https://localhost:8085
+```
+
+Browsers cannot scan for or advertise Bluetooth beacons, so the scanner and simulator show
+"not supported" on the web. To see the app with data, run `SemBeacon.demo()` in the browser
+console, or build with `VITE_DEMO_MODE=true`. Optional service overrides are listed in
+[`.env.example`](./.env.example).
+
+For a device connected to the devcontainer, start `adb -a nodaemon server start` on the host.
+
+### Code structure
+Dependencies point one way: views and components use stores, stores use services, and
+services and utilities never import stores, Vue or Ionic (enforced by `yarn lint`).
+
+| Where | What |
+|---|---|
+| `src/views`, `src/components` | Ionic pages and components |
+| `src/stores` | Pinia stores: UI state and orchestration, persistence via Capacitor Preferences |
+| `src/services` | Framework-free logic: Bluetooth scanning pipeline (`BeaconScanner`), SemBeacon service and URL shortener |
+| `src/platform` | Small wrappers for platform differences (status bar) |
+| `src/demo` | Demo beacons and demo mode (`window.SemBeacon` debug API) |
+| `src/config.ts` | External endpoints and keys (overridable with `VITE_*`) |
+| `src/workers` | Web Worker that classifies beacons and resolves SemBeacons off the UI thread |
+
+## Testing
+| Command | What it checks | Where it runs |
+|---|---|---|
+| `yarn lint`, `yarn format:check`, `yarn typecheck` | ESLint (incl. layering), Prettier, TypeScript | anywhere |
+| `yarn test` / `yarn test:coverage` | Unit and component tests (Vitest, happy-dom) in `tests/unit` | anywhere |
+| `yarn test:e2e` | End-to-end tests in `tests/e2e/specs` on Pixel 7 (Chromium) and iPhone 14 (WebKit), against the production build | host (WebKit needs its system libraries) or `yarn test:e2e:docker` |
+| `yarn test:visual` | Screenshot comparison of the main pages, light and dark | Docker only (`mcr.microsoft.com/playwright`, same as CI) |
+| `yarn screenshots` | App Store / Play Store screenshots in `resources/screenshots` | anywhere; Docker for consistent fonts |
+| `yarn test:native:android` / `yarn test:native:ios` | Maestro flows in `tests/native` on an emulator / simulator | Android SDK + KVM / macOS with Xcode, plus [Maestro](https://maestro.mobile.dev) |
+
+The e2e tests never use the network: the URL shortener, CORS proxy and resolved RDF documents
+are served from `tests/e2e/fixtures/http` (the Solid profile there is synthetic). Demo mode
+provides the beacons.
+
+### Visual baselines
+Fonts differ between machines, so baselines in `tests/e2e/visual/__screenshots__` are only
+valid when made in the Playwright Docker image. After an intended UI change:
+
+```bash
+yarn test:visual:update   # rewrites all baselines; review the PNG diff before committing
+```
+
+Relative times ("5s ago") are masked, and the beacon list is sorted by RSSI (ties sorted by
+UID), so the screenshots do not depend on timing.
+
+### Store screenshots
+`yarn screenshots` captures scanner, SemBeacon details, simulator (Android only) and menu at
+the store sizes (phone, 7" and 10" tablet, iPhone 6.9" and 6.5", iPad 13") in light and dark
+mode. The web build cannot show native-only UI (permission dialogs, the status bar, iOS without
+simulator): those come from the Maestro flows, which save screenshots to
+`resources/screenshots/native`. CI produces both as artifacts (workflow `Checks` with
+*screenshots*, workflow `Native UI tests`).
+
+### Native tests
+```bash
+yarn build:android:demo        # demo-mode debug APK
+yarn test:native:android       # starts an emulator, installs the APK, runs tests/native
+yarn test:native:ios           # macOS: simulator build in demo mode + Maestro
+```
+
+Emulators and simulators cannot scan for real beacons. Before a release, check on a device:
+- the scanner finds a beacon (a second phone can advertise one with the simulator)
+- the simulator advertises, and *Stop broadcasting* in the notification stops it
+- a detected SemBeacon resolves and shows its building on the map
+- after leaving and reopening the app, detected beacons are still listed
 
 ### Troubleshooting
 
