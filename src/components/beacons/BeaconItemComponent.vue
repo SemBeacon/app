@@ -8,7 +8,7 @@
                 <img
                     :src="beacon.object.picture ?? '/assets/avatar.svg'"
                     :alt="`Profile picture of ${beacon.object.name}`"
-                    @error="(e) => (e.target as HTMLImageElement).src = '/assets/avatar.svg'"
+                    @error="(e) => ((e.target as HTMLImageElement).src = '/assets/avatar.svg')"
                 />
             </ion-avatar>
             <ion-thumbnail v-else-if="beaconIcon" slot="start" @click="onClick">

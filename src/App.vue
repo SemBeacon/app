@@ -14,7 +14,11 @@
                                     <img
                                         :src="userStore.user.picture"
                                         :alt="`Profile picture of ${userStore.user.name}`"
-                                        @error="(e) => (e.target as HTMLImageElement).src = '/assets/avatar.svg'"
+                                        @error="
+                                            (e) =>
+                                                ((e.target as HTMLImageElement).src =
+                                                    '/assets/avatar.svg')
+                                        "
                                     />
                                 </ion-avatar>
                                 <ion-label>{{ userStore.user.name }}</ion-label>
@@ -137,7 +141,15 @@ import { addIcons } from 'ionicons';
 import { enUS } from 'date-fns/locale';
 import { formatDistance } from '@/utils/DateLocale';
 
-import { map, bluetooth, help, wifiOutline, logOutOutline, logInOutline, settingsOutline } from 'ionicons/icons';
+import {
+    map,
+    bluetooth,
+    help,
+    wifiOutline,
+    logOutOutline,
+    logInOutline,
+    settingsOutline,
+} from 'ionicons/icons';
 import { Browser } from '@capacitor/browser';
 
 addIcons({
@@ -147,7 +159,7 @@ addIcons({
     bluetooth,
     help,
     wifiOutline,
-    settingsOutline
+    settingsOutline,
 });
 
 @Component({
@@ -334,7 +346,9 @@ export default class App extends Vue {
 
     async openExternal(url: string): Promise<void> {
         return new Promise((resolve) => {
-            Browser.open({ url }).then(() => resolve()).catch(() => resolve());
+            Browser.open({ url })
+                .then(() => resolve())
+                .catch(() => resolve());
         });
     }
 }

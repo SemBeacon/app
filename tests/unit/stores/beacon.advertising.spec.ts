@@ -29,7 +29,11 @@ describe('beacon.advertising store', () => {
         await store.addSimulatedBeacon('sim-1', beacon);
         const simulated = store.findByUID('sim-1');
         expect(simulated).toBeInstanceOf(BLEiBeacon);
-        expect(simulated).toMatchObject({ advertising: false, latency: 'lowLatency', power: 'high' });
+        expect(simulated).toMatchObject({
+            advertising: false,
+            latency: 'lowLatency',
+            power: 'high',
+        });
     });
 
     it('persists simulated beacons', async () => {

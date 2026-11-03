@@ -17,13 +17,13 @@ export default defineConfig({
                     buffer: false,
                 }),
                 NodeModulesPolyfillPlugin(),
-            ]
-        }
+            ],
+        },
     },
     resolve: {
         alias: {
-          '@': resolve(__dirname, './src'),
-        }
+            '@': resolve(__dirname, './src'),
+        },
     },
     plugins: [
         vue(),
@@ -32,10 +32,10 @@ export default defineConfig({
         }),
         copy({
             targets: [
-                { 
-                    src: 'src/**/BLEScannerWorker.worker.js', 
+                {
+                    src: 'src/**/BLEScannerWorker.worker.js',
                     dest: 'public/js/workers',
-                    rename: (name, extension) => `${name}.${extension}`
+                    rename: (name, extension) => `${name}.${extension}`,
                 },
             ],
         }),
@@ -53,8 +53,8 @@ export default defineConfig({
                     '@openhps/rf': '/js/vendor/openhps/openhps-rf.es.min.js',
                     '@openhps/geospatial': '/js/vendor/openhps/openhps-geospatial.es.min.js',
                     '@openhps/rdf': '/js/vendor/openhps/openhps-rdf.all.es.min.js',
-                    '@sembeacon/openhps': '/js/vendor/openhps/sembeacon-openhps.es.min.js'
-                }
+                    '@sembeacon/openhps': '/js/vendor/openhps/sembeacon-openhps.es.min.js',
+                },
             },
             external: [
                 'crypto',
@@ -62,7 +62,7 @@ export default defineConfig({
                 '@openhps/rf',
                 '@openhps/geospatial',
                 '@openhps/rdf',
-                '@sembeacon/openhps'
+                '@sembeacon/openhps',
             ],
         },
         // Not minified: OpenHPS (de)serialisation relies on class names. Enabling
@@ -75,6 +75,6 @@ export default defineConfig({
         port: 8085,
         watch: {
             usePolling: true,
-        }
-    }
+        },
+    },
 });

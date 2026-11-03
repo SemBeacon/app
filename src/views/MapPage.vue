@@ -156,7 +156,7 @@ export default class MapPage extends Vue {
         this.geolocationStore
             .initialize()
             .then(() => {
-                if (Capacitor.getPlatform() !== "ios") {
+                if (Capacitor.getPlatform() !== 'ios') {
                     return this.geolocationStore.start();
                 }
             })
@@ -210,16 +210,16 @@ export default class MapPage extends Vue {
         const buildingDistances = this._buildingDistances();
         if (this.buildingRef) {
             this.buildingRef.forEach((component) => {
-            if (
-                component.building === buildingDistances[0].building &&
-                this.zoom > 16 &&
-                buildingDistances[0].distance < 200
-            ) {
-                component.setFocus(true);
-            } else {
-                component.setFocus(false);
-            }
-        });
+                if (
+                    component.building === buildingDistances[0].building &&
+                    this.zoom > 16 &&
+                    buildingDistances[0].distance < 200
+                ) {
+                    component.setFocus(true);
+                } else {
+                    component.setFocus(false);
+                }
+            });
         }
         this.following = false;
     }

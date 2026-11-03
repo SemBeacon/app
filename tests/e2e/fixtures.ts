@@ -96,10 +96,15 @@ export const activePage = (page: Page) => page.locator('.ion-page:not(.ion-page-
 export const inputValues = (page: Page) =>
     activePage(page)
         .locator('ion-input')
-        .evaluateAll((inputs) => inputs.map((input) => (input as unknown as { value?: string }).value));
+        .evaluateAll((inputs) =>
+            inputs.map((input) => (input as unknown as { value?: string }).value),
+        );
 
 /** Choose a sort order in the scanner's sort dialog. */
-export async function sortScannerBy(page: Page, label: 'First seen' | 'Last seen' | 'RSSI' | 'Distance') {
+export async function sortScannerBy(
+    page: Page,
+    label: 'First seen' | 'Last seen' | 'RSSI' | 'Distance',
+) {
     await page.locator('ion-button:has(ion-icon[name="funnel"])').click();
     const alert = page.locator('ion-alert');
     await alert.getByText(label, { exact: true }).click();

@@ -155,7 +155,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                     })
                     .then(() => {
                         logger.log('info', 'Initializing Bluetooth advertiser ...');
-                        
+
                         bluetoothle.initialize(
                             (result) => {
                                 if (result.status !== 'enabled') {
@@ -223,7 +223,10 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             }
 
             const logger = useLogger();
-            logger.log('debug', `Initializing Bluetooth advertising for ${beacon.constructor.name}...`);
+            logger.log(
+                'debug',
+                `Initializing Bluetooth advertising for ${beacon.constructor.name}...`,
+            );
             bluetoothle.startAdvertising(
                 () => {
                     logger.log('info', `${beacon.constructor.name} advertising started!`);

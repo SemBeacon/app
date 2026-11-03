@@ -170,7 +170,7 @@ export default class LoginPage extends Vue {
         'https://login.inrupt.com/',
         'https://solidcommunity.net/',
         'https://datapod.igrant.io/',
-        'https://solid.redpencil.io/'
+        'https://solid.redpencil.io/',
     ];
     remember: boolean = true;
     loading: boolean = false;

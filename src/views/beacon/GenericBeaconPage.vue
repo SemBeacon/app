@@ -47,10 +47,14 @@
                                             <h2>Distance: -</h2>
                                         </ion-col>
                                         <ion-col size="6">
-                                            <h3 class="relative-time">Created: {{ firstSeen() }}</h3>
+                                            <h3 class="relative-time">
+                                                Created: {{ firstSeen() }}
+                                            </h3>
                                         </ion-col>
                                         <ion-col size="6">
-                                            <h3 class="relative-time">Last seen: {{ lastSeen() }}</h3>
+                                            <h3 class="relative-time">
+                                                Last seen: {{ lastSeen() }}
+                                            </h3>
                                         </ion-col>
                                     </ion-row>
                                 </ion-grid>
@@ -69,7 +73,7 @@
                         :value="(beacon as SimulatedBeacon).latency"
                         :fill="!edit ? undefined : 'solid'"
                         label-placement="stacked"
-                        @ionChange="(e) => (beacon as SimulatedBeacon).latency = e.detail.value"
+                        @ionChange="(e) => ((beacon as SimulatedBeacon).latency = e.detail.value)"
                     >
                         <div slot="label">Advertising latency</div>
                         <ion-select-option value="lowLatency">Low latency</ion-select-option>
@@ -83,7 +87,7 @@
                         :disabled="!edit"
                         :fill="!edit ? undefined : 'solid'"
                         label-placement="stacked"
-                        @ionChange="(e) => (beacon as SimulatedBeacon).power = e.detail.value"
+                        @ionChange="(e) => ((beacon as SimulatedBeacon).power = e.detail.value)"
                     >
                         <div slot="label">Advertising power</div>
                         <ion-select-option value="high">High</ion-select-option>

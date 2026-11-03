@@ -11,9 +11,7 @@ import BLECompanies from '@/models/BLECompanies.json';
 
 export { BLECompanies };
 
-@ComponentBase({
-    
-})
+@ComponentBase({})
 export abstract class BaseBeaconPage extends Vue {
     // Data
     readonly BLEUUID: typeof BLEUUID = BLEUUID;

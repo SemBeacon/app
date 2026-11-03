@@ -222,7 +222,10 @@ export default class BLESimulatorComponent extends Vue {
         [BLEiBeacon, () => BLEiBeaconBuilder.create().build()],
         [BLEAltBeacon, () => BLEAltBeaconBuilder.create().build()],
         [BLESemBeacon, () => BLESemBeaconBuilder.create().build()],
-        [BLEEddystoneURL, () => BLEEddystoneURLBuilder.create().url('https://sembeacon.org').build()],
+        [
+            BLEEddystoneURL,
+            () => BLEEddystoneURLBuilder.create().url('https://sembeacon.org').build(),
+        ],
         [BLEEddystoneUID, () => BLEEddystoneUIDBuilder.create().build()],
     ]);
 
@@ -240,7 +243,10 @@ export default class BLESimulatorComponent extends Vue {
 
     toggleAdvertising(beacon: SimulatedBeacon, advertising: boolean): void {
         const logger = useLogger();
-        logger.log('debug', `Toggling advertising for ${beacon.constructor.name} to ${advertising}...`);
+        logger.log(
+            'debug',
+            `Toggling advertising for ${beacon.constructor.name} to ${advertising}...`,
+        );
         if (advertising) {
             this.beaconStore.startAdvertising(beacon);
         } else {

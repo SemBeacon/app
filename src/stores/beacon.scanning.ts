@@ -172,7 +172,8 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             this.state = ControllerState.INITIALIZING;
             const logger = useLogger();
             logger.log('info', 'Initializing beacon scanner model ...');
-            semBeaconService.logger = (level: string, message: string) => logger.log(level, message);
+            semBeaconService.logger = (level: string, message: string) =>
+                logger.log(level, message);
             // initialize() runs again when the app resumes: register the listener once
             if (!listening) {
                 listening = true;

@@ -28,9 +28,9 @@ test.describe('with demo beacons', () => {
         await expect(page).toHaveURL(/\/beacon\/(?!scanner$)[^/]+$/);
         await expect(page.locator('ion-title', { hasText: 'Beacon details' })).toBeVisible();
         // The beacon itself is shown, not the generic loading placeholder
-        await expect.poll(() => inputValues(page)).toEqual(
-            expect.arrayContaining(['BEACON_08', 'c187d748']),
-        );
+        await expect
+            .poll(() => inputValues(page))
+            .toEqual(expect.arrayContaining(['BEACON_08', 'c187d748']));
     });
 
     test('remembers every sort option, including distance', async ({ page }) => {
@@ -42,6 +42,8 @@ test.describe('with demo beacons', () => {
 
     test('keeps detected beacons after a reload', async ({ page }) => {
         await page.reload();
-        await expect(page.locator('.beacon-item', { hasText: 'https://maximvdw.be' })).toBeVisible();
+        await expect(
+            page.locator('.beacon-item', { hasText: 'https://maximvdw.be' }),
+        ).toBeVisible();
     });
 });

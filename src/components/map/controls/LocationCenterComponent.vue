@@ -1,11 +1,6 @@
 <template>
     <ion-fab id="location-center" slot="fixed" horizontal="end" vertical="bottom">
-        <ion-fab-button
-            size="small"
-            color="light"
-            :disabled="disabled"
-            @click="toggleFollow"
-        >
+        <ion-fab-button size="small" color="light" :disabled="disabled" @click="toggleFollow">
             <ion-icon v-if="following" class="active" size="small" name="ellipse-sharp"></ion-icon>
             <ion-icon name="locate-outline"></ion-icon>
         </ion-fab-button>

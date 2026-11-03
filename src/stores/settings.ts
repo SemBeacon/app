@@ -6,10 +6,13 @@ export interface SettingsState {
     version: number;
     data: {
         theme: 'LIGHT' | 'DARK' | 'SYSTEM';
-        uuids: Record<string, {
-            name: string;
-            automatic?: boolean;
-        }>
+        uuids: Record<
+            string,
+            {
+                name: string;
+                automatic?: boolean;
+            }
+        >;
     };
 }
 
@@ -30,7 +33,7 @@ export const useSettings = defineStore('settings', {
         version: CURRENT_VERSION,
         data: {
             theme: 'SYSTEM',
-            uuids: {}
+            uuids: {},
         },
     }),
     getters: {
@@ -110,21 +113,21 @@ export const useSettings = defineStore('settings', {
             // Add uuids
             this.data.uuids = {
                 '77f340db-ac0d-20e8-aa3a-f656a29f236c': {
-                    name: 'SemBeacon DEMO'
+                    name: 'SemBeacon DEMO',
                 },
                 'f7826da6-4fa2-4e98-8024-bc5b71e0893e': {
-                    name: 'Kontakt.io'
+                    name: 'Kontakt.io',
                 },
                 'b9407f30-f5f8-466e-aff9-25556b57fe6d': {
-                    name: 'Estimote'
+                    name: 'Estimote',
                 },
                 '2f234454-cf6d-4a0f-adf2-f4911ba9ffa6': {
-                    name: 'Radius Networks'
+                    name: 'Radius Networks',
                 },
                 'e2c56db5-dffb-48d2-b060-d0f5a71096e0': {
-                    name: 'Generic'
+                    name: 'Generic',
                 },
             };
-        }
+        },
     },
 });

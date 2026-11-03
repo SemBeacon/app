@@ -100,6 +100,4 @@ export default class CodePage extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

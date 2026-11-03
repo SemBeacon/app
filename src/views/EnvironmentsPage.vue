@@ -50,7 +50,7 @@ import { useEnvironmentStore } from '@/stores/environment';
         IonIcon,
         IonInput,
         IonButton,
-    }
+    },
 })
 export default class EnvironmentsPage extends Vue {
     isLoading: boolean = true;

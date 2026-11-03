@@ -136,7 +136,8 @@ export default class BeaconMarkerComponent extends Vue {
 
         // Modify the opacity of markers when not seen for a while
         setInterval(() => {
-            if (!this.sourceRef) {  // Source vector not (yet) loaded
+            if (!this.sourceRef) {
+                // Source vector not (yet) loaded
                 return;
             }
 

@@ -17,13 +17,16 @@ const missingLast = (value: number | undefined, fallback: number) => value ?? fa
 
 const comparators: Record<SortKey, (a: SortableBeacon, b: SortableBeacon) => number> = {
     // Oldest first, so newly detected beacons are appended instead of shifting the list
-    [SortKey.CREATED]: (a, b) => missingLast(a.createdTimestamp, Infinity) - missingLast(b.createdTimestamp, Infinity),
+    [SortKey.CREATED]: (a, b) =>
+        missingLast(a.createdTimestamp, Infinity) - missingLast(b.createdTimestamp, Infinity),
     // Most recently seen first
-    [SortKey.MODIFIED]: (a, b) => missingLast(b.lastSeen, -Infinity) - missingLast(a.lastSeen, -Infinity),
+    [SortKey.MODIFIED]: (a, b) =>
+        missingLast(b.lastSeen, -Infinity) - missingLast(a.lastSeen, -Infinity),
     // Strongest signal first
     [SortKey.RSSI]: (a, b) => missingLast(b.rssi, -Infinity) - missingLast(a.rssi, -Infinity),
     // Nearest first
-    [SortKey.DISTANCE]: (a, b) => missingLast(a.distance, Infinity) - missingLast(b.distance, Infinity),
+    [SortKey.DISTANCE]: (a, b) =>
+        missingLast(a.distance, Infinity) - missingLast(b.distance, Infinity),
 };
 
 /**
@@ -32,5 +35,7 @@ const comparators: Record<SortKey, (a: SortableBeacon, b: SortableBeacon) => num
  */
 export function sortBeacons<T extends SortableBeacon>(beacons: readonly T[], key: SortKey): T[] {
     const compare = comparators[key];
-    return [...beacons].sort((a, b) => compare(a, b) || (a.uid < b.uid ? -1 : a.uid > b.uid ? 1 : 0));
+    return [...beacons].sort(
+        (a, b) => compare(a, b) || (a.uid < b.uid ? -1 : a.uid > b.uid ? 1 : 0),
+    );
 }

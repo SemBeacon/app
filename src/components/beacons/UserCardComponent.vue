@@ -4,7 +4,7 @@
             <img
                 :src="object.picture"
                 :alt="`Profile picture of ${object.name}`"
-                @error="(e) => (e.target as HTMLImageElement).src = '/assets/avatar.svg'"
+                @error="(e) => ((e.target as HTMLImageElement).src = '/assets/avatar.svg')"
             />
         </div>
         <ion-card-content>
@@ -16,11 +16,7 @@
                 </ion-row>
                 <ion-row>
                     <ion-col size="12">
-                        <ion-input
-                            v-model="object.id"
-                            :readonly="true"
-                            label-placement="floating"
-                        >
+                        <ion-input v-model="object.id" :readonly="true" label-placement="floating">
                             <div slot="label">WebID</div>
                         </ion-input>
                     </ion-col>
@@ -114,7 +110,6 @@
     </ion-card>
 </template>
 
-
 <script lang="ts">
 import { Component, Prop } from 'vue-facing-decorator';
 import {
@@ -163,7 +158,7 @@ addIcons({
 })
 export default class UserCardComponent extends BaseBeaconPage {
     @Prop() beacon?: BLESemBeacon & Beacon = undefined;
-    
+
     get object(): User {
         return this.beacon.object as User;
     }

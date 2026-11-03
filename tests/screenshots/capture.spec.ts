@@ -37,7 +37,10 @@ for (const colorScheme of ['light', 'dark'] as const) {
             await sortScannerBy(page, 'RSSI');
             await capture(page, colorScheme, '01-scanner');
 
-            await page.locator('.beacon-item', { hasText: 'BEACON_08' }).locator('ion-grid').click();
+            await page
+                .locator('.beacon-item', { hasText: 'BEACON_08' })
+                .locator('ion-grid')
+                .click();
             await expect.poll(() => inputValues(page)).toContain('BEACON_08');
             await capture(page, colorScheme, '02-semBeacon');
 

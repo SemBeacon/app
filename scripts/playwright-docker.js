@@ -20,12 +20,18 @@ const args = [
     '--ipc=host',
     ...(process.stdout.isTTY ? ['-t'] : []),
     ...(uid ? ['--user', uid] : []),
-    '-e', 'HOME=/tmp',
-    '-e', 'CI',
-    '-v', `${cwd}:/work`,
-    '-w', '/work',
+    '-e',
+    'HOME=/tmp',
+    '-e',
+    'CI',
+    '-v',
+    `${cwd}:/work`,
+    '-w',
+    '/work',
     image,
-    'npx', 'playwright', ...process.argv.slice(2),
+    'npx',
+    'playwright',
+    ...process.argv.slice(2),
 ];
 
 const result = spawnSync('docker', args, { stdio: 'inherit' });

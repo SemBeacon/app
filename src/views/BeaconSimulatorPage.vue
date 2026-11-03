@@ -20,22 +20,15 @@
                 </ion-buttons>
             </ion-toolbar>
 
-            <ion-toolbar
-v-if="platform !== 'ios'"
-                class="tab-selector"
-            >
+            <ion-toolbar v-if="platform !== 'ios'" class="tab-selector">
                 <ion-segment
                     :value="$route.path"
                     @ionChange="(e) => $router.replace(e.target.value)"
                 >
-                    <ion-segment-button
-                        value="/beacon/scanner"
-                    >
+                    <ion-segment-button value="/beacon/scanner">
                         <ion-label>Scanner</ion-label>
                     </ion-segment-button>
-                    <ion-segment-button
-                        value="/beacon/simulator"
-                    >
+                    <ion-segment-button value="/beacon/simulator">
                         <ion-label>Simulator</ion-label>
                     </ion-segment-button>
                 </ion-segment>
@@ -102,7 +95,7 @@ addIcons({
         IonSegmentButton,
         IonInput,
         IonButton,
-    }
+    },
 })
 export default class BeaconSimulatorPage extends Vue {
     isLoading: boolean = true;

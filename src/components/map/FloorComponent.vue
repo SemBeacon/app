@@ -69,6 +69,4 @@ export default class FloorComponent extends Vue {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

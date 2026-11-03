@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { SortKey, sortBeacons, type SortableBeacon } from '@/utils/sortBeacons';
 
-const beacon = (uid: string, values: Partial<SortableBeacon> = {}): SortableBeacon => ({ uid, ...values });
+const beacon = (uid: string, values: Partial<SortableBeacon> = {}): SortableBeacon => ({
+    uid,
+    ...values,
+});
 const uids = (list: SortableBeacon[]) => list.map((b) => b.uid);
 
 describe('sortBeacons', () => {
@@ -22,7 +25,11 @@ describe('sortBeacons', () => {
     });
 
     it('sorts by distance, nearest first, unknown distances last', () => {
-        const list = [beacon('unknown'), beacon('far', { distance: 8 }), beacon('near', { distance: 0.5 })];
+        const list = [
+            beacon('unknown'),
+            beacon('far', { distance: 8 }),
+            beacon('near', { distance: 0.5 }),
+        ];
         expect(uids(sortBeacons(list, SortKey.DISTANCE))).toEqual(['near', 'far', 'unknown']);
     });
 

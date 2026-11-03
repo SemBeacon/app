@@ -15,7 +15,8 @@
                     <ion-card-title>Why do we need UUIDs?</ion-card-title>
                 </ion-card-header>
                 <ion-card-content>
-                    We need UUIDs on iOS because it can only scan for beacons with known UUIDs (iBeacon). SemBeacons will automatically resolve and be added to this list.
+                    We need UUIDs on iOS because it can only scan for beacons with known UUIDs
+                    (iBeacon). SemBeacons will automatically resolve and be added to this list.
                 </ion-card-content>
             </ion-card>
             <ion-list>
@@ -35,9 +36,7 @@
             </ion-list>
 
             <ion-fab slot="fixed" horizontal="end" vertical="bottom">
-                <ion-fab-button
-                    @click="addUUID"
-                >
+                <ion-fab-button @click="addUUID">
                     <ion-icon name="add-outline"></ion-icon>
                 </ion-fab-button>
             </ion-fab>
@@ -108,7 +107,9 @@ export default class SettingsPage extends Vue {
         try {
             const added = await this.settings.addUuid(uuid, name);
             await Toast.show({
-                text: added ? `Added UUID ${uuid.trim()}` : 'Not a valid UUID, or it already exists.',
+                text: added
+                    ? `Added UUID ${uuid.trim()}`
+                    : 'Not a valid UUID, or it already exists.',
             });
         } catch (err) {
             this.logger.log('error', `Failed to add UUID: ${err.message}`);
@@ -122,12 +123,8 @@ export default class SettingsPage extends Vue {
             .catch((err) => this.logger.log('error', `Failed to remove UUID: ${err.message}`));
     }
 
-    mounted() {
-
-    }
+    mounted() {}
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

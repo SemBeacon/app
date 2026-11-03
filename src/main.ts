@@ -33,7 +33,15 @@ import './theme/variables.css';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 // Import OpenLayers components directly
-import { Map, Sources, Layers, Styles, Geometries, Interactions, MapControls } from 'vue3-openlayers';
+import {
+    Map,
+    Sources,
+    Layers,
+    Styles,
+    Geometries,
+    Interactions,
+    MapControls,
+} from 'vue3-openlayers';
 
 const app = createApp(App).use(IonicVue).use(createPinia()).use(router);
 

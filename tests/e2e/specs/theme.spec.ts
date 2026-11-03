@@ -7,7 +7,10 @@ test.describe('dark mode', () => {
         await page.goto('/');
         await expect(page.locator('body')).toHaveClass(/\bdark\b/);
         await page.locator('ion-menu-button').first().click();
-        await expect(page.locator('ion-menu ion-list-header img')).toHaveAttribute('src', /_alpha\.svg$/);
+        await expect(page.locator('ion-menu ion-list-header img')).toHaveAttribute(
+            'src',
+            /_alpha\.svg$/,
+        );
     });
 });
 

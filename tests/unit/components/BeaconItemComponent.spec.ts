@@ -46,7 +46,9 @@ describe('BeaconItemComponent theming and lifecycle', () => {
         const { useSettings } = await import('@/stores/settings');
         useSettings().data.theme = 'DARK';
         const wrapper = mountItem(await iBeacon());
-        expect(wrapper.find('ion-thumbnail img').attributes('src')).toBe('/assets/beacons/ibeacon_alpha.svg');
+        expect(wrapper.find('ion-thumbnail img').attributes('src')).toBe(
+            '/assets/beacons/ibeacon_alpha.svg',
+        );
         wrapper.unmount();
     });
 

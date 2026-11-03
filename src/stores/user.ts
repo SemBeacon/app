@@ -95,7 +95,10 @@ export const useUserStore = defineStore('user', {
                             // Advertise the user's WebID with a lower power and rate
                             return useBeaconAdvertisingStore().addSimulatedBeacon(
                                 beacon.uid,
-                                Object.assign(beacon, { latency: 'balanced', power: 'medium' } as const),
+                                Object.assign(beacon, {
+                                    latency: 'balanced',
+                                    power: 'medium',
+                                } as const),
                             );
                         })
                         .catch((err) => {

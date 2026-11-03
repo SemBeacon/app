@@ -51,7 +51,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'settings',
         path: '/settings',
         component: () => import('../views/SettingsPage.vue'),
-    }
+    },
 ];
 
 const router = createRouter({

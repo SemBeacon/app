@@ -50,23 +50,22 @@ export default class EditorComponent extends Vue {
 
             monaco.languages.register({ id: 'turtle' });
 
-            this.editor = monaco.editor.create(
-                document.getElementById('editor') as HTMLElement,
-                {
-                    value: '',
-                    language: 'turtle',
-                    minimap: { enabled: false },
-                    automaticLayout: true,
-                },
-            );
+            this.editor = monaco.editor.create(document.getElementById('editor') as HTMLElement, {
+                value: '',
+                language: 'turtle',
+                minimap: { enabled: false },
+                automaticLayout: true,
+            });
 
             if (this.code !== undefined) {
                 this.editor.setValue(this.code);
             }
 
-            wireTmGrammars(monaco, registry, grammars, this.editor).then(() => {
-                resolve();
-            }).catch(reject);
+            wireTmGrammars(monaco, registry, grammars, this.editor)
+                .then(() => {
+                    resolve();
+                })
+                .catch(reject);
         });
     }
 

@@ -122,7 +122,9 @@ export default class BLEScannerComponent extends Vue {
     loading = false;
 
     get beacons(): (BLEBeaconObject & Beacon)[] {
-        const seen = this.beaconStore.beaconsWithInfo.filter((beacon) => beacon.lastSeen !== undefined);
+        const seen = this.beaconStore.beaconsWithInfo.filter(
+            (beacon) => beacon.lastSeen !== undefined,
+        );
         return sortBeacons(seen, this.sortKey);
     }
 

@@ -49,9 +49,7 @@ export class HelmertTransformation {
             this.hasControlPoints = false;
         } else {
             const matrix =
-                this.similarity || xy.length < 3
-                    ? this._similarity(xy, XY)
-                    : this._helmert(xy, XY);
+                this.similarity || xy.length < 3 ? this._similarity(xy, XY) : this._helmert(xy, XY);
             this.hasControlPoints = matrix !== false;
             this.matrix = matrix || [1, 0, 0, 0, 1, 0];
         }
