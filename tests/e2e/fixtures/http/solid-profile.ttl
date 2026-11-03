@@ -1,0 +1,16 @@
+# Synthetic Solid profile used by the e2e tests in place of
+# https://solid.maximvdw.be/profile/card#me (no real personal data).
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix schema: <http://schema.org/>.
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+
+<#me> a foaf:Person, schema:Person;
+    vcard:fn "Demo User";
+    foaf:name "Demo User";
+    schema:name "Demo User";
+    foaf:givenName "Demo";
+    foaf:familyName "User";
+    vcard:organization-name "SemBeacon";
+    vcard:role "Test persona"@en;
+    solid:oidcIssuer <https://solid.example.org/>.

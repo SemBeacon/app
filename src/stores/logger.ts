@@ -5,55 +5,83 @@ export interface LogEntry {
     timestamp: number;
     level: string;
     message: string;
+    error?: Error;
 }
 
-const start = Date.now();
+/** Number of entries kept in memory; older entries only remain in the log file. */
+export const MAX_LOG_ENTRIES = 500;
+/** Log lines are written in batches instead of rewriting the file per line. */
+export const FLUSH_DELAY_MS = 1000;
+
+const LOG_DIRECTORY = 'sembeacon';
+const LOG_FILE = `${LOG_DIRECTORY}/${Date.now()}_log.txt`;
+
+// Write buffer: not reactive state, only used to batch file writes
+let pending: LogEntry[] = [];
+let flushTimer: ReturnType<typeof setTimeout> | undefined;
+let flushing: Promise<void> = Promise.resolve();
+
+function formatEntry(entry: LogEntry): string {
+    return `[${new Date(entry.timestamp).toISOString()}][${entry.level}] ${entry.message}`;
+}
 
 export const useLogger = defineStore('logging', {
     state: () => ({
-        logs: [],
+        logs: [] as LogEntry[],
     }),
-    getters: {},
     actions: {
-        initialize() {
-            Filesystem.requestPermissions().then(() => {
-                Filesystem.mkdir({
-                    path: 'sembeacon',
+        async initialize(): Promise<void> {
+            try {
+                await Filesystem.requestPermissions();
+                await Filesystem.mkdir({
+                    path: LOG_DIRECTORY,
                     directory: Directory.Documents,
-                }).catch((err) => {
-                    console.warn(`Unable to (re)create sembeacon log directory.`, err);
+                    recursive: true,
                 });
-            });
+            } catch (err) {
+                // Already existing directory or no file access: logging to the console still works
+                console.warn('Unable to create the SemBeacon log directory.', err);
+            }
         },
-        log(level: string, message: string | any, error?: Error) {
-            const timestamp = Date.now();
-            this.logs.push({
-                timestamp,
-                level,
-                message,
-                error,
-            });
+        log(level: string, message: string | any, error?: Error): void {
+            const entry: LogEntry = { timestamp: Date.now(), level, message, error };
+            this.logs.push(entry);
+            if (this.logs.length > MAX_LOG_ENTRIES) {
+                this.logs.splice(0, this.logs.length - MAX_LOG_ENTRIES);
+            }
             console.log(level, message);
             if (error) {
                 console.error(error.stack);
             }
-            this.save();
+            pending.push(entry);
+            if (flushTimer === undefined) {
+                flushTimer = setTimeout(() => {
+                    flushTimer = undefined;
+                    this.save();
+                }, FLUSH_DELAY_MS);
+            }
         },
+        /**
+         * Append pending entries to the log file. Writes are chained so they never overlap,
+         * and failures are reported to the console instead of becoming unhandled rejections.
+         */
         save(): Promise<void> {
-            return new Promise((resolve, reject) => {
-                Filesystem.writeFile({
-                    path: `sembeacon/${start}_log.txt`,
-                    data: this.logs
-                        .map((log: LogEntry) => {
-                            return `[${new Date(log.timestamp)}][${log.level}] ${log.message}`;
-                        })
-                        .join('\n'),
-                    directory: Directory.Documents,
-                    encoding: Encoding.UTF8,
-                })
-                    .then(() => resolve())
-                    .catch(reject);
-            });
+            const entries = pending;
+            pending = [];
+            if (entries.length === 0) {
+                return flushing;
+            }
+            flushing = flushing
+                .then(() =>
+                    Filesystem.appendFile({
+                        path: LOG_FILE,
+                        data: entries.map(formatEntry).join('\n') + '\n',
+                        directory: Directory.Documents,
+                        encoding: Encoding.UTF8,
+                    }),
+                )
+                .catch((err) => console.warn('Unable to write the SemBeacon log file.', err));
+            return flushing;
         },
     },
 });
