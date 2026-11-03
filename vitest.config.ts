@@ -11,6 +11,10 @@ export default defineConfig({
         alias: {
             '@': resolve(__dirname, './src'),
         },
+        // Resolve like the browser build. OpenHPS packages without an `exports` map
+        // (e.g. @openhps/rf, typedjson) would otherwise load their CJS `main`, and their
+        // decorator metadata would no longer match the ESM @openhps/core.
+        mainFields: ['module', 'jsnext:main', 'jsnext', 'main'],
     },
     test: {
         environment: 'happy-dom',
@@ -19,7 +23,9 @@ export default defineConfig({
         setupFiles: ['tests/unit/setup.ts'],
         server: {
             deps: {
-                inline: [/@ionic\//, /ionicons/],
+                // The OpenHPS ESM builds use directory imports that Node's ESM loader
+                // rejects; inline their own dist code (not their nested node_modules).
+                inline: [/@ionic\//, /ionicons/, /@(openhps|sembeacon)\/[^/]+\/dist\//],
             },
         },
         coverage: {
