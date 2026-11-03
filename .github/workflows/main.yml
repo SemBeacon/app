@@ -41,6 +41,9 @@ jobs:
           # The default package list contains 'tools', which current SDK tools no longer have
           packages: platform-tools platforms;android-36 build-tools;36.0.0
 
+      - name: Put apksigner on the PATH
+        run: echo "$ANDROID_HOME/build-tools/36.0.0" >> "$GITHUB_PATH"
+
       - name: Decode Keystore
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
@@ -57,7 +60,7 @@ jobs:
 
       - name: Verify APK signature
         # Target SDK 30+ requires signature scheme v2 or later; jarsigner (v1) APKs do not install
-        run: '"$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose android/app/build/outputs/apk/release/app-release-signed.apk'
+        run: apksigner verify --verbose android/app/build/outputs/apk/release/app-release-signed.apk
 
       - name: Archive APK
         uses: actions/upload-artifact@v4
