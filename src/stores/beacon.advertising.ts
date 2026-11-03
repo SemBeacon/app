@@ -19,7 +19,7 @@ import { ControllerState } from './types';
 import { Preferences } from '@capacitor/preferences';
 import type { BluetoothlePlugin } from 'cordova-plugin-bluetoothle';
 import { DataSerializer } from '@openhps/core';
-import { toRaw } from 'vue';
+import { toRaw, type Raw } from 'vue';
 import { ForegroundService } from '@capawesome-team/capacitor-android-foreground-service';
 const bluetoothle = (window as any).bluetoothle as BluetoothlePlugin.Bluetoothle;
 
@@ -34,16 +34,18 @@ export type SimulatedBeacon = BLEBeaconObject &
     };
 
 export interface BeaconAdvertisingState {
-    beacons: Map<string, SimulatedBeacon>;
+    // Raw<> keeps the class types (Pinia's state typing would unwrap them)
+    beacons: Map<string, Raw<SimulatedBeacon>>;
     state: ControllerState;
-    watchDog?: number;
 }
+
+// Notification refresh timer while advertising: not reactive state
+let watchDog: ReturnType<typeof setInterval> | undefined;
 
 export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
     state: (): BeaconAdvertisingState => ({
         beacons: new Map(),
         state: ControllerState.PENDING,
-        watchDog: undefined,
     }),
     getters: {
         advertisingBeacons(): SimulatedBeacon[] {
@@ -375,7 +377,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
         },
         async startForegroundService(): Promise<void> {
             // Create a foreground watchdog to ensure the user is aware of the service
-            this.watchDog = setInterval(() => {
+            clearInterval(watchDog);
+            watchDog = setInterval(() => {
                 this.updateNotification();
             }, 5000);
 
@@ -403,10 +406,8 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             }
         },
         async stopForegroundService(): Promise<void> {
-            if (this.watchDog) {
-                clearInterval(this.watchDog);
-                this.watchDog = undefined;
-            }
+            clearInterval(watchDog);
+            watchDog = undefined;
             await ForegroundService.stopForegroundService();
         },
     },

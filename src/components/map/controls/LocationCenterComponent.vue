@@ -58,7 +58,7 @@ export default class LocationCenterComponent extends Vue {
     toggleFollow(): void {
         if (!this.following) {
             if (!this.geolocationStore.running) {
-                this.geolocationStore.start();
+                this.geolocationStore.start().catch(console.error);
             }
             this.flyTo(this.location as unknown as Coordinate, () => {
                 this.following = true;

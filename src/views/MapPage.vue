@@ -179,7 +179,7 @@ export default class MapPage extends Vue {
     }
 
     unmounted() {
-        this.geolocationStore.stop();
+        this.geolocationStore.stop().catch(console.error);
     }
 
     highlightBeacon(uid: string): void {

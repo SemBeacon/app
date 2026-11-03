@@ -104,28 +104,22 @@ export default class SettingsPage extends Vue {
         const uuid = prompt('Enter UUID:');
         if (!uuid) return;
         const name = prompt('Enter Name for UUID:');
-        if (!name) return;
-        if (this.settings.data.uuids[uuid]) {
-            await Toast.show({ text: 'UUID already exists.' });
-            return;
-        }
-        this.settings.data.uuids[uuid] = { name };
-        this.settings.save().then(() => {
-            Toast.show({ text: `Added UUID ${uuid}` });
-        }).catch(err => {
+        if (name === null) return;
+        try {
+            const added = await this.settings.addUuid(uuid, name);
+            await Toast.show({
+                text: added ? `Added UUID ${uuid.trim()}` : 'Not a valid UUID, or it already exists.',
+            });
+        } catch (err) {
             this.logger.log('error', `Failed to add UUID: ${err.message}`);
-        });
+        }
     }
 
     removeUUID(uuid: string) {
-        delete this.settings.data.uuids[uuid];
-        this.settings.save().then(() => {
-            Toast.show({
-                text: `Removed UUID ${uuid}`,
-            });
-        }).catch(err => {
-            this.logger.log('error', `Failed to remove UUID: ${err.message}`);
-        });
+        this.settings
+            .removeUuid(uuid)
+            .then(() => Toast.show({ text: `Removed UUID ${uuid}` }))
+            .catch((err) => this.logger.log('error', `Failed to remove UUID: ${err.message}`));
     }
 
     mounted() {

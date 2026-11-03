@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Preferences } from '@capacitor/preferences';
+import { config } from '@/config';
 
 export interface SettingsState {
     version: number;
@@ -14,11 +15,15 @@ export interface SettingsState {
 
 const CURRENT_VERSION: number = 2;
 
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-Preferences.keys().then((keys) => {
-    console.log('Data storage', keys);
-});
+/** Normalise user or beacon input to a lowercase UUID; undefined when it is not a UUID. */
+export function normalizeUuid(input: string): string | undefined {
+    const uuid = input.trim().toLowerCase();
+    return UUID_PATTERN.test(uuid) ? uuid : undefined;
+}
+
+const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 export const useSettings = defineStore('settings', {
     state: (): SettingsState => ({
@@ -30,7 +35,7 @@ export const useSettings = defineStore('settings', {
     }),
     getters: {
         accessToken(): string {
-            return 'pk.eyJ1IjoibWF4aW12ZHciLCJhIjoiY2xnbnJmc3Q3MGFyZzNtcGp0eGNuemp5eCJ9.yUAGNxEFSIxHIXqk0tGoxw';
+            return config.mapboxToken;
         },
         mapStyle(): string {
             return this.darkMode
@@ -38,11 +43,7 @@ export const useSettings = defineStore('settings', {
                 : 'mapbox://styles/mapbox/streets-v12';
         },
         darkMode(): boolean {
-            return this.data.theme === 'SYSTEM'
-                ? prefersDark.matches
-                : this.data.theme === 'DARK'
-                  ? true
-                  : false;
+            return this.data.theme === 'SYSTEM' ? prefersDark() : this.data.theme === 'DARK';
         },
     },
     actions: {
@@ -57,42 +58,53 @@ export const useSettings = defineStore('settings', {
                 })
                 .catch(console.error);
         },
-        save(): Promise<void> {
-            return new Promise((resolve, reject) => {
-                Preferences.set({
-                    key: 'settings',
-                    value: JSON.stringify({ version: this.version, data: this.data }),
-                })
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch(reject);
+        async save(): Promise<void> {
+            await Preferences.set({
+                key: 'settings',
+                value: JSON.stringify({ version: this.version, data: this.data }),
             });
         },
-        load(): Promise<void> {
-            return new Promise((resolve, reject) => {
-                Preferences.get({
-                    key: 'settings',
-                })
-                    .then((result) => {
-                        try {
-                            const value = JSON.parse(result.value);
-                            if (value && value.version === CURRENT_VERSION) {
-                                this.data = value.data;
-                                resolve();
-                            } else {
-                                this.populate();
-                                return this.save();
-                            }
-                        } catch (err) {
-                            reject(err);
-                        }
-                    })
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch(reject);
-            });
+        async load(): Promise<void> {
+            const { value } = await Preferences.get({ key: 'settings' });
+            const stored = value ? JSON.parse(value) : undefined;
+            if (stored?.version === CURRENT_VERSION) {
+                this.data = stored.data;
+            } else {
+                // Nothing stored yet, or an older format: start from the defaults
+                this.populate();
+                await this.save();
+            }
+        },
+        /**
+         * Add a UUID entered by the user.
+         * @returns false when the input is not a UUID or the UUID is already known
+         */
+        async addUuid(input: string, name: string): Promise<boolean> {
+            const uuid = normalizeUuid(input);
+            if (!uuid || this.data.uuids[uuid]) {
+                return false;
+            }
+            this.data.uuids[uuid] = { name: name.trim() || uuid };
+            await this.save();
+            return true;
+        },
+        async removeUuid(uuid: string): Promise<void> {
+            delete this.data.uuids[uuid];
+            await this.save();
+        },
+        /**
+         * Remember the namespace of a detected SemBeacon, so iOS can range for it. Existing
+         * entries (and names the user chose) are kept.
+         * @returns true when the UUID was new
+         */
+        async registerUuid(input: string): Promise<boolean> {
+            const uuid = normalizeUuid(input);
+            if (!uuid || this.data.uuids[uuid]) {
+                return false;
+            }
+            this.data.uuids[uuid] = { name: `SemBeacon ${uuid}`, automatic: true };
+            await this.save();
+            return true;
         },
         populate(): void {
             // Add uuids

@@ -5,7 +5,7 @@
     "strict": false,
     "strictPropertyInitialization": false,
     "jsx": "preserve",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -39,8 +39,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "*.config.ts"
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules"

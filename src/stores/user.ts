@@ -5,16 +5,19 @@ import { Browser } from '@capacitor/browser';
 import { IriString, Subject, User } from '@openhps/rdf';
 import { rdfs, RDFSerializer } from '@openhps/rdf';
 import { BLESemBeacon, BLESemBeaconBuilder, SEMBEACON_FLAG_MOVING } from '@sembeacon/openhps';
-import { SimulatedBeacon, useBeaconAdvertisingStore } from './beacon.advertising';
+import { useBeaconAdvertisingStore } from './beacon.advertising';
+import type { Raw } from 'vue';
 import fetch from 'cross-fetch';
 import { Toast } from '@capacitor/toast';
 import { useLogger } from './logger';
+import { shortenUrl } from '@/services/semBeacon';
 
 const CLIENT_NAME = 'SemBeacon Application';
 const CLIENT_ID = 'https://sembeacon.org/id.jsonld';
 
 export interface UserState {
-    user: User;
+    // Raw<> keeps the class type (Pinia's state typing would unwrap it)
+    user: Raw<User>;
     ready: boolean;
 }
 
@@ -83,15 +86,17 @@ export const useUserStore = defineStore('user', {
             return new Promise((resolve) => {
                 service.on('login', (session: SolidSession) => {
                     console.log(`Logged in ${session.info.webId}`);
-                    this.fetchProfile(session, session.info.webId)
-                        .then(() => {
-                            return this.createBeacon();
-                        })
-                        .then((beacon: SimulatedBeacon) => {
-                            const beaconStore = useBeaconAdvertisingStore();
-                            beacon.latency = 'balanced';
-                            beacon.power = 'medium';
-                            return beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+                    this.fetchProfile(session, session.info.webId as IriString)
+                        .then(() => this.createBeacon())
+                        .then((beacon) => {
+                            if (!beacon) {
+                                return;
+                            }
+                            // Advertise the user's WebID with a lower power and rate
+                            return useBeaconAdvertisingStore().addSimulatedBeacon(
+                                beacon.uid,
+                                Object.assign(beacon, { latency: 'balanced', power: 'medium' } as const),
+                            );
                         })
                         .catch((err) => {
                             console.error(err);
@@ -146,7 +151,9 @@ export const useUserStore = defineStore('user', {
                     })
                     .then((profile) => {
                         if (profile) {
-                            this.user = RDFSerializer.deserializeFromSubject(this.profile);
+                            this.user = RDFSerializer.deserializeFromSubject(
+                                profile as Subject & { url: IriString },
+                            );
                             resolve(this.user);
                         } else {
                             reject(new Error(`User profile is not accessible!`));
@@ -161,17 +168,7 @@ export const useUserStore = defineStore('user', {
                 if (user === undefined) {
                     return resolve(undefined);
                 }
-                BLESemBeaconBuilder.create({
-                    urlShortener: (url: string): Promise<string> => {
-                        return new Promise((resolve, reject) => {
-                            fetch(`https://s.sembeacon.org/shorten?api=Y5Y2SRZ2zo&uri=${url}`)
-                                .then((response) => {
-                                    resolve(response.text());
-                                })
-                                .catch(reject);
-                        });
-                    },
-                })
+                BLESemBeaconBuilder.create({ urlShortener: shortenUrl })
                     .resourceUri(user.id as IriString)
                     .displayName(user.name)
                     .flag(SEMBEACON_FLAG_MOVING)

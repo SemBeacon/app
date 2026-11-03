@@ -184,7 +184,7 @@ export default class MapEditorPage extends Vue {
     }
 
     unmounted() {
-        this.geolocationStore.stop();
+        this.geolocationStore.stop().catch(console.error);
     }
 
     highlightBeacon(uid: string): void {

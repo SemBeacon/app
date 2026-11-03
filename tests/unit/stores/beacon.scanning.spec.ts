@@ -2,14 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { BLEiBeacon, BLEEddystoneURL } from '@openhps/rf';
 import { useBeaconStore } from '@/stores/beacon.scanning';
+import { useSettings } from '@/stores/settings';
 import { altBeacon, eddystoneURL, iBeacon, DEMO_UUID } from '../fixtures/beacons';
 
 describe('beacon.scanning store', () => {
-    it('tracks the proximity UUID of detected iBeacons once', async () => {
+    it('registers SemBeacon namespaces as known UUIDs without renaming existing ones', async () => {
+        const settings = useSettings();
+        settings.data.uuids = { [DEMO_UUID]: { name: 'My building' } };
         const store = useBeaconStore();
-        await store.addBeacon(await iBeacon(1, 1));
-        await store.addBeacon(await iBeacon(1, 2));
-        expect(store.proximityUUIDs).toEqual([DEMO_UUID]);
+        await store.addUUID(DEMO_UUID);
+        await store.addUUID('B9407F30-F5F8-466E-AFF9-25556B57FE6D ');
+        expect(settings.data.uuids[DEMO_UUID].name).toBe('My building');
+        expect(settings.data.uuids['b9407f30-f5f8-466e-aff9-25556b57fe6d']).toMatchObject({
+            automatic: true,
+        });
     });
 
     it('persists beacons and their scan info across store instances', async () => {
@@ -17,6 +23,7 @@ describe('beacon.scanning store', () => {
         const beacon = await altBeacon();
         store.beaconInfo.set(beacon.uid, { rssi: -70, distance: 2.5, lastSeen: 1000 });
         await store.addBeacon(beacon);
+        await store.save();
 
         setActivePinia(createPinia());
         const reloaded = useBeaconStore();
@@ -33,6 +40,7 @@ describe('beacon.scanning store', () => {
         store.beaconInfo.set(url.uid, { rssi: -60, distance: 1, lastSeen: 1 });
         await store.addBeacon(ibeacon);
         await store.addBeacon(url);
+        await store.save();
 
         setActivePinia(createPinia());
         const reloaded = useBeaconStore();
@@ -82,6 +90,7 @@ describe('beacon.scanning findByUID', () => {
         const beacon = await altBeacon();
         store.beaconInfo.set(beacon.uid, { rssi: -60, distance: 1, lastSeen: 1 });
         await store.addBeacon(beacon);
+        await store.save();
 
         setActivePinia(createPinia());
         const found = await useBeaconStore().findByUID(beacon.uid);

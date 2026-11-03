@@ -13,15 +13,16 @@ import { defineStore } from 'pinia';
 import { Building, Floor, SymbolicSpace, SymbolicSpaceService } from '@openhps/geospatial';
 import { DataSerializer, GeographicalPosition } from '@openhps/core';
 import { Preferences } from '@capacitor/preferences';
-import { toRaw } from 'vue';
+import { toRaw, type Raw } from 'vue';
 import { PiniaDataService } from '@/utils/PiniaDataService';
 import { MapObject } from '@/models/MapObject';
 
 let spaceService: SymbolicSpaceService<any>;
 
 export interface EnvironmentState {
-    environments: Map<string, SymbolicSpace<GeographicalPosition>>;
-    floorPlans: Map<string, MapObject>;
+    // Raw<> keeps the class types (Pinia's state typing would unwrap them)
+    environments: Map<string, Raw<SymbolicSpace<GeographicalPosition>>>;
+    floorPlans: Map<string, Raw<MapObject>>;
 }
 
 export const useEnvironmentStore = defineStore('environments', {

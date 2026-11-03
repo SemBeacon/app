@@ -96,7 +96,7 @@ export const activePage = (page: Page) => page.locator('.ion-page:not(.ion-page-
 export const inputValues = (page: Page) =>
     activePage(page)
         .locator('ion-input')
-        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLIonInputElement).value));
+        .evaluateAll((inputs) => inputs.map((input) => (input as unknown as { value?: string }).value));
 
 /** Choose a sort order in the scanner's sort dialog. */
 export async function sortScannerBy(page: Page, label: 'First seen' | 'Last seen' | 'RSSI' | 'Distance') {

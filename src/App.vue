@@ -315,6 +315,16 @@ export default class App extends Vue {
             });
         }
 
+        // Scan info is saved with a delay while scanning: write it before the app is
+        // suspended or the page is hidden
+        const flush = () => this.beaconStore.save().catch(console.error);
+        CapacitorApp.addListener('pause', flush);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                flush();
+            }
+        });
+
         this.handlePermissions().finally(() => {
             CapacitorApp.addListener('resume', () => {
                 this.handlePermissions();
