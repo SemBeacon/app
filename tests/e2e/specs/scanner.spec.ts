@@ -33,6 +33,16 @@ test.describe('with demo beacons', () => {
             .toEqual(expect.arrayContaining(['BEACON_08', 'c187d748']));
     });
 
+    test('shows the RDF description of a SemBeacon in the code editor', async ({ page }) => {
+        await page.locator('.beacon-item', { hasText: 'BEACON_08' }).locator('ion-grid').click();
+        await page.locator('ion-button:has(ion-icon[name="code-slash-outline"])').click();
+        await expect(page).toHaveURL(/\/beacon\/edit\/[^/]+\/code$/);
+        const editor = page.locator('.monaco-editor').first();
+        await expect(editor).toBeVisible();
+        // Turtle content with the SemBeacon vocabulary, highlighted by the TextMate grammar
+        await expect(editor.locator('.view-lines')).toContainText('sembeacon');
+    });
+
     test('remembers every sort option, including distance', async ({ page }) => {
         await sortScannerBy(page, 'Distance');
         await page.locator('ion-button:has(ion-icon[name="funnel"])').click();
