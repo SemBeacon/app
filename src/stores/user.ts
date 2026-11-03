@@ -88,11 +88,10 @@ export const useUserStore = defineStore('user', {
                             return this.createBeacon();
                         })
                         .then((beacon: SimulatedBeacon) => {
-                            console.log('Created user beacon', beacon);
                             const beaconStore = useBeaconAdvertisingStore();
                             beacon.latency = 'balanced';
                             beacon.power = 'medium';
-                            beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+                            return beaconStore.addSimulatedBeacon(beacon.uid, beacon);
                         })
                         .catch((err) => {
                             console.error(err);

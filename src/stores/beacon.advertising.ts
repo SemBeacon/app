@@ -261,113 +261,87 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                     : undefined,
             );
         },
-        delete(beacon: BLEBeaconObject): void {
+        delete(beacon: BLEBeaconObject): Promise<void> {
             this.beacons.delete(beacon.uid);
-            this.save();
+            return this.save();
         },
-        isAdvertising(beacon: SimulatedBeacon): Promise<boolean> {
+        isAdvertising(beacon?: SimulatedBeacon): Promise<boolean> {
+            if (!bluetoothle) {
+                return Promise.resolve(false);
+            }
             return new Promise((resolve, reject) => {
-                if (!bluetoothle) {
-                    resolve(false);
-                }
                 bluetoothle.isAdvertising(
-                    (result) => {
-                        console.log('Checked if advertising', beacon.uid, result.isAdvertising);
-                        resolve(result.isAdvertising);
-                    },
-                    (error) => {
-                        reject(error);
-                    },
-                    beacon
-                        ? {
-                              identifier: beacon.uid,
-                          }
-                        : undefined,
+                    (result) => resolve(result.isAdvertising),
+                    reject,
+                    beacon ? { identifier: beacon.uid } : undefined,
                 );
             });
         },
+        /** Rebuild a beacon with the builder of its type, so its advertisement data is current. */
         buildBeacon(beacon: BLEBeaconObject): Promise<BLEBeaconObject> {
-            return new Promise((resolve, reject) => {
-                if (beacon instanceof BLESemBeacon) {
-                    BLESemBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-                } else if (beacon instanceof BLEAltBeacon) {
-                    BLEAltBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-                } else if (beacon instanceof BLEiBeacon) {
-                    BLEiBeaconBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-                } else if (beacon instanceof BLEEddystoneURL) {
-                    BLEEddystoneURLBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-                } else if (beacon instanceof BLEEddystoneUID) {
-                    BLEEddystoneUIDBuilder.fromBeacon(beacon).build().then(resolve).catch(reject);
-                }
-            });
+            if (beacon instanceof BLESemBeacon) {
+                return BLESemBeaconBuilder.fromBeacon(beacon).build();
+            } else if (beacon instanceof BLEAltBeacon) {
+                return BLEAltBeaconBuilder.fromBeacon(beacon).build();
+            } else if (beacon instanceof BLEiBeacon) {
+                return BLEiBeaconBuilder.fromBeacon(beacon).build();
+            } else if (beacon instanceof BLEEddystoneURL) {
+                return BLEEddystoneURLBuilder.fromBeacon(beacon).build();
+            } else if (beacon instanceof BLEEddystoneUID) {
+                return BLEEddystoneUIDBuilder.fromBeacon(beacon).build();
+            }
+            return Promise.reject(
+                new Error(`Simulating ${beacon.constructor.name} beacons is not supported`),
+            );
         },
-        addSimulatedBeacon(
+        async addSimulatedBeacon(
             uid: string,
-            beacon: BLEBeaconObject & (Partial<SimulatedBeacon> | any),
-        ): void {
-            this.buildBeacon(beacon)
-                .then((beacon) => {
-                    if (!this.beacons.has(uid)) {
-                        (beacon as any).advertising = false;
-                    }
-                    beacon.uid = uid;
-                    beacon.latency = beacon.latency ?? 'lowLatency';
-                    beacon.power = beacon.power ?? 'high';
-                    this.beacons.set(uid, beacon);
-                    return this.save();
-                })
-                .then(() => {
-                    return this.isAdvertising(beacon);
-                })
-                .then((advertising) => {
-                    this.beacons.get(uid).advertising = advertising;
-                });
+            beacon: BLEBeaconObject & Partial<SimulatedBeacon>,
+        ): Promise<void> {
+            const built = (await this.buildBeacon(beacon)) as SimulatedBeacon;
+            built.uid = uid;
+            built.advertising = this.beacons.get(uid)?.advertising ?? false;
+            built.latency = beacon.latency ?? 'lowLatency';
+            built.power = beacon.power ?? 'high';
+            this.beacons.set(uid, built);
+            await this.save();
+            const advertising = await this.isAdvertising(built).catch(() => false);
+            const stored = this.beacons.get(uid);
+            if (stored) {
+                stored.advertising = advertising;
+            }
         },
-        load(): Promise<void> {
-            return new Promise((resolve, reject) => {
-                const logger = useLogger();
-                logger.log('info', `Loading advertising beacons ...`);
-                Preferences.get({
-                    key: 'beacon.advertising',
-                })
-                    .then((result) => {
-                        if (result.value && result.value !== 'undefined') {
-                            const data = JSON.parse(result.value);
-                            if (data) {
-                                const beacons: { [k: string]: any } =
-                                    DataSerializer.deserialize(data);
-                                this.beacons = new Map(Object.entries(beacons));
-                                // Check if beacons are still advertising
-                                (this.beacons as Map<string, SimulatedBeacon>).forEach((beacon) => {
-                                    this.isAdvertising(beacon).then((advertising) => {
-                                        beacon.advertising = advertising;
-                                    });
-                                });
-                            }
-                        }
-                        resolve();
+        async load(): Promise<void> {
+            const logger = useLogger();
+            logger.log('info', `Loading advertising beacons ...`);
+            const { value } = await Preferences.get({ key: 'beacon.advertising' });
+            if (!value || value === 'undefined') {
+                return;
+            }
+            const data = JSON.parse(value);
+            if (!data) {
+                return;
+            }
+            const beacons: Record<string, SimulatedBeacon> = DataSerializer.deserialize(data);
+            this.beacons = new Map(Object.entries(beacons));
+            // Advertising may have continued in the background
+            this.beacons.forEach((beacon: SimulatedBeacon) => {
+                this.isAdvertising(beacon)
+                    .then((advertising) => {
+                        beacon.advertising = advertising;
                     })
-                    .catch(reject);
+                    .catch(() => undefined);
             });
         },
-        save(): Promise<void> {
-            return new Promise((resolve, reject) => {
-                Promise.resolve(
-                    this.state === ControllerState.READY ? Promise.resolve() : this.load(),
-                )
-                    .then(() => {
-                        const serialized = DataSerializer.serialize(
-                            Object.fromEntries(toRaw(this.beacons).entries()),
-                        );
-                        const logger = useLogger();
-                        logger.log('info', `Saving advertising beacons ...`);
-                        return Preferences.set({
-                            key: 'beacon.advertising',
-                            value: JSON.stringify(serialized),
-                        });
-                    })
-                    .then(resolve)
-                    .catch(reject);
+        async save(): Promise<void> {
+            const logger = useLogger();
+            logger.log('info', `Saving advertising beacons ...`);
+            const serialized = DataSerializer.serialize(
+                Object.fromEntries(toRaw(this.beacons).entries()),
+            );
+            await Preferences.set({
+                key: 'beacon.advertising',
+                value: JSON.stringify(serialized),
             });
         },
         async updateNotification(): Promise<void> {

@@ -131,6 +131,7 @@
 </template>
 
 <script lang="ts">
+import { Toast } from '@capacitor/toast';
 import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,
@@ -342,10 +343,12 @@ export default class BeaconPage extends Vue {
     }
 
     saveBeacon(): void {
-        this.beaconSimulatorStore.addSimulatedBeacon(
-            this.uid as string,
-            this.beacon as unknown as SimulatedBeacon,
-        );
+        this.beaconSimulatorStore
+            .addSimulatedBeacon(this.uid as string, this.beacon as unknown as SimulatedBeacon)
+            .catch((err) => {
+                console.error(err);
+                Toast.show({ text: `Unable to save beacon! ${err}` });
+            });
         this.enabled = false;
         this.$router.replace({ path: '/beacon/simulator' });
     }

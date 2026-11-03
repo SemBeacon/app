@@ -26,9 +26,7 @@ describe('beacon.advertising store', () => {
         const store = useBeaconAdvertisingStore();
         store.state = ControllerState.READY;
         const beacon = await iBeacon();
-        store.addSimulatedBeacon('sim-1', beacon);
-
-        await vi.waitFor(() => expect(store.findByUID('sim-1')).toBeDefined());
+        await store.addSimulatedBeacon('sim-1', beacon);
         const simulated = store.findByUID('sim-1');
         expect(simulated).toBeInstanceOf(BLEiBeacon);
         expect(simulated).toMatchObject({ advertising: false, latency: 'lowLatency', power: 'high' });
@@ -37,9 +35,7 @@ describe('beacon.advertising store', () => {
     it('persists simulated beacons', async () => {
         const store = useBeaconAdvertisingStore();
         store.state = ControllerState.READY;
-        store.addSimulatedBeacon('sim-2', await altBeacon());
-        await vi.waitFor(() => expect(store.findByUID('sim-2')).toBeDefined());
-        await store.save();
+        await store.addSimulatedBeacon('sim-2', await altBeacon());
 
         setActivePinia(createPinia());
         const reloaded = useBeaconAdvertisingStore();
@@ -60,7 +56,32 @@ describe('beacon.advertising store', () => {
         const store = useBeaconAdvertisingStore();
         store.state = ControllerState.READY;
         store.beacons.set('x', (await iBeacon()) as any);
-        store.delete({ uid: 'x' } as BLEBeaconObject);
+        await store.delete({ uid: 'x' } as BLEBeaconObject);
         expect(store.findByUID('x')).toBeUndefined();
+    });
+});
+
+describe('beacon.advertising on platforms without advertising', () => {
+    it('keeps every added beacon while not READY (web, iOS)', async () => {
+        const store = useBeaconAdvertisingStore();
+        await store.initialize(); // web: NOT_SUPPORTED
+        expect(store.state).toBe(ControllerState.NOT_SUPPORTED);
+
+        await store.addSimulatedBeacon('one', await iBeacon(1, 1));
+        await store.addSimulatedBeacon('two', await iBeacon(1, 2));
+        expect(store.findByUID('one')).toBeDefined();
+        expect(store.findByUID('two')).toBeDefined();
+
+        setActivePinia(createPinia());
+        const reloaded = useBeaconAdvertisingStore();
+        await reloaded.load();
+        expect([...reloaded.beacons.keys()].sort()).toEqual(['one', 'two']);
+    });
+
+    it('rejects beacon types it cannot simulate', async () => {
+        const store = useBeaconAdvertisingStore();
+        await expect(store.addSimulatedBeacon('x', new BLEBeaconObject() as any)).rejects.toThrow(
+            /not supported/,
+        );
     });
 });

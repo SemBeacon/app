@@ -120,6 +120,7 @@ import { ControllerState } from '@/stores/types';
 import { addOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { useLogger } from '@/stores/logger';
+import { Toast } from '@capacitor/toast';
 
 addIcons({
     addOutline,
@@ -216,49 +217,24 @@ export default class BLESimulatorComponent extends Vue {
         await action.present();
     }
 
-    createBeacon(type: new () => BLEBeaconObject): void {
-        switch (type) {
-            case BLEiBeacon:
-                BLEiBeaconBuilder.create()
-                    .build()
-                    .then((beacon) => {
-                        this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
-                        this.$router.push(`/beacon/edit/${beacon.uid}`);
-                    });
-                return;
-            case BLEAltBeacon:
-                BLEAltBeaconBuilder.create()
-                    .build()
-                    .then((beacon) => {
-                        this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
-                        this.$router.push(`/beacon/edit/${beacon.uid}`);
-                    });
-                return;
-            case BLESemBeacon:
-                BLESemBeaconBuilder.create()
-                    .build()
-                    .then((beacon) => {
-                        this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
-                        this.$router.push(`/beacon/edit/${beacon.uid}`);
-                    });
-                return;
-            case BLEEddystoneURL:
-                BLEEddystoneURLBuilder.create()
-                    .url('https://sembeacon.org')
-                    .build()
-                    .then((beacon) => {
-                        this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
-                        this.$router.push(`/beacon/edit/${beacon.uid}`);
-                    });
-                return;
-            case BLEEddystoneUID:
-                BLEEddystoneUIDBuilder.create()
-                    .build()
-                    .then((beacon) => {
-                        this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
-                        this.$router.push(`/beacon/edit/${beacon.uid}`);
-                    });
-                return;
+    /** New beacons start with the builder defaults; they are edited on the next page. */
+    readonly beaconFactories = new Map<new () => BLEBeaconObject, () => Promise<BLEBeaconObject>>([
+        [BLEiBeacon, () => BLEiBeaconBuilder.create().build()],
+        [BLEAltBeacon, () => BLEAltBeaconBuilder.create().build()],
+        [BLESemBeacon, () => BLESemBeaconBuilder.create().build()],
+        [BLEEddystoneURL, () => BLEEddystoneURLBuilder.create().url('https://sembeacon.org').build()],
+        [BLEEddystoneUID, () => BLEEddystoneUIDBuilder.create().build()],
+    ]);
+
+    async createBeacon(type: new () => BLEBeaconObject): Promise<void> {
+        try {
+            const beacon = await this.beaconFactories.get(type)();
+            // Add before navigating: the edit page looks the beacon up in the store
+            await this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
+            this.$router.push(`/beacon/edit/${beacon.uid}`);
+        } catch (err) {
+            console.error(err);
+            Toast.show({ text: `Unable to create beacon! ${err}` });
         }
     }
 
@@ -276,7 +252,7 @@ export default class BLESimulatorComponent extends Vue {
         this.beaconStore.initializeNotifications().catch(console.error);
     }
     deleteBeacon(beacon: SimulatedBeacon): void {
-        this.beaconStore.delete(beacon);
+        this.beaconStore.delete(beacon).catch(console.error);
     }
 
     stopAdvertising(): void {
@@ -298,14 +274,17 @@ export default class BLESimulatorComponent extends Vue {
                 });
             })
             .then((beacons) => {
-                this.beaconStore.addSimulatedBeacon(beacons.result.uid, beacons.result);
                 beacons.beacons.forEach((beacon) => {
                     if (beacon instanceof BLESemBeacon) {
                         beacon.setFlag(SEMBEACON_FLAG_HAS_POSITION);
                         beacon.setFlag(SEMBEACON_FLAG_HAS_SYSTEM);
                     }
-                    this.beaconStore.addSimulatedBeacon(beacon.uid, beacon);
                 });
+                return Promise.all(
+                    [beacons.result, ...beacons.beacons].map((beacon) =>
+                        this.beaconStore.addSimulatedBeacon(beacon.uid, beacon),
+                    ),
+                );
             })
             .catch(console.error)
             .finally(() => {
