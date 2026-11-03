@@ -7,9 +7,12 @@ The SemBeacon application showcases the capabilities of the SemBeacon platform. 
 
 ## Development
 ```bash
-yarn install        # also copies the OpenHPS browser bundles to public/js/vendor
-yarn dev            # https://localhost:8085
+cp .env.example .env   # set VITE_MAPBOX_TOKEN (maps and geocoding)
+yarn install           # also copies the OpenHPS browser bundles to public/js/vendor
+yarn dev               # https://localhost:8085
 ```
+
+CI builds get the Mapbox token from the `MAPBOX_TOKEN` repository secret.
 
 Browsers cannot scan for or advertise Bluetooth beacons, so the scanner and simulator show
 "not supported" on the web. To see the app with data, run `SemBeacon.demo()` in the browser

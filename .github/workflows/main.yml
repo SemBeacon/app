@@ -23,6 +23,8 @@ jobs:
 
       - name: Build web app
         run: yarn build
+        env:
+          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
 
       - name: Copy web app and plugins into the Android project
         run: npx cap sync android

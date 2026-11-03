@@ -1,6 +1,7 @@
 /**
- * External endpoints and keys. Defaults are the public SemBeacon services; override them
- * with VITE_* variables (see .env.example) for staging or self-hosted deployments.
+ * External endpoints and keys, from VITE_* variables (see .env.example). The SemBeacon
+ * services have defaults; the Mapbox token must be provided (local .env, CI secret
+ * MAPBOX_TOKEN), otherwise maps and geocoding do not load.
  * Keep src/workers/BLEScannerWorker.worker.js in sync: it is not bundled and cannot import
  * this module.
  */
@@ -11,7 +12,6 @@ export const config = {
     shortenerUrl: env.VITE_SHORTENER_URL ?? 'https://s.sembeacon.org/shorten?api=Y5Y2SRZ2zo',
     /** CORS proxy prefix for fetching SemBeacon resources; the target URI is appended. */
     corsProxyUrl: env.VITE_CORS_PROXY_URL ?? 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
-    /** Public Mapbox token (pk.*) for map tiles and geocoding. */
-    mapboxToken:
-        env.VITE_MAPBOX_TOKEN,
+    /** Mapbox access token (pk.*) for map tiles and geocoding. */
+    mapboxToken: env.VITE_MAPBOX_TOKEN,
 } as const;

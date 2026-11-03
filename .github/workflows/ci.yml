@@ -78,6 +78,7 @@ jobs:
       - run: npx playwright test -c playwright.screenshots.config.ts
         env:
           HOME: /root
+          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: store-screenshots
