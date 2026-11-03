@@ -42,6 +42,20 @@ export interface BeaconAdvertisingState {
 // Notification refresh timer while advertising: not reactive state
 let watchDog: ReturnType<typeof setInterval> | undefined;
 
+/**
+ * Initialise the Bluetooth plugin (asks to enable Bluetooth if needed) and resolve with
+ * the first reported status. The plugin reports through a callback, possibly more than once.
+ */
+function initializeBluetooth(): Promise<string> {
+    return new Promise((resolve) => {
+        bluetoothle.initialize((result) => resolve(result.status), {
+            request: true,
+            statusReceiver: false,
+            restoreKey: 'sembeacon',
+        });
+    });
+}
+
 export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
     state: (): BeaconAdvertisingState => ({
         beacons: new Map(),
@@ -131,7 +145,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 }
             });
         },
-        initialize(): Promise<void> {
+        async initialize(): Promise<void> {
             if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'web') {
                 // Advertising is only implemented on Android; simulated beacons can
                 // still be created and edited.
@@ -139,46 +153,30 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
                 return this.load();
             }
             this.state = ControllerState.INITIALIZING;
-
-            return new Promise((resolve, reject) => {
-                const logger = useLogger();
-                this.load()
-                    .then(() => {
-                        if (!bluetoothle) {
-                            logger.log('error', 'BluetoothLE not available');
-                            this.state = ControllerState.DISABLED;
-                            return resolve();
-                        }
-
-                        logger.log('info', 'Checking advertising permissions ...');
-                        return this.requestPermission();
-                    })
-                    .then(() => {
-                        logger.log('info', 'Initializing Bluetooth advertiser ...');
-
-                        bluetoothle.initialize(
-                            (result) => {
-                                if (result.status !== 'enabled') {
-                                    this.state = ControllerState.DISABLED;
-                                    logger.log('warn', `Bluetooth is disabled (${result.status})!`);
-                                    return reject(new Error(`Bluetooth is disabled!`));
-                                }
-                                logger.log('info', `Bluetooth initialized (${result.status})`);
-                                this.state = ControllerState.READY;
-                            },
-                            {
-                                request: true,
-                                statusReceiver: false,
-                                restoreKey: 'sembeacon',
-                            },
-                        );
-                    })
-                    .catch((error: Error) => {
-                        logger.log('error', error);
-                        this.state = ControllerState.NO_PERMISSION;
-                        reject(error);
-                    });
-            });
+            const logger = useLogger();
+            await this.load();
+            if (!bluetoothle) {
+                logger.log('error', 'BluetoothLE not available');
+                this.state = ControllerState.DISABLED;
+                return;
+            }
+            try {
+                logger.log('info', 'Checking advertising permissions ...');
+                await this.requestPermission();
+            } catch (error) {
+                logger.log('error', error);
+                this.state = ControllerState.NO_PERMISSION;
+                throw error;
+            }
+            logger.log('info', 'Initializing Bluetooth advertiser ...');
+            const status = await initializeBluetooth();
+            if (status !== 'enabled') {
+                logger.log('warn', `Bluetooth is disabled (${status})!`);
+                this.state = ControllerState.DISABLED;
+                throw new Error('Bluetooth is disabled!');
+            }
+            logger.log('info', `Bluetooth initialized (${status})`);
+            this.state = ControllerState.READY;
         },
         startAdvertising(beacon: SimulatedBeacon): void {
             // Extract advertisement and scan response data

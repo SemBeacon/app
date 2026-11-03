@@ -1,4 +1,5 @@
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 import { defineStore } from 'pinia';
 
 export interface LogEntry {
@@ -14,6 +15,13 @@ export const MAX_LOG_ENTRIES = 500;
 export const FLUSH_DELAY_MS = 1000;
 
 const LOG_DIRECTORY = 'sembeacon';
+/**
+ * Android (scoped storage) does not allow writing to the public Documents folder; the
+ * app-specific external directory (Android/data/org.sembeacon/files) needs no permission
+ * and is reachable over USB/adb. iOS keeps the app's Documents folder.
+ */
+const LOG_BASE_DIRECTORY =
+    Capacitor.getPlatform() === 'android' ? Directory.External : Directory.Documents;
 const LOG_FILE = `${LOG_DIRECTORY}/${Date.now()}_log.txt`;
 
 // Write buffer: not reactive state, only used to batch file writes
@@ -32,10 +40,12 @@ export const useLogger = defineStore('logging', {
     actions: {
         async initialize(): Promise<void> {
             try {
-                await Filesystem.requestPermissions();
+                if (LOG_BASE_DIRECTORY === Directory.Documents) {
+                    await Filesystem.requestPermissions();
+                }
                 await Filesystem.mkdir({
                     path: LOG_DIRECTORY,
-                    directory: Directory.Documents,
+                    directory: LOG_BASE_DIRECTORY,
                     recursive: true,
                 });
             } catch (err) {
@@ -76,7 +86,7 @@ export const useLogger = defineStore('logging', {
                     Filesystem.appendFile({
                         path: LOG_FILE,
                         data: entries.map(formatEntry).join('\n') + '\n',
-                        directory: Directory.Documents,
+                        directory: LOG_BASE_DIRECTORY,
                         encoding: Encoding.UTF8,
                     }),
                 )

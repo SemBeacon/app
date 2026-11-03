@@ -9,7 +9,8 @@ const config: CapacitorConfig = {
         androidScheme: 'https',
         hostname: 'app.sembeacon.org',
     },
-    loggingBehavior: 'none',
+    // Console output in logcat/Xcode for debug builds only
+    loggingBehavior: 'debug',
     android: {
         includePlugins: [
             '@capacitor/splash-screen',

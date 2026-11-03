@@ -4,7 +4,7 @@ import { FLUSH_DELAY_MS, MAX_LOG_ENTRIES, useLogger } from '@/stores/logger';
 
 // Capacitor plugins are proxies that cannot be spied on; replace the module instead
 vi.mock('@capacitor/filesystem', () => ({
-    Directory: { Documents: 'DOCUMENTS' },
+    Directory: { Documents: 'DOCUMENTS', External: 'EXTERNAL' },
     Encoding: { UTF8: 'utf8' },
     Filesystem: { appendFile: vi.fn(), mkdir: vi.fn(), requestPermissions: vi.fn() },
 }));
