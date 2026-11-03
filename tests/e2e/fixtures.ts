@@ -75,14 +75,28 @@ const STARTING_STATES = [1 /* INITIALIZING */, 2 /* PENDING */];
  * would otherwise override the READY state that demo mode sets.
  */
 export async function loadDemoBeacons(page: Page) {
-    await page.waitForFunction((starting) => {
-        const stores = window.SemBeacon?.stores;
-        return (
-            stores !== undefined &&
-            !starting.includes(stores.beaconScanning.state) &&
-            !starting.includes(stores.beaconAdvertising.state)
-        );
-    }, STARTING_STATES);
+    await page
+        .waitForFunction(
+            (starting) => {
+                const stores = window.SemBeacon?.stores;
+                return (
+                    stores !== undefined &&
+                    !starting.includes(stores.beaconScanning.state) &&
+                    !starting.includes(stores.beaconAdvertising.state)
+                );
+            },
+            STARTING_STATES,
+            { timeout: 30_000 },
+        )
+        .catch(async (error) => {
+            const states = await page.evaluate(() => ({
+                scanner: window.SemBeacon?.stores.beaconScanning.state,
+                advertiser: window.SemBeacon?.stores.beaconAdvertising.state,
+            }));
+            throw new Error(`Controllers did not finish starting: ${JSON.stringify(states)}`, {
+                cause: error,
+            });
+        });
     await page.evaluate(() => window.SemBeacon!.demo());
     // Both SemBeacons are resolved through the (mocked) network
     await expect(page.getByText('BEACON_08').first()).toBeVisible({ timeout: 20_000 });
