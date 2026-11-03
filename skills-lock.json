@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "skills": {
+    "ionic-app-development": {
+      "source": "capawesome-team/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ionic-app-development/SKILL.md",
+      "computedHash": "0de1816d61abd7cff966745ccfed04cd40186b6156f5e94d2c976ea4c14d698d",
+      "installMode": "copy"
+    },
+    "ionic-vue": {
+      "source": "capawesome-team/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ionic-vue/SKILL.md",
+      "computedHash": "938ac08493d5b90de286a5846946073ba02af3b35943e7f2a734b06dba1f8da0",
+      "installMode": "copy"
+    },
+    "vitest": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest/SKILL.md",
+      "computedHash": "90f1cee9326269c91b46a601b3a575491505d8e771009dacff01329381d45291",
+      "installMode": "copy"
+    },
+    "vue-pinia-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-pinia-best-practices/SKILL.md",
+      "computedHash": "d4ba913bec21910b8e37b2115cd964df2dc43ad62346b981c7b88d4ddc8cf792",
+      "installMode": "copy"
+    },
+    "vue-testing-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-testing-best-practices/SKILL.md",
+      "computedHash": "58d365899f54be9e5fa2c2e455093f9567620600578ae92aaa2f31d9b19a59ad",
+      "installMode": "copy"
+    }
+  }
+}
