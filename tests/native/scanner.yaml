@@ -6,7 +6,7 @@ name: scanner
 - extendedWaitUntil:
     visible: '.*WebID.*'
     timeout: 30000
-  optional: true
+    optional: true
 - takeScreenshot: 01-scanner
 - tapOn: '.*BEACON_08.*'
 - extendedWaitUntil:
