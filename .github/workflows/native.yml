@@ -34,6 +34,9 @@ jobs:
           distribution: zulu
           java-version: '21'
       - uses: android-actions/setup-android@v3
+        with:
+          # The default package list contains 'tools', which current SDK tools no longer have
+          packages: platform-tools platforms;android-36 build-tools;36.0.0
       - run: yarn install --frozen-lockfile
       - name: Build demo APK
         env:
