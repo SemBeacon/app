@@ -53,7 +53,11 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: npx cap build android --androidreleasetype APK --keystorepath "${{ steps.decode_keystore.outputs.filePath }}" --keystorepass "$SIGNING_STORE_PASSWORD" --keystorealias "$SIGNING_KEY_ALIAS" --keystorealiaspass "$SIGNING_KEY_PASSWORD"
+        run: npx cap build android --androidreleasetype APK --signing-type apksigner --keystorepath "${{ steps.decode_keystore.outputs.filePath }}" --keystorepass "$SIGNING_STORE_PASSWORD" --keystorealias "$SIGNING_KEY_ALIAS" --keystorealiaspass "$SIGNING_KEY_PASSWORD"
+
+      - name: Verify APK signature
+        # Target SDK 30+ requires signature scheme v2 or later; jarsigner (v1) APKs do not install
+        run: '"$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose android/app/build/outputs/apk/release/app-release-signed.apk'
 
       - name: Archive APK
         uses: actions/upload-artifact@v4
