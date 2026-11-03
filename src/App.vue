@@ -232,37 +232,28 @@ export default class App extends Vue {
         return this.settings.darkMode ? '/assets/logo/logo_alpha.svg' : '/assets/logo/logo.svg';
     }
 
-    handlePermissions(): Promise<void> {
-        return new Promise((resolve) => {
-            if (
-                !this.isLoading &&
-                (this.beaconStore.state !== ControllerState.READY ||
-                    this.beaconSimulatorStore.state !== ControllerState.READY) &&
-                this.beaconStore.state !== ControllerState.INITIALIZING &&
-                this.beaconSimulatorStore.state !== ControllerState.INITIALIZING
-            ) {
-                this.isLoading = true;
-                Promise.all([
-                    ...(this.beaconStore.state !== ControllerState.READY
-                        ? [this.beaconStore.initialize()]
-                        : []),
-                ])
-                    .then(() => {
-                        return Promise.all([
-                            ...(this.beaconSimulatorStore.state !== ControllerState.READY
-                                ? [this.beaconSimulatorStore.initialize()]
-                                : []),
-                        ]);
-                    })
-                    .catch((err: Error) => {
-                        console.error('Initialization error', err);
-                    })
-                    .finally(() => {
-                        this.isLoading = false;
-                        resolve();
-                    });
+    /**
+     * (Re)initialise the scanner and advertiser, e.g. after the user granted permissions
+     * in the system settings and returned to the app.
+     */
+    async handlePermissions(): Promise<void> {
+        const needsInit = (state: ControllerState) =>
+            state !== ControllerState.READY &&
+            state !== ControllerState.INITIALIZING &&
+            state !== ControllerState.NOT_SUPPORTED;
+        if (this.isLoading) {
+            return;
+        }
+        this.isLoading = true;
+        // Scanner and advertiser are independent: one failing must not block the other
+        for (const store of [this.beaconStore, this.beaconSimulatorStore]) {
+            if (needsInit(store.state)) {
+                await store.initialize().catch((err: Error) => {
+                    console.error('Initialization error', err);
+                });
             }
-        });
+        }
+        this.isLoading = false;
     }
 
     async beforeMount() {

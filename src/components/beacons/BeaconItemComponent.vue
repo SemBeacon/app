@@ -6,9 +6,9 @@
                 slot="start"
             >
                 <img
-                    :src="beacon.object.picture"
+                    :src="beacon.object.picture ?? '/assets/avatar.svg'"
                     :alt="`Profile picture of ${beacon.object.name}`"
-                    @error="(e) => (e.target as HTMLImageElement).src = 'https://ionicframework.com/docs/img/demos/avatar.svg'"
+                    @error="(e) => (e.target as HTMLImageElement).src = '/assets/avatar.svg'"
                 />
             </ion-avatar>
             <ion-thumbnail v-else-if="beaconIcon" slot="start" @click="onClick">
@@ -149,7 +149,7 @@
             </ion-label>
             <ion-label v-else slot="end">
                 <h2 class="rssi">{{ beacon.rssi }} <small>dBm</small></h2>
-                <small :key="key.value">{{ lastSeen() }}</small>
+                <small :key="key.value" class="relative-time">{{ lastSeen() }}</small>
             </ion-label>
         </ion-item>
         <ion-item-options v-if="simulator && deleteBeacon" @ionSwipe="deleteBeacon">
@@ -193,12 +193,11 @@ import { SimulatedBeacon } from '@/stores/beacon.advertising';
 import { User } from '@openhps/rdf';
 import { trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { useSettings } from '@/stores/settings';
 
 addIcons({
     trash,
 });
-
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
 @Component({
     components: {
@@ -228,6 +227,7 @@ export default class BeaconItemComponent extends Vue {
     };
 
     @Prop() beacon: BLEBeaconObject & Beacon & Partial<SimulatedBeacon> & any;
+    settings = useSettings();
     key = ref(TimeService.now().toString() + Math.random());
     @Prop() simulator: boolean;
     @Prop() disabled: boolean;
@@ -258,7 +258,7 @@ export default class BeaconItemComponent extends Vue {
     get beaconIcon(): string {
         const beaconType = this.beaconType;
         return `/assets/beacons/${beaconType.toLowerCase()}${
-            prefersDark.matches ? '_alpha' : ''
+            this.settings.darkMode ? '_alpha' : ''
         }.svg`;
     }
 
@@ -271,10 +271,17 @@ export default class BeaconItemComponent extends Vue {
         });
     }
 
+    private refreshTimer?: ReturnType<typeof setInterval>;
+
     mounted() {
-        setInterval(() => {
+        // Re-render the relative "last seen" time
+        this.refreshTimer = setInterval(() => {
             (this.key as any) = (this.beacon ? this.beacon.uid : '') + TimeService.now();
         }, 500);
+    }
+
+    unmounted() {
+        clearInterval(this.refreshTimer);
     }
 
     onClick(): void {

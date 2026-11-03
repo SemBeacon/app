@@ -4,6 +4,12 @@
             <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION">
                 No Precise Location permission to scan!
             </permission-error-component>
+            <permission-error-component
+                v-else-if="beaconStore.state === ControllerState.NOT_SUPPORTED"
+                :settings="false"
+            >
+                Bluetooth scanning is not supported on this device.
+            </permission-error-component>
             <beacon-item-component
                 v-for="beacon in beacons"
                 :key="beacon.uid"
@@ -67,26 +73,18 @@ import {
 } from '@ionic/vue';
 import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
 import { Beacon, useBeaconStore } from '@/stores/beacon.scanning';
-import { useEnvironmentStore } from '@/stores/environment';
-import { Capacitor } from '@capacitor/core';
 import { Toast } from '@capacitor/toast';
 import { ControllerState } from '@/stores/types';
 import PermissionErrorComponent from '@/components/PermissionErrorComponent.vue';
 import { BLEBeaconObject } from '@openhps/rf';
 import { stop, search } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { SortKey, sortBeacons } from '@/utils/sortBeacons';
 
 addIcons({
     stop,
     search,
 });
-
-enum SortKey {
-    RSSI,
-    CREATED,
-    MODIFIED,
-    DISTANCE,
-}
 
 @Component({
     components: {
@@ -116,74 +114,34 @@ enum SortKey {
         IonToggle,
     },
 })
-export default class BLESimulatorComponent extends Vue {
+export default class BLEScannerComponent extends Vue {
     ControllerState: any = ControllerState;
 
     sortKey: SortKey = SortKey.CREATED;
     beaconStore = useBeaconStore();
-    environmentStore = useEnvironmentStore();
     loading = false;
-    platform = Capacitor.getPlatform();
 
     get beacons(): (BLEBeaconObject & Beacon)[] {
-        return this.beaconStore.beaconsWithInfo
-            .filter((beacon) => beacon.lastSeen !== undefined)
-            .sort((a, b) => {
-                switch (this.sortKey) {
-                    case SortKey.CREATED:
-                        return a.createdTimestamp - b.createdTimestamp;
-                    case SortKey.MODIFIED:
-                        return b.lastSeen - a.lastSeen;
-                    case SortKey.DISTANCE:
-                        return (
-                            (b.distance ?? Number.MAX_SAFE_INTEGER) -
-                            (a.distance ?? Number.MAX_SAFE_INTEGER)
-                        );
-                    case SortKey.RSSI:
-                    default:
-                        return b.rssi - a.rssi;
-                }
-            });
+        const seen = this.beaconStore.beaconsWithInfo.filter((beacon) => beacon.lastSeen !== undefined);
+        return sortBeacons(seen, this.sortKey);
     }
 
     toggleScan(): void {
-        if (!this.loading) {
-            this.loading = true;
-            if (this.beaconStore.isScanning) {
-                this.beaconStore
-                    .stopScan()
-                    .then(() => {
-                        //
-                    })
-                    .catch((err) => {
-                        //
-                        console.error(err);
-                        Toast.show({
-                            text: `Error while stopping scan! ${err}`,
-                        });
-                    })
-                    .finally(() => {
-                        this.loading = false;
-                    });
-            } else {
-                // Start scan
-                this.beaconStore
-                    .startScan()
-                    .then(() => {
-                        //
-                    })
-                    .catch((err) => {
-                        //
-                        console.error(err);
-                        Toast.show({
-                            text: `Error while starting scan! ${err}`,
-                        });
-                    })
-                    .finally(() => {
-                        this.loading = false;
-                    });
-            }
+        if (this.loading) {
+            return;
         }
+        this.loading = true;
+        const scanning = this.beaconStore.isScanning;
+        (scanning ? this.beaconStore.stopScan() : this.beaconStore.startScan())
+            .catch((err) => {
+                console.error(err);
+                Toast.show({
+                    text: `Error while ${scanning ? 'stopping' : 'starting'} scan! ${err}`,
+                });
+            })
+            .finally(() => {
+                this.loading = false;
+            });
     }
 
     async sort(): Promise<void> {
@@ -193,25 +151,25 @@ export default class BLESimulatorComponent extends Vue {
                 {
                     label: 'First seen',
                     type: 'radio',
-                    value: 'created',
+                    value: SortKey.CREATED,
                     checked: this.sortKey === SortKey.CREATED,
                 },
                 {
                     label: 'Last seen',
                     type: 'radio',
-                    value: 'modified',
+                    value: SortKey.MODIFIED,
                     checked: this.sortKey === SortKey.MODIFIED,
                 },
                 {
                     label: 'RSSI',
                     type: 'radio',
-                    value: 'rssi',
+                    value: SortKey.RSSI,
                     checked: this.sortKey === SortKey.RSSI,
                 },
                 {
                     label: 'Distance',
                     type: 'radio',
-                    value: 'distance',
+                    value: SortKey.DISTANCE,
                     checked: this.sortKey === SortKey.DISTANCE,
                 },
             ],
@@ -219,18 +177,8 @@ export default class BLESimulatorComponent extends Vue {
                 {
                     text: 'OK',
                     role: 'confirm',
-                    handler: (value) => {
-                        switch (value) {
-                            case 'rssi':
-                                this.sortKey = SortKey.RSSI;
-                                break;
-                            case 'created':
-                                this.sortKey = SortKey.CREATED;
-                                break;
-                            case 'modified':
-                                this.sortKey = SortKey.MODIFIED;
-                                break;
-                        }
+                    handler: (value: SortKey) => {
+                        this.sortKey = value;
                     },
                 },
             ],
@@ -252,8 +200,8 @@ export default class BLESimulatorComponent extends Vue {
                     text: 'OK',
                     role: 'confirm',
                     handler: () => {
+                        // Also clears the environments resolved from SemBeacons
                         this.beaconStore.clear();
-                        this.environmentStore.clear();
                     },
                 },
             ],

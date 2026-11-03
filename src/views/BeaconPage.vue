@@ -235,6 +235,7 @@ export default class BeaconPage extends Vue {
     enabled: boolean = false;
     uid: string;
     lastUpdate: number;
+    private refreshTimer?: ReturnType<typeof setInterval>;
 
     onUpdate(beacon: BLEBeaconObject & Partial<Beacon>): void {
         this.beacon = beacon;
@@ -282,11 +283,10 @@ export default class BeaconPage extends Vue {
                         this.beacon.distance = beaconInfo.distance;
                     }
                     this.loading = false;
-                    console.log('Beacon details loaded', this.beacon);
                 })
                 .catch(console.error);
 
-            setInterval(() => {
+            this.refreshTimer = setInterval(() => {
                 if (this.beaconStore.isScanning && !this.simulated) {
                     const beaconInfo = this.beaconStore.findBeaconInfo(beaconUID);
                     if (beaconInfo) {
@@ -297,6 +297,10 @@ export default class BeaconPage extends Vue {
                 }
             }, 500);
         }
+    }
+
+    unmounted(): void {
+        clearInterval(this.refreshTimer);
     }
 
     toggleScan(): void {

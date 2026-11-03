@@ -22,7 +22,7 @@ export default defineConfig({
             caret: 'hide',
         },
     },
-    snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
+    snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
     use: {
         baseURL: `https://localhost:${PORT}`,
         // vite preview serves a self-signed certificate (@vitejs/plugin-basic-ssl)

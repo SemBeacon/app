@@ -47,10 +47,10 @@
                                             <h2>Distance: -</h2>
                                         </ion-col>
                                         <ion-col size="6">
-                                            <h3>Created: {{ firstSeen() }}</h3>
+                                            <h3 class="relative-time">Created: {{ firstSeen() }}</h3>
                                         </ion-col>
                                         <ion-col size="6">
-                                            <h3>Last seen: {{ lastSeen() }}</h3>
+                                            <h3 class="relative-time">Last seen: {{ lastSeen() }}</h3>
                                         </ion-col>
                                     </ion-row>
                                 </ion-grid>

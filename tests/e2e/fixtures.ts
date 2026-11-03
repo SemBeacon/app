@@ -5,8 +5,15 @@ import { join } from 'node:path';
 const HTTP = join(__dirname, 'fixtures', 'http');
 const read = (file: string) => readFileSync(join(HTTP, file), 'utf-8');
 
-/** Fixed "now" so relative times ("5 min ago") render the same on every run. */
-export const FIXED_NOW = new Date('2025-02-01T10:00:00Z');
+/**
+ * Start time of the page clock. Time keeps running: freezing it (setFixedTime) breaks
+ * Ionic's tap handling, which relies on timestamps. Relative times ("5s ago") are masked
+ * in screenshots instead (`.relative-time`).
+ */
+export const START_TIME = new Date('2025-02-01T10:00:00Z');
+
+/** Elements whose content depends on elapsed time. */
+export const timeDependent = (page: Page) => [page.locator('.relative-time')];
 
 /**
  * RDF documents served by the mocked CORS proxy, keyed by the requested URI.
@@ -59,11 +66,35 @@ export async function mockNetwork(context: BrowserContext, { allowMapTiles = fal
     );
 }
 
-/** Load the built-in demo beacons (window.SemBeacon.debug, see stores/beacon.scanning.ts). */
+/** ControllerState values (src/stores/types.ts) that mean "still starting". */
+const STARTING_STATES = [1 /* INITIALIZING */, 2 /* PENDING */];
+
+/**
+ * Load the built-in demo beacons (window.SemBeacon.debug, see stores/beacon.scanning.ts).
+ * Waits for the scanner initialisation to settle first; it would otherwise override the
+ * READY state that demo mode sets.
+ */
 export async function loadDemoBeacons(page: Page) {
-    await page.waitForFunction(() => typeof window.SemBeacon?.debug === 'function');
+    await page.waitForFunction(
+        (starting) => {
+            const store = window.SemBeacon?.stores?.beaconScanning;
+            return store !== undefined && !starting.includes(store.state);
+        },
+        STARTING_STATES,
+    );
     await page.evaluate(() => window.SemBeacon.debug());
+    // Both SemBeacons are resolved through the (mocked) network
     await expect(page.getByText('BEACON_08')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('Demo User')).toBeVisible({ timeout: 20_000 });
+}
+
+/** Choose a sort order in the scanner's sort dialog. */
+export async function sortScannerBy(page: Page, label: 'First seen' | 'Last seen' | 'RSSI' | 'Distance') {
+    await page.locator('ion-button:has(ion-icon[name="funnel"])').click();
+    const alert = page.locator('ion-alert');
+    await alert.getByText(label, { exact: true }).click();
+    await alert.getByRole('button', { name: 'OK' }).click();
+    await expect(alert).toBeHidden();
 }
 
 export const test = base.extend<{ pageErrors: Error[] }>({
@@ -72,7 +103,8 @@ export const test = base.extend<{ pageErrors: Error[] }>({
         await use(context);
     },
     page: async ({ page }, use) => {
-        await page.clock.setFixedTime(FIXED_NOW);
+        await page.clock.install({ time: START_TIME });
+        await page.clock.resume();
         await use(page);
     },
     pageErrors: async ({ page }, use) => {

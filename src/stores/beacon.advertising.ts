@@ -126,10 +126,13 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
             });
         },
         initialize(): Promise<void> {
-            this.state = ControllerState.INITIALIZING;
             if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'web') {
-                return Promise.resolve();
+                // Advertising is only implemented on Android; simulated beacons can
+                // still be created and edited.
+                this.state = ControllerState.NOT_SUPPORTED;
+                return this.load();
             }
+            this.state = ControllerState.INITIALIZING;
 
             return new Promise((resolve, reject) => {
                 const logger = useLogger();

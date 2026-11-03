@@ -66,3 +66,29 @@ describe('beacon.scanning store', () => {
         expect(store.findBeaconInfo(beacon.uid)).toBeUndefined();
     });
 });
+
+describe('beacon.scanning findByUID', () => {
+    it('finds detected beacons without a scanner model', async () => {
+        const store = useBeaconStore();
+        const beacon = await iBeacon();
+        store.beacons.set(beacon.uid, beacon);
+        const found = await store.findByUID(beacon.uid);
+        expect(found).toBeInstanceOf(BLEiBeacon);
+        expect(found?.uid).toBe(beacon.uid);
+    });
+
+    it('falls back to persisted beacons', async () => {
+        const store = useBeaconStore();
+        const beacon = await altBeacon();
+        store.beaconInfo.set(beacon.uid, { rssi: -60, distance: 1, lastSeen: 1 });
+        await store.addBeacon(beacon);
+
+        setActivePinia(createPinia());
+        const found = await useBeaconStore().findByUID(beacon.uid);
+        expect(found?.uid).toBe(beacon.uid);
+    });
+
+    it('resolves undefined for unknown beacons', async () => {
+        await expect(useBeaconStore().findByUID('unknown')).resolves.toBeUndefined();
+    });
+});

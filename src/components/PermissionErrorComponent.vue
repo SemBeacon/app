@@ -5,6 +5,7 @@
         </ion-label>
 
         <ion-button
+            v-if="settings"
             slot="end"
             fill="clear"
             size="default"
@@ -23,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-facing-decorator';
+import { Vue, Component, Prop } from 'vue-facing-decorator';
 import { IonItem, IonLabel, IonButton } from '@ionic/vue';
 import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
 
@@ -35,6 +36,9 @@ import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-s
     },
 })
 export default class PermissionErrorComponent extends Vue {
+    /** Show a button to the app's system settings (pointless when the feature is unsupported). */
+    @Prop({ default: true }) settings: boolean;
+
     onClick(): void {
         NativeSettings.open({
             optionAndroid: AndroidSettings.ApplicationDetails,

@@ -1,27 +1,17 @@
 <template>
     <ion-content :fullscreen="true">
-        <ion-list
-            v-if="
-                beaconStore.state !== ControllerState.READY ||
-                beaconScannerStore.state !== ControllerState.READY ||
-                beacons.length !== 0
-            "
-        >
-            <permission-error-component
-                v-if="
-                    beaconStore.state === ControllerState.NO_PERMISSION ||
-                    beaconScannerStore.state === ControllerState.NO_PERMISSION
-                "
-            >
+        <ion-list v-if="beaconStore.state !== ControllerState.READY || beacons.length !== 0">
+            <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION">
                 No Bluetooth advertising permission to broadcast!
             </permission-error-component>
+            <permission-error-component v-else-if="beaconStore.state === ControllerState.DISABLED">
+                Bluetooth advertising is not available!
+            </permission-error-component>
             <permission-error-component
-                v-else-if="
-                    beaconStore.state === ControllerState.DISABLED ||
-                    beaconScannerStore.state === ControllerState.DISABLED
-                "
+                v-else-if="beaconStore.state === ControllerState.NOT_SUPPORTED"
+                :settings="false"
             >
-                Bluetooth advertising is not supported!
+                Bluetooth advertising is not supported on this device.
             </permission-error-component>
             <beacon-item-component
                 v-for="beacon in beacons"
@@ -172,7 +162,6 @@ export default class BLESimulatorComponent extends Vue {
     downloading: boolean = false;
 
     get isBeaconStoreDisabled(): boolean {
-        console.log('[BLESimulatorComponent] isBeaconStoreDisabled:', this.beaconStore.state !== ControllerState.READY);
         return this.beaconStore.state !== ControllerState.READY;
     }
 

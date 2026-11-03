@@ -32,6 +32,7 @@ import {
     BLEUUID,
     BLEiBeaconBuilder,
     BLEEddystoneURL,
+    BLEEddystoneTLM,
 } from '@openhps/rf';
 import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
@@ -252,7 +253,10 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .build(),
             ]).then((beacons) => {
                 beacons.forEach((beacon: any) => {
-                    beacon.uid = beacon.computeUID();
+                    // Eddystone-TLM frames carry no identifier, so computeUID() is random;
+                    // a fixed UID keeps the demo data identical between runs.
+                    beacon.uid =
+                        beacon instanceof BLEEddystoneTLM ? 'demo-eddystone-tlm' : beacon.computeUID();
                     const beaconInfo = {
                         lastSeen: Date.now(),
                         rssi: -64,
@@ -266,21 +270,21 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
         },
-        findByUID(uid: string): Promise<BLEBeaconObject> {
-            return new Promise((resolve) => {
-                if (!model) {
-                    return new Promise((resolve) => resolve(undefined));
-                }
-                const service = beaconService;
-                service
-                    .findByUID(uid)
-                    .then((beacon) => {
-                        resolve(beacon);
-                    })
-                    .catch(() => {
-                        resolve(undefined);
-                    });
-            });
+        /**
+         * Find a beacon among the detected ones, falling back to persisted beacons. Never
+         * rejects or hangs: resolves undefined when the beacon is unknown, also when the
+         * scanner model could not be built (e.g. no Bluetooth support).
+         */
+        async findByUID(uid: string): Promise<BLEBeaconObject | undefined> {
+            const detected = this.beacons.get(uid);
+            if (detected) {
+                return detected;
+            }
+            try {
+                return await beaconService.findByUID(uid);
+            } catch {
+                return undefined;
+            }
         },
         findByNamespace(namespace: string): BLESemBeacon[] {
             return this.namespaces[namespace as any].beacons as BLESemBeacon[];
@@ -543,8 +547,13 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                     .then(() => {
                         resolve();
                     })
-                    .catch((error: Error) => {
-                        this.state = ControllerState.NO_PERMISSION;
+                    .catch((error: Error & { code?: string }) => {
+                        // Capacitor plugins reject with code UNAVAILABLE when the platform
+                        // lacks the API (e.g. browsers without Web Bluetooth scanning)
+                        this.state =
+                            error?.code === 'UNAVAILABLE'
+                                ? ControllerState.NOT_SUPPORTED
+                                : ControllerState.NO_PERMISSION;
                         // Try loading data
                         this.load().then(() => {
                             reject(error);

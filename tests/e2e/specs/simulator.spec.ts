@@ -1,5 +1,10 @@
 import { test, expect } from '../fixtures';
 
+test('explains that advertising is unsupported in a browser', async ({ page }) => {
+    await page.goto('/beacon/simulator');
+    await expect(page.locator('ion-item[color="danger"]')).toContainText('not supported');
+});
+
 test('loads the example beacons', async ({ page }) => {
     await page.goto('/beacon/simulator');
     await page.locator('ion-card', { hasText: 'Load example beacons' }).getByText('Load beacons').click();

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { toRaw } from 'vue';
 import { IonicVue } from '@ionic/vue';
@@ -38,5 +38,24 @@ describe('BeaconItemComponent', () => {
         const wrapper = mountItem(beacon);
         expect(wrapper.find('.rssi').text()).toContain('-67');
         wrapper.unmount();
+    });
+});
+
+describe('BeaconItemComponent theming and lifecycle', () => {
+    it('uses the light icons on a dark theme setting', async () => {
+        const { useSettings } = await import('@/stores/settings');
+        useSettings().data.theme = 'DARK';
+        const wrapper = mountItem(await iBeacon());
+        expect(wrapper.find('ion-thumbnail img').attributes('src')).toBe('/assets/beacons/ibeacon_alpha.svg');
+        wrapper.unmount();
+    });
+
+    it('stops its refresh timer when unmounted', async () => {
+        vi.useFakeTimers();
+        const wrapper = mountItem(await iBeacon());
+        expect(vi.getTimerCount()).toBeGreaterThan(0);
+        wrapper.unmount();
+        expect(vi.getTimerCount()).toBe(0);
+        vi.useRealTimers();
     });
 });
