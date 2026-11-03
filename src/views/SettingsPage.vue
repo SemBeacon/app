@@ -46,7 +46,6 @@
 </template>
 
 <script lang="ts">
-import { actionSheetController } from '@ionic/vue';
 import { Vue, Component } from 'vue-facing-decorator';
 import {
     IonButtons,

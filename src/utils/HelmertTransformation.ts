@@ -16,7 +16,7 @@ export interface HelmertTransformationResult {
  */
 export class HelmertTransformation {
     private similarity: boolean;
-    private matrix: number[] | false;
+    private matrix: number[];
     private hasControlPoints: boolean;
     private a_: number;
     private sc_: Coordinate;
@@ -48,16 +48,19 @@ export class HelmertTransformation {
             this.matrix = [1, 0, 0, 0, 1, 0];
             this.hasControlPoints = false;
         } else {
-            if (this.similarity || xy.length < 3) this.matrix = this._similarity(xy, XY);
-            else this.matrix = this._helmert(xy, XY);
-            this.hasControlPoints = true;
+            const matrix =
+                this.similarity || xy.length < 3
+                    ? this._similarity(xy, XY)
+                    : this._helmert(xy, XY);
+            this.hasControlPoints = matrix !== false;
+            this.matrix = matrix || [1, 0, 0, 0, 1, 0];
         }
         return this.hasControlPoints;
     }
 
     /**
      * Get the rotation angle of the transformation.
-     * @returns {number} - Rotation angle in radians.
+     * @returns {number} - Clockwise rotation angle in radians, as expected by OpenLayers.
      */
     getRotation(): number {
         return this.a_;
@@ -116,7 +119,7 @@ export class HelmertTransformation {
      */
     private _similarity(xy: Coordinate[], XY: Coordinate[]): number[] | false {
         if (!xy.length || xy.length !== XY.length) {
-            console.log('Helmert: Size of point arrays is incompatible');
+            console.warn('Helmert: Size of point arrays is incompatible');
             return false;
         }
 
@@ -170,15 +173,13 @@ export class HelmertTransformation {
         p = mXY.x - a * mxy.x + b * mxy.y;
         q = mXY.y - b * mxy.x - a * mxy.y;
 
-        this.matrix = [a, -b, p, b, a, q];
-
         const sc = Math.sqrt(a * a + b * b);
         this.a_ = Math.acos(a / sc);
         if (b > 0) this.a_ *= -1;
         this.sc_ = [sc, sc];
         this.tr_ = [p, q];
 
-        return this.matrix;
+        return [a, -b, p, b, a, q];
     }
 
     /**
@@ -197,7 +198,7 @@ export class HelmertTransformation {
         tol?: number,
     ): number[] | false {
         if (!xy.length || xy.length !== XY.length) {
-            console.log('Helmert: Size of point arrays is incompatible');
+            console.warn('Helmert: Size of point arrays is incompatible');
             return false;
         }
 
@@ -311,8 +312,6 @@ export class HelmertTransformation {
         this.sc_ = [k, h];
         this.tr_ = [tx, ty];
 
-        this.matrix = [a * k, -b * h, tx, b * k, a * h, ty];
-
-        return this.matrix;
+        return [a * k, -b * h, tx, b * k, a * h, ty];
     }
 }

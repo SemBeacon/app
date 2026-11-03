@@ -41,3 +41,8 @@ modern-report.html
 .env
 
 android/keystore
+
+# Test output
+/playwright-report
+/test-results
+/blob-report

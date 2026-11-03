@@ -20,8 +20,9 @@
                 </ion-buttons>
             </ion-toolbar>
 
-            <ion-toolbar class="tab-selector"
-                v-if="platform !== 'ios'"
+            <ion-toolbar
+v-if="platform !== 'ios'"
+                class="tab-selector"
             >
                 <ion-segment
                     :value="$route.path"

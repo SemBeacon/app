@@ -28,8 +28,9 @@
                 </ion-buttons>
             </ion-toolbar>
 
-            <ion-toolbar class="tab-selector"
-                v-if="platform !== 'ios'"
+            <ion-toolbar
+v-if="platform !== 'ios'"
+                class="tab-selector"
             >
                 <ion-segment
                     :value="$route.path"
@@ -57,10 +58,6 @@
 import { Vue, Component, Ref } from 'vue-facing-decorator';
 import BLEScannerComponent from '@/components/BLEScannerComponent.vue';
 import {
-    IonTab,
-    IonTabs,
-    IonTabBar,
-    IonTabButton,
     IonButtons,
     IonContent,
     IonHeader,

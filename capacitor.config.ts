@@ -1,7 +1,6 @@
 import { CapacitorConfig } from '@capacitor/cli';
-import { CapacitorElectronConfig } from '@capacitor-community/electron';
 
-const config: CapacitorConfig & CapacitorElectronConfig = {
+const config: CapacitorConfig = {
   appId: 'org.sembeacon',
   appName: 'SemBeacon',
   webDir: 'dist',
