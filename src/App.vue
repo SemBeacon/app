@@ -126,7 +126,7 @@ import {
 import { useBeaconStore } from '@/stores/beacon.scanning';
 import { useUserStore } from '@/stores/user';
 import { useLogger } from '@/stores/logger';
-import { Animation, StatusBar } from '@capacitor/status-bar';
+import { setStatusBarColor } from '@/platform/statusBar';
 import { App as CapacitorApp, URLOpenListenerEvent, AppInfo } from '@capacitor/app';
 import { RDFSerializer } from '@openhps/rdf';
 import { Capacitor } from '@capacitor/core';
@@ -318,13 +318,7 @@ export default class App extends Vue {
             await SplashScreen.hide({
                 fadeOutDuration: 150,
             });
-            // await StatusBar.setStyle({ style: Style.Dark });
-            await StatusBar.setBackgroundColor({
-                color: '#363795',
-            });
-            await StatusBar.show({
-                animation: Animation.None,
-            });
+            await setStatusBarColor('#363795');
         }
 
         // Scan info is saved with a delay while scanning: write it before the app is

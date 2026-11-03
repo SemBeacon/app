@@ -36,8 +36,8 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 35
-          build-tools: 35.0.0
+          api-level: 36
+          build-tools: 36.0.0
 
       - name: Decode Keystore
         id: decode_keystore

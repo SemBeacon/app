@@ -13,8 +13,8 @@
             "version": "21"
         },
         "ghcr.io/NordcomInc/devcontainer-features/android-sdk:1.2.0": {
-            "platform": "35",
-            "build_tools": "35.0.0",
+            "platform": "36",
+            "build_tools": "36.0.0",
             "base_packages": []
         }
     },

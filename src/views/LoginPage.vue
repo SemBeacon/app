@@ -130,8 +130,8 @@ import {
 } from '@ionic/vue';
 import { useUserStore } from '@/stores/user';
 import AddListAttributeDirective from '@/directives/AddListAttributeDirective';
-import { StatusBar } from '@capacitor/status-bar';
-import { Capacitor } from '@capacitor/core';
+import { setStatusBarColor } from '@/platform/statusBar';
+import { useSettings } from '@/stores/settings';
 import { logInOutline, informationCircleOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
@@ -164,6 +164,7 @@ addIcons({
 })
 export default class LoginPage extends Vue {
     userStore = useUserStore();
+    settings = useSettings();
     selectedIssuer?: string;
     knownIssuers = [
         'https://solidweb.org/',
@@ -204,20 +205,12 @@ export default class LoginPage extends Vue {
     }
 
     async mounted() {
-        if (Capacitor.getPlatform() !== 'web') {
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            await StatusBar.setBackgroundColor({
-                color: isDark ? '#222428' : '#ffffff', // Use dark or light background color
-            });
-        }
+        // The login page has a light/dark background instead of the brand colour
+        await setStatusBarColor(this.settings.darkMode ? '#222428' : '#ffffff');
     }
 
     async unmounted() {
-        if (Capacitor.getPlatform() !== 'web') {
-            await StatusBar.setBackgroundColor({
-                color: '#363795',
-            });
-        }
+        await setStatusBarColor('#363795');
     }
 
     login(): void {
