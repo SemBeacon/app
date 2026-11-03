@@ -140,6 +140,7 @@ import { loadWASM } from 'onigasm';
 import { addIcons } from 'ionicons';
 import { enUS } from 'date-fns/locale';
 import { formatDistance } from '@/utils/DateLocale';
+import { enableDemoMode } from '@/demo';
 
 import {
     map,
@@ -332,6 +333,11 @@ export default class App extends Vue {
         });
 
         this.handlePermissions().finally(() => {
+            // Builds for emulators, simulators and screenshots (VITE_DEMO_MODE=true) show
+            // demo beacons instead of relying on Bluetooth hardware
+            if (import.meta.env.VITE_DEMO_MODE === 'true') {
+                enableDemoMode().catch(console.error);
+            }
             CapacitorApp.addListener('resume', () => {
                 this.handlePermissions();
             });

@@ -1,0 +1,10 @@
+# Maestro workspace: native UI flows for the Android emulator and iOS simulator.
+# Run against a demo build (VITE_DEMO_MODE=true), see README "Native tests".
+flows:
+  - '*.yaml'
+executionOrder:
+  continueOnFailure: false
+  flowsOrder:
+    - scanner
+    - simulator
+    - menu

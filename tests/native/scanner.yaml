@@ -1,0 +1,12 @@
+appId: org.sembeacon
+name: scanner
+---
+- runFlow: subflows/launch.yaml
+- assertVisible: 'Demo User'
+- takeScreenshot: ${OUTPUT}/01-scanner
+- tapOn: 'BEACON_08'
+- extendedWaitUntil:
+    visible: 'Beacon details'
+    timeout: 15000
+- assertVisible: 'c187d748'
+- takeScreenshot: ${OUTPUT}/02-semBeacon

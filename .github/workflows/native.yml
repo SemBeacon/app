@@ -1,0 +1,91 @@
+name: Native UI tests
+
+# Emulator/simulator runs are slow (and macOS minutes expensive): main, nightly and on demand
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: Also run the iOS simulator job
+        type: boolean
+        default: true
+
+jobs:
+  android:
+    name: Android emulator (Maestro)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - run: yarn install --frozen-lockfile
+      - name: Build demo APK
+        run: |
+          VITE_DEMO_MODE=true yarn build
+          npx cap sync android
+          cd android && ./gradlew assembleDebug
+      - name: Install Maestro
+        run: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          script: |
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+            mkdir -p resources/screenshots/native/android
+            maestro test tests/native -e OUTPUT=resources/screenshots/native/android --format junit --output resources/screenshots/native/android/report.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-android
+          path: |
+            resources/screenshots/native/android/
+            ~/.maestro/tests/
+          retention-days: 14
+
+  ios:
+    name: iOS simulator (Maestro)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.ios)
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - name: Install Maestro
+        run: |
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - run: scripts/ios-simulator-e2e.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-ios
+          path: |
+            resources/screenshots/native/ios/
+            ~/.maestro/tests/
+          retention-days: 14

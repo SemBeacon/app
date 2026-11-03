@@ -1,0 +1,10 @@
+# Fresh start with all permissions granted; waits until demo mode listed the beacons
+appId: org.sembeacon
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible: 'BEACON_08'
+    timeout: 90000
