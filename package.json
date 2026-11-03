@@ -34,7 +34,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test --project=chromium-mobile --project=webkit-mobile",
     "test:e2e:docker": "node scripts/playwright-docker.js test --project=chromium-mobile --project=webkit-mobile",
-    "test:native": "maestro test tests/native -e OUTPUT=resources/screenshots/native",
+    "test:native": "maestro test tests/native --test-output-dir resources/screenshots/native/maestro",
     "test:native:android": "scripts/android-emulator-e2e.sh",
     "test:native:ios": "scripts/ios-simulator-e2e.sh",
     "test:visual": "node scripts/playwright-docker.js test --project=visual-android --project=visual-ios",

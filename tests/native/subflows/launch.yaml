@@ -6,5 +6,5 @@ appId: org.sembeacon
     permissions:
       all: allow
 - extendedWaitUntil:
-    visible: 'BEACON_08'
+    visible: '.*BEACON_08.*' # list items are one accessibility node
     timeout: 90000

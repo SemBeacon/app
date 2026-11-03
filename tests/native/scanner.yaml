@@ -2,11 +2,15 @@ appId: org.sembeacon
 name: scanner
 ---
 - runFlow: subflows/launch.yaml
-- assertVisible: 'Demo User'
-- takeScreenshot: ${OUTPUT}/01-scanner
-- tapOn: 'BEACON_08'
+# The Solid profile SemBeacon depends on an external Solid server: reported, not required
 - extendedWaitUntil:
-    visible: 'Beacon details'
+    visible: '.*WebID.*'
+    timeout: 30000
+  optional: true
+- takeScreenshot: 01-scanner
+- tapOn: '.*BEACON_08.*'
+- extendedWaitUntil:
+    visible: '.*Beacon details.*'
     timeout: 15000
-- assertVisible: 'c187d748'
-- takeScreenshot: ${OUTPUT}/02-semBeacon
+- assertVisible: '.*c187d748.*'
+- takeScreenshot: 02-semBeacon

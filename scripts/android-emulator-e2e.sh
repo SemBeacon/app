@@ -28,4 +28,6 @@ done
 
 adb install -r "$APK"
 mkdir -p "$OUTPUT"
-maestro test tests/native -e OUTPUT="$OUTPUT" --format junit --output "$OUTPUT/report.xml"
+maestro test tests/native --test-output-dir "$OUTPUT/maestro" --format junit --output "$OUTPUT/report.xml"
+# Collect the flows' screenshots (Maestro stores them per flow)
+find "$OUTPUT/maestro" -path "*takeScreenshot*" -name "*.png" -exec cp {} "$OUTPUT/" \;

@@ -28,4 +28,6 @@ xcrun simctl bootstatus "$DEVICE_ID" -b
 xcrun simctl install "$DEVICE_ID" "$DERIVED_DATA/Build/Products/Debug-iphonesimulator/App.app"
 
 mkdir -p "$OUTPUT"
-maestro --device "$DEVICE_ID" test tests/native -e OUTPUT="$OUTPUT" --format junit --output "$OUTPUT/report.xml"
+maestro --device "$DEVICE_ID" test tests/native --test-output-dir "$OUTPUT/maestro" --format junit --output "$OUTPUT/report.xml"
+# Collect the flows' screenshots (Maestro stores them per flow)
+find "$OUTPUT/maestro" -path "*takeScreenshot*" -name "*.png" -exec cp {} "$OUTPUT/" \;

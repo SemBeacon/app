@@ -5,4 +5,4 @@ name: menu
 - tapOn: 'menu'
 - assertVisible: 'Scanner'
 - assertVisible: 'Map'
-- takeScreenshot: ${OUTPUT}/04-menu
+- takeScreenshot: 04-menu

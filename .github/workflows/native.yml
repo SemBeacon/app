@@ -54,14 +54,14 @@ jobs:
           script: |
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
             mkdir -p resources/screenshots/native/android
-            maestro test tests/native -e OUTPUT=resources/screenshots/native/android --format junit --output resources/screenshots/native/android/report.xml
+            maestro test tests/native --test-output-dir resources/screenshots/native/android/maestro --format junit --output resources/screenshots/native/android/report.xml
+            find resources/screenshots/native/android/maestro -path '*takeScreenshot*' -name '*.png' -exec cp {} resources/screenshots/native/android/ \;
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: native-android
           path: |
             resources/screenshots/native/android/
-            ~/.maestro/tests/
           retention-days: 14
 
   ios:
@@ -87,5 +87,4 @@ jobs:
           name: native-ios
           path: |
             resources/screenshots/native/ios/
-            ~/.maestro/tests/
           retention-days: 14

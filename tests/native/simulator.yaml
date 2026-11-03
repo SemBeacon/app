@@ -11,6 +11,6 @@ name: simulator
           text: '(?i)simulator'
           index: 0
       - extendedWaitUntil:
-          visible: 'https://sembeacon.org'
+          visible: '.*https://sembeacon\.org.*'
           timeout: 30000
-      - takeScreenshot: ${OUTPUT}/03-simulator
+      - takeScreenshot: 03-simulator
