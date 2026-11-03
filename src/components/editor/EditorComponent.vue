@@ -8,8 +8,7 @@ import { Component, Prop, Vue, Watch, Vanilla } from 'vue-facing-decorator';
 import { Registry } from 'monaco-textmate';
 import { wireTmGrammars } from 'monaco-editor-textmate';
 import { monaco } from './monaco';
-
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+import { useSettings } from '@/stores/settings';
 
 @Component({
     components: {
@@ -33,7 +32,7 @@ export default class EditorComponent extends Vue {
 
     mounted(): Promise<void> {
         return new Promise((resolve, reject) => {
-            monaco.editor.setTheme(prefersDark.matches ? 'vs-dark' : 'vs');
+            monaco.editor.setTheme(useSettings().darkMode ? 'vs-dark' : 'vs');
 
             const registry = new Registry({
                 getGrammarDefinition: async () => {

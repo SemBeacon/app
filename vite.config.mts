@@ -1,35 +1,18 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import copy from 'rollup-plugin-copy';
-import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import { resolve } from 'path';
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
-import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import swc from 'unplugin-swc';
 
 export default defineConfig({
-    optimizeDeps: {
-        esbuildOptions: {
-            plugins: [
-                NodeGlobalsPolyfillPlugin({
-                    process: true,
-                    buffer: false,
-                }),
-                NodeModulesPolyfillPlugin(),
-            ],
-        },
-    },
     resolve: {
         alias: {
-            '@': resolve(__dirname, './src'),
+            '@': resolve(import.meta.dirname, './src'),
         },
     },
     plugins: [
         vue(),
-        monacoEditorPlugin({
-            languageWorkers: [],
-        }),
         copy({
             targets: [
                 {
