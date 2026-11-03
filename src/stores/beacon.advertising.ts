@@ -23,11 +23,15 @@ import { toRaw } from 'vue';
 import { ForegroundService } from '@capawesome-team/capacitor-android-foreground-service';
 const bluetoothle = (window as any).bluetoothle as BluetoothlePlugin.Bluetoothle;
 
-export type SimulatedBeacon = BLEBeaconObject & {
-    advertising: boolean;
+export interface AdvertisingSettings {
     latency: BluetoothlePlugin.AdvertiseMode;
     power: BluetoothlePlugin.TxPowerLevel;
-};
+}
+
+export type SimulatedBeacon = BLEBeaconObject &
+    AdvertisingSettings & {
+        advertising: boolean;
+    };
 
 export interface BeaconAdvertisingState {
     beacons: Map<string, SimulatedBeacon>;
@@ -296,7 +300,7 @@ export const useBeaconAdvertisingStore = defineStore('beacon.advertising', {
         },
         async addSimulatedBeacon(
             uid: string,
-            beacon: BLEBeaconObject & Partial<SimulatedBeacon>,
+            beacon: BLEBeaconObject & Partial<AdvertisingSettings>,
         ): Promise<void> {
             const built = (await this.buildBeacon(beacon)) as SimulatedBeacon;
             built.uid = uid;

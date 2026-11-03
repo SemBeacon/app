@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { createApp } from 'vue';
 import App from './App.vue';
+import { registerDebugApi } from './demo';
 import router from './router';
 import { createPinia } from 'pinia';
 import { IonicVue } from '@ionic/vue';
@@ -86,11 +87,4 @@ router.isReady().then(() => {
     app.mount('#app');
 });
 
-declare global {
-    interface Window {
-        SemBeacon?: any;
-    }
-}
-
-window.SemBeacon = window.SemBeacon || {};
-window.SemBeacon.stores = {};
+registerDebugApi();

@@ -58,7 +58,6 @@ export const useGeolocationStore = defineStore('geolocation', {
             this.sources[1].stop();
         },
         initialize(): Promise<void> {
-            window.SemBeacon.stores.geolocation = this;
             const logger = useLogger();
             this.state = ControllerState.INITIALIZING;
             return new Promise((resolve, reject) => {

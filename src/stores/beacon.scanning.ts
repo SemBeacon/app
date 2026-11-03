@@ -13,26 +13,13 @@ import {
 } from '@openhps/core';
 import { BLESourceNode, ScanMode } from '@openhps/capacitor-bluetooth';
 import { BLEiBeaconSourceNode } from '@openhps/cordova-ibeacon';
-import {
-    BLESemBeaconBuilder,
-    SemBeaconService,
-    BLESemBeacon,
-    SEMBEACON_FLAG_HAS_POSITION,
-    SEMBEACON_FLAG_HAS_SYSTEM,
-    ResolveOptions,
-} from '@sembeacon/openhps';
+import { SemBeaconService, BLESemBeacon, ResolveOptions } from '@sembeacon/openhps';
 import {
     BLEBeaconObject,
     BLEAltBeacon,
     BLEiBeacon,
     RelativeRSSI,
-    BLEEddystoneTLMBuilder,
-    BLEEddystoneURLBuilder,
-    BLEAltBeaconBuilder,
-    BLEUUID,
-    BLEiBeaconBuilder,
     BLEEddystoneURL,
-    BLEEddystoneTLM,
 } from '@openhps/rf';
 import { useEnvironmentStore } from './environment';
 import { Toast } from '@capacitor/toast';
@@ -45,13 +32,7 @@ import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 import { Floor } from '@openhps/geospatial';
 import { IriString } from '@openhps/rdf';
 import { useSettings } from './settings';
-
-window.SemBeacon = {
-    debug: () => {
-        const beaconStore = useBeaconStore();
-        beaconStore.debug();
-    }
-};
+import { createDemoBeacons, DEMO_SCAN_INFO } from '@/demo/demoBeacons';
 
 export interface BeaconScan {
     results: number;
@@ -202,70 +183,15 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         },
     },
     actions: {
-        populate(): void {
-            Promise.all([
-                BLESemBeaconBuilder.create()
-                    .namespaceId(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
-                    .instanceId('c187d748')
-                    .calibratedRSSI(-56)
-                    .shortResourceUri('https://bit.ly/3JsEnF9')
-                    .flag(SEMBEACON_FLAG_HAS_POSITION)
-                    .flag(SEMBEACON_FLAG_HAS_SYSTEM)
-                    .build(),
-                BLESemBeaconBuilder.create()
-                    .resourceUri('https://solid.maximvdw.be/profile/card#me')
-                    .instanceId(0x01)
-                    .calibratedRSSI(-56)
-                    .build(),
-                // BLESemBeaconBuilder.create()
-                //     .resourceUri('https://ruben.verborgh.org/profile/#me')
-                //     .instanceId(0x01)
-                //     .calibratedRSSI(-56)
-                //     .build(),
-                // BLESemBeaconBuilder.create()
-                //     .resourceUri('https://schmid.solidcommunity.net/profile/card#me')
-                //     .instanceId(0x01)
-                //     .calibratedRSSI(-56)
-                //     .build(),
-                BLEiBeaconBuilder.create()
-                    .proximityUUID(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
-                    .calibratedRSSI(-56)
-                    .major(51243)
-                    .minor(14124)
-                    .build(),
-                BLEAltBeaconBuilder.create()
-                    .proximityUUID(BLEUUID.fromString('77f340db-ac0d-20e8-aa3a-f656a29f236c'))
-                    .major(51243)
-                    .manufacturerId(0x0118)
-                    .minor(14124)
-                    .calibratedRSSI(-56)
-                    .build(),
-                BLEEddystoneURLBuilder.create()
-                    .calibratedRSSI(-56)
-                    .url('https://maximvdw.be')
-                    .build(),
-                BLEEddystoneTLMBuilder.create()
-                    .calibratedRSSI(-56)
-                    .voltage(3215)
-                    .temperature(25.91)
-                    .uptime(5)
-                    .advertiseCount(100)
-                    .build(),
-            ]).then((beacons) => {
-                beacons.forEach((beacon: any) => {
-                    // Eddystone-TLM frames carry no identifier, so computeUID() is random;
-                    // a fixed UID keeps the demo data identical between runs.
-                    beacon.uid =
-                        beacon instanceof BLEEddystoneTLM ? 'demo-eddystone-tlm' : beacon.computeUID();
-                    const beaconInfo = {
-                        lastSeen: Date.now(),
-                        rssi: -64,
-                        distance: 1.5,
-                    };
-                    this.beaconInfo.set(beacon.uid, beaconInfo);
-                    this.addBeacon(beacon);
-                });
-            });
+        /** Add the demo beacons as if they were just detected (see src/demo). */
+        async addDemoBeacons(): Promise<void> {
+            const beacons = await createDemoBeacons();
+            await Promise.all(
+                beacons.map((beacon) => {
+                    this.beaconInfo.set(beacon.uid, { ...DEMO_SCAN_INFO, lastSeen: Date.now() });
+                    return this.addBeacon(beacon);
+                }),
+            );
         },
         findBeaconInfo(uid: string): Beacon {
             return this.beaconInfo.get(uid);
@@ -388,20 +314,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             }
             });
         },
-        debug(): void {
-            const logger = useLogger();
-            logger.log('info', 'SemBeacon debug method called');
-            this.load().then(() => {
-                this.populate();
-            }).catch(console.error);
-            this.state = ControllerState.READY;
-            // Add any debug logic you want here
-            // For example, print current beacons:
-            console.log('Current beacons:', Array.from(this.beacons.values()));
-            console.log('Current beaconInfo:', Array.from(this.beaconInfo.entries()));
-        },
         initialize(): Promise<void> {
-            window.SemBeacon.stores.beaconScanning = this;
             return new Promise((resolve, reject) => {
                 this.state = ControllerState.INITIALIZING;
                 const logger = useLogger();

@@ -46,3 +46,4 @@ android/keystore
 /playwright-report
 /test-results
 /blob-report
+/resources/screenshots

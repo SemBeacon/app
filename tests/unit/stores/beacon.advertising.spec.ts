@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { BLEiBeacon, BLEBeaconObject } from '@openhps/rf';
 import { ControllerState } from '@/stores/types';
-import { iBeacon, altBeacon } from '../fixtures/beacons';
+import { iBeacon, altBeacon, eddystoneTLM } from '../fixtures/beacons';
 
 const bluetoothle = {
     isAdvertising: vi.fn((success: (r: { isAdvertising: boolean }) => void) =>
@@ -80,7 +80,7 @@ describe('beacon.advertising on platforms without advertising', () => {
 
     it('rejects beacon types it cannot simulate', async () => {
         const store = useBeaconAdvertisingStore();
-        await expect(store.addSimulatedBeacon('x', new BLEBeaconObject() as any)).rejects.toThrow(
+        await expect(store.addSimulatedBeacon('x', await eddystoneTLM())).rejects.toThrow(
             /not supported/,
         );
     });

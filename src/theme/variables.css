@@ -269,3 +269,9 @@ ion-segment-button {
 ion-fab {
   margin-bottom: var(--ion-safe-area-bottom, 0);
 }
+/* iOS mode draws the checked segment as a white pill: keep its label readable */
+.ios ion-toolbar.tab-selector ion-segment-button {
+  --color: rgba(255, 255, 255, 0.85);
+  --color-checked: #363795;
+  --indicator-color: #ffffff;
+}

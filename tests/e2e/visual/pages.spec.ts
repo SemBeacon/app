@@ -1,4 +1,4 @@
-import { test, expect, loadDemoBeacons, sortScannerBy, timeDependent } from '../fixtures';
+import { test, expect, loadDemoBeacons, sortScannerBy, timeDependent, inputValues } from '../fixtures';
 import type { Page } from '@playwright/test';
 
 /** Wait until Ionic finished rendering and transitions settled. */
@@ -38,7 +38,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
             await page.locator('.beacon-item', { hasText: 'BEACON_08' }).locator('ion-grid').click();
             await expect(page).toHaveURL(/\/beacon\/(?!scanner$)[^/]+$/);
             await expect(page.locator('ion-title', { hasText: 'Beacon details' })).toBeVisible();
-            await expect(page.locator('ion-content').getByText('BEACON_08').first()).toBeVisible();
+            await expect.poll(() => inputValues(page)).toContain('BEACON_08');
             await settle(page);
             await expect(page).toHaveScreenshot(`semBeacon-details-${colorScheme}.png`, {
                 mask: [page.locator('.ol-viewport'), ...timeDependent(page)],

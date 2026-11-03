@@ -41,7 +41,7 @@ export default defineConfig({
         }),
         basicSsl({
             name: 'SemBeacon',
-            domains: ['localhost:8085'],
+            domains: ['localhost'],
         }),
         swc.vite(),
     ],
@@ -65,9 +65,9 @@ export default defineConfig({
                 '@sembeacon/openhps'
             ],
         },
-        terserOptions: {
-            keep_classnames: true,
-        }
+        // Not minified: OpenHPS (de)serialisation relies on class names. Enabling
+        // minification requires keeping class names (e.g. terser keep_classnames).
+        minify: false,
     },
     server: {
         open: process.platform === 'darwin',

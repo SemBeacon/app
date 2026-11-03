@@ -70,23 +70,33 @@ export async function mockNetwork(context: BrowserContext, { allowMapTiles = fal
 const STARTING_STATES = [1 /* INITIALIZING */, 2 /* PENDING */];
 
 /**
- * Load the built-in demo beacons (window.SemBeacon.debug, see stores/beacon.scanning.ts).
- * Waits for the scanner initialisation to settle first; it would otherwise override the
- * READY state that demo mode sets.
+ * Enable demo mode (window.SemBeacon.demo, see src/demo): demo beacons in the scanner and
+ * simulator. Waits for the scanner and advertiser initialisation to settle first; it
+ * would otherwise override the READY state that demo mode sets.
  */
 export async function loadDemoBeacons(page: Page) {
-    await page.waitForFunction(
-        (starting) => {
-            const store = window.SemBeacon?.stores?.beaconScanning;
-            return store !== undefined && !starting.includes(store.state);
-        },
-        STARTING_STATES,
-    );
-    await page.evaluate(() => window.SemBeacon.debug());
+    await page.waitForFunction((starting) => {
+        const stores = window.SemBeacon?.stores;
+        return (
+            stores !== undefined &&
+            !starting.includes(stores.beaconScanning.state) &&
+            !starting.includes(stores.beaconAdvertising.state)
+        );
+    }, STARTING_STATES);
+    await page.evaluate(() => window.SemBeacon!.demo());
     // Both SemBeacons are resolved through the (mocked) network
-    await expect(page.getByText('BEACON_08')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('BEACON_08').first()).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText('Demo User')).toBeVisible({ timeout: 20_000 });
 }
+
+/** The Ionic page currently shown (other pages stay in the DOM, hidden). */
+export const activePage = (page: Page) => page.locator('.ion-page:not(.ion-page-hidden)').last();
+
+/** Values of the inputs on the active page. */
+export const inputValues = (page: Page) =>
+    activePage(page)
+        .locator('ion-input')
+        .evaluateAll((inputs) => inputs.map((input) => (input as HTMLIonInputElement).value));
 
 /** Choose a sort order in the scanner's sort dialog. */
 export async function sortScannerBy(page: Page, label: 'First seen' | 'Last seen' | 'RSSI' | 'Distance') {

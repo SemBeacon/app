@@ -34,7 +34,7 @@
     "test:e2e": "playwright test --project=chromium-mobile --project=webkit-mobile",
     "test:e2e:docker": "node scripts/playwright-docker.js test --project=chromium-mobile --project=webkit-mobile",
     "test:visual": "node scripts/playwright-docker.js test --project=visual-android --project=visual-ios",
-    "test:visual:update": "node scripts/playwright-docker.js test --project=visual-android --project=visual-ios --update-snapshots",
+    "test:visual:update": "node scripts/playwright-docker.js test --project=visual-android --project=visual-ios --update-snapshots=all",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "typecheck:vue": "vue-tsc --noEmit",

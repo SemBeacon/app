@@ -1,4 +1,11 @@
-import { BLEUUID, BLEiBeaconBuilder, BLEAltBeaconBuilder, BLEEddystoneURLBuilder, BLEBeaconObject } from '@openhps/rf';
+import {
+    BLEUUID,
+    BLEiBeaconBuilder,
+    BLEAltBeaconBuilder,
+    BLEEddystoneURLBuilder,
+    BLEEddystoneTLMBuilder,
+    BLEBeaconObject,
+} from '@openhps/rf';
 
 export const DEMO_UUID = '77f340db-ac0d-20e8-aa3a-f656a29f236c';
 
@@ -33,4 +40,8 @@ export function altBeacon(major = 3, minor = 4) {
 
 export function eddystoneURL(url = 'https://example.org') {
     return withUID(BLEEddystoneURLBuilder.create().calibratedRSSI(-56).url(url).build());
+}
+
+export function eddystoneTLM() {
+    return withUID(BLEEddystoneTLMBuilder.create().calibratedRSSI(-56).voltage(3000).build());
 }
