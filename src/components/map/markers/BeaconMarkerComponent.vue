@@ -112,6 +112,12 @@ export default class BeaconMarkerComponent extends Vue {
         }
     }
 
+    private opacityTimer?: ReturnType<typeof setInterval>;
+
+    unmounted() {
+        clearInterval(this.opacityTimer);
+    }
+
     mounted() {
         this.map.on('singleclick', (e) => {
             const features: Feature[] = [];
@@ -135,7 +141,7 @@ export default class BeaconMarkerComponent extends Vue {
         });
 
         // Modify the opacity of markers when not seen for a while
-        setInterval(() => {
+        this.opacityTimer = setInterval(() => {
             if (!this.sourceRef) {
                 // Source vector not (yet) loaded
                 return;

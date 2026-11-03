@@ -8,6 +8,7 @@ import { GeographicalPosition } from '@openhps/core';
 import { ref } from 'vue';
 import { TimeService } from '@openhps/core';
 import BLECompanies from '@/models/BLECompanies.json';
+import { hexMask, uuidMask } from '@/utils/masks';
 
 export { BLECompanies };
 
@@ -31,66 +32,25 @@ export abstract class BaseBeaconPage extends Vue {
     // Refresher
     key: string = ref(TimeService.now().toString() + Math.random()) as unknown as string;
 
+    private refreshTimer?: ReturnType<typeof setInterval>;
+
     mounted() {
-        setInterval(() => {
+        // Re-render relative times ("5s ago")
+        this.refreshTimer = setInterval(() => {
             (this.key as any) = (this.beacon ? this.beacon.uid : '') + TimeService.now();
         }, 500);
     }
 
-    uuid32Options = {
-        mask: [...Array(8).fill(/[a-fA-F0-9]/)],
-        elementPredicate: (el: HTMLIonInputElement) => {
-            return new Promise((resolve) => {
-                requestAnimationFrame(async () => {
-                    const input = await el.getInputElement();
-                    resolve(input);
-                });
-            });
-        },
-    };
-    uuid80Options = {
-        mask: [...Array((80 / 8) * 2).fill(/[a-fA-F0-9]/)],
-        elementPredicate: (el: HTMLIonInputElement) => {
-            return new Promise((resolve) => {
-                requestAnimationFrame(async () => {
-                    const input = await el.getInputElement();
-                    resolve(input);
-                });
-            });
-        },
-    };
-    uuid48Options = {
-        mask: [...Array((48 / 8) * 2).fill(/[a-fA-F0-9]/)],
-        elementPredicate: (el: HTMLIonInputElement) => {
-            return new Promise((resolve) => {
-                requestAnimationFrame(async () => {
-                    const input = await el.getInputElement();
-                    resolve(input);
-                });
-            });
-        },
-    };
-    uuid128Options = {
-        mask: [
-            ...Array(8).fill(/[a-fA-F0-9]/),
-            '-',
-            ...Array(4).fill(/[a-fA-F0-9]/),
-            '-',
-            ...Array(4).fill(/[a-fA-F0-9]/),
-            '-',
-            ...Array(4).fill(/[a-fA-F0-9]/),
-            '-',
-            ...Array(12).fill(/[a-fA-F0-9]/),
-        ],
-        elementPredicate: (el: HTMLIonInputElement) => {
-            return new Promise((resolve) => {
-                requestAnimationFrame(async () => {
-                    const input = await el.getInputElement();
-                    resolve(input);
-                });
-            });
-        },
-    };
+    unmounted() {
+        clearInterval(this.refreshTimer);
+    }
+
+    // Input masks: 4-byte instance ID, 6-byte Eddystone instance, 10-byte Eddystone
+    // namespace and 16-byte UUIDs
+    uuid32Options = hexMask(8);
+    uuid48Options = hexMask(12);
+    uuid80Options = hexMask(20);
+    uuid128Options = uuidMask();
 
     firstSeen(): string {
         if (this.beacon.createdTimestamp === undefined) {

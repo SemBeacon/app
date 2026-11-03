@@ -26,10 +26,6 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-/* Sentry */
-// import * as Sentry from '@sentry/capacitor';
-// import * as SentryVue from '@sentry/vue';
-
 import { SplashScreen } from '@capacitor/splash-screen';
 
 // Import OpenLayers components directly
@@ -44,28 +40,6 @@ import {
 } from 'vue3-openlayers';
 
 const app = createApp(App).use(IonicVue).use(createPinia()).use(router);
-
-// Sentry.init({
-//     app,
-//     dsn: "https://cbbf5555be20152690d361fda1645a7f@sentry.mvdw-software.com/5",
-//     integrations: [
-//         SentryVue.browserTracingIntegration({
-//             // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-//             tracePropagationTargets: ["localhost", /^https:\/\/sentry\.mvdw-software\.com\/api/],
-//             router,
-//         }),
-//         SentryVue.replayIntegration() as any,
-//     ],
-
-//     // Tracing
-//     tracesSampleRate: 1.0, //  Capture 100% of the transactions
-//     // Session Replay
-//     replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-//     replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-//   },
-//   // Forward the init method from @sentry/vue
-//   SentryVue.init
-// );
 
 // Bootstrap icons
 app.component('BIconWifiOff', BIconWifiOff);
