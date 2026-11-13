@@ -1,4 +1,4 @@
-import { BLESemBeacon, SemBeaconService } from '@sembeacon/openhps';
+import { BLESemBeacon, SemBeaconService, SemBeaconServiceOptions } from '@sembeacon/openhps';
 import { BLEBeaconObject } from '@openhps/rf';
 import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 import { IriString } from '@openhps/rdf';
@@ -14,18 +14,33 @@ export async function shortenUrl(url: string): Promise<string> {
  * The SemBeacon data service: stores detected beacons (Capacitor Preferences) and resolves
  * SemBeacon resource URIs. Shared by the scanner model and the UI.
  */
+const semBeaconOptions: SemBeaconServiceOptions = {
+    urlShortener: shortenUrl,
+    cors: config.corsProxyUrl as IriString,
+    uid: 'sembeacon-service',
+    timeout: 15000,
+    minTimeout: 60000,
+};
+
 export const semBeaconService = new SemBeaconService(
     new CapacitorPreferencesDriver(BLESemBeacon, {
         namespace: 'sembeacon',
     }),
-    {
-        urlShortener: shortenUrl,
-        cors: config.corsProxyUrl as IriString,
-        uid: 'sembeacon-service',
-        timeout: 15000,
-        minTimeout: 60000,
-    },
+    semBeaconOptions,
 );
+
+/**
+ * Replace the resource fetcher (and URL shortener), e.g. to serve demo resources from the
+ * app bundle so demo mode also works without internet.
+ */
+export function setResourceProvider(
+    fetcher: typeof globalThis.fetch,
+    urlShortener?: (url: string) => Promise<string>,
+): void {
+    semBeaconOptions.fetch = fetcher as unknown as SemBeaconServiceOptions['fetch'];
+    semBeaconOptions.urlShortener = urlShortener;
+    semBeaconService.fetch = fetcher as unknown as typeof globalThis.fetch;
+}
 
 /**
  * Store a detected beacon and resolve with the stored (for SemBeacons: resolved) beacon.

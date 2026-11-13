@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Absolute2DPosition, DataSerializer } from '@openhps/core';
+import { Store } from '@openhps/rdf';
 import { BLESemBeacon } from '@sembeacon/openhps';
 import { BLEBeaconObject, BLEAltBeacon, BLEiBeacon, BLEEddystoneURL } from '@openhps/rf';
 import { Floor } from '@openhps/geospatial';
@@ -12,7 +13,9 @@ import { useLogger } from './logger';
 import { useSettings } from './settings';
 import { ControllerState } from './types';
 import { createDemoBeacons, DEMO_SCAN_INFO } from '@/demo/demoBeacons';
+import { BeaconFilter, emptyBeaconFilter, isFilterActive } from '@/utils/FilterBeacons';
 import { BeaconScanner, ScanInfo } from '@/services/BeaconScanner';
+import { isNetworkError, isOnline, onNetworkChange } from '@/services/Network';
 import { semBeaconService, storeBeacon } from '@/services/semBeacon';
 
 /** Scan info of a beacon; kept under this name for the components that use it. */
@@ -21,10 +24,18 @@ export type Beacon = ScanInfo;
 export interface BeaconState {
     state: ControllerState;
     scanning: boolean;
+    /** Whether the browser reports a network connection. */
+    online: boolean;
     // Raw<> keeps the class types: Pinia's state typing would otherwise unwrap the class
     // instances into plain object types
     beacons: Map<string, Raw<BLEBeaconObject>>;
     beaconInfo: Map<string, Beacon>;
+    /** Avoid showing the same "details could not be loaded" toast for every beacon. */
+    resolutionNoticeShown: boolean;
+    /** SemBeacon flag filter (session only). */
+    filter: BeaconFilter;
+    /** Whether the app is showing demo data (enables local actuation). */
+    demoMode: boolean;
 }
 
 /** Scan info is written at most this often while scanning. */
@@ -35,6 +46,9 @@ const STORAGE_KEY = 'beacon.scanning';
 const scanner = new BeaconScanner(Capacitor.getPlatform());
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 let listening = false;
+let networkListening = false;
+/** UIDs that are being resolved, so repeated scans do not start a resolution each time. */
+const resolving = new Set<string>();
 
 /**
  * A beacon with its latest scan info, without modifying the stored beacon: the beacon is
@@ -59,8 +73,12 @@ export const useBeaconStore = defineStore('beacon.scanning', {
     state: (): BeaconState => ({
         state: ControllerState.PENDING,
         scanning: false,
+        online: isOnline(),
         beacons: new Map(),
         beaconInfo: new Map(),
+        resolutionNoticeShown: false,
+        filter: emptyBeaconFilter(),
+        demoMode: false,
     }),
     getters: {
         service: () => semBeaconService,
@@ -74,6 +92,13 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             return Array.from(this.beacons.values(), (beacon) =>
                 withScanInfo(beacon, this.beaconInfo.get(beacon.uid)),
             );
+        },
+        /** SemBeacons whose online resource could not be resolved. */
+        unresolvedBeacons(): Array<BLEBeaconObject & Beacon> {
+            return this.beaconsWithInfo.filter((beacon) => beacon.resolutionError !== undefined);
+        },
+        filterActive(): boolean {
+            return isFilterActive(this.filter);
         },
         /** Positioned beacons on a floor, or in one of the floor's spaces. */
         beaconsOnFloor(): (floor: Floor) => Array<BLEBeaconObject & Beacon> {
@@ -132,23 +157,126 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             if (beacon.namespaceId === undefined || beacon.instanceId === undefined) {
                 throw new Error('SemBeacon is missing namespace or instance ID');
             }
-            await this.addUUID(beacon.namespaceId.toString());
-            logger.log(
-                'info',
-                `Detecting SemBeacon with URI=${beacon.shortResourceUri}, NS=${beacon.namespaceId}, ID=${beacon.instanceId}`,
-            );
-            const inserted = await storeBeacon(beacon).catch((err) => {
-                logger.log('warn', `Unable to resolve SemBeacon ${beacon.uid}: ${err}`);
-                return undefined;
-            });
-            if (inserted instanceof BLESemBeacon && inserted.resourceData) {
-                useEnvironmentStore().fetchEnvironments(inserted.resourceData);
-                if (inserted.createdTimestamp === inserted.modifiedTimestamp) {
-                    Toast.show({ text: `Detected new nearby SemBeacon!` });
-                }
-                logger.log('info', `Retrieved information for SemBeacon ${inserted.resourceUri}`);
+            if (resolving.has(beacon.uid)) {
+                return;
             }
+            resolving.add(beacon.uid);
+            // Show the beacon even while (or when) its resource cannot be resolved: an
+            // offline demo must not make the SemBeacon silently disappear.
+            this.beacons.set(beacon.uid, beacon);
+            try {
+                await this.addUUID(beacon.namespaceId.toString());
+                logger.log(
+                    'info',
+                    `Detecting SemBeacon with URI=${beacon.shortResourceUri}, NS=${beacon.namespaceId}, ID=${beacon.instanceId}`,
+                );
+                const inserted = await storeBeacon(beacon).catch((err) => {
+                    const error = isNetworkError(err) ? 'offline' : 'failed';
+                    this.setResolutionError(beacon.uid, error);
+                    this.notifyResolutionError(error);
+                    logger.log('warn', `Unable to resolve SemBeacon ${beacon.uid}: ${err}`);
+                    return undefined;
+                });
+                if (inserted instanceof BLESemBeacon) {
+                    this.clearResolutionError(beacon.uid);
+                    this.beacons.set(inserted.uid, inserted);
+                    if (inserted.resourceData) {
+                        useEnvironmentStore().fetchEnvironments(inserted.resourceData);
+                        if (inserted.createdTimestamp === inserted.modifiedTimestamp) {
+                            Toast.show({ text: `Detected new nearby SemBeacon!` });
+                        }
+                        logger.log(
+                            'info',
+                            `Retrieved information for SemBeacon ${inserted.resourceUri}`,
+                        );
+                    }
+                }
+            } finally {
+                resolving.delete(beacon.uid);
+                this.scheduleSave();
+            }
+        },
+        /** Mark a SemBeacon as unresolved so the UI can offer a retry. */
+        setResolutionError(uid: string, error: 'offline' | 'failed'): void {
+            const info = this.beaconInfo.get(uid);
+            if (!info) {
+                return;
+            }
+            this.beaconInfo.set(uid, { ...info, resolutionError: error });
             this.scheduleSave();
+        },
+        clearResolutionError(uid: string): void {
+            // The detail page copies the error onto the beacon object; clear it there too so
+            // a retry hides the error card even when the service returns the same object.
+            const beacon = this.beacons.get(uid) as (BLEBeaconObject & Beacon) | undefined;
+            if (beacon?.resolutionError !== undefined) {
+                delete beacon.resolutionError;
+            }
+            const info = this.beaconInfo.get(uid);
+            if (!info || info.resolutionError === undefined) {
+                return;
+            }
+            const { resolutionError: _, ...rest } = info;
+            this.beaconInfo.set(uid, rest);
+            this.scheduleSave();
+        },
+        /** Explain why beacon details are missing, once per offline period. */
+        notifyResolutionError(error: 'offline' | 'failed'): void {
+            if (this.resolutionNoticeShown) {
+                return;
+            }
+            this.resolutionNoticeShown = true;
+            Toast.show({
+                text:
+                    error === 'offline'
+                        ? 'You are offline. Beacon details could not be loaded.'
+                        : 'Unable to load the details of a detected SemBeacon.',
+            }).catch(console.error);
+        },
+        /**
+         * Force a fresh resource resolve, bypassing the service cache. Used for retries and
+         * for reloading the transient RDF data of a persisted beacon.
+         * @returns the resolved beacon, or undefined when it still cannot be resolved
+         */
+        async reloadResolution(uid: string): Promise<BLESemBeacon | undefined> {
+            const beacon = this.beacons.get(uid);
+            if (!(beacon instanceof BLESemBeacon)) {
+                return undefined;
+            }
+            try {
+                const result = await semBeaconService.resolve(beacon as BLESemBeacon, {
+                    resolveAll: false,
+                    persistence: false,
+                });
+                if (!result.result) {
+                    return undefined;
+                }
+                const resolved = result.result as BLESemBeacon;
+                resolved.resourceData = new Store(result.data);
+                this.beacons.set(resolved.uid, resolved);
+                this.clearResolutionError(resolved.uid);
+                this.scheduleSave();
+                return resolved;
+            } catch (err) {
+                const error = isNetworkError(err) ? 'offline' : 'failed';
+                this.setResolutionError(uid, error);
+                this.notifyResolutionError(error);
+                useLogger().log('warn', `Unable to load SemBeacon ${uid}: ${err}`);
+                return undefined;
+            }
+        },
+        /** Try to resolve a SemBeacon again, e.g. from the offline banner or detail page. */
+        async retryResolution(uid: string): Promise<BLESemBeacon | undefined> {
+            return this.reloadResolution(uid);
+        },
+        /** Retry every SemBeacon whose resource could not be resolved. */
+        async retryUnresolved(): Promise<void> {
+            const unresolved = Array.from(this.beacons.values()).filter(
+                (beacon) =>
+                    beacon instanceof BLESemBeacon &&
+                    this.beaconInfo.get(beacon.uid)?.resolutionError !== undefined,
+            ) as BLESemBeacon[];
+            await Promise.all(unresolved.map((beacon) => this.reloadResolution(beacon.uid)));
         },
         async addBeacon(beacon: BLEBeaconObject): Promise<void> {
             if (beacon instanceof BLESemBeacon) {
@@ -170,6 +298,7 @@ export const useBeaconStore = defineStore('beacon.scanning', {
         },
         async initialize(): Promise<void> {
             this.state = ControllerState.INITIALIZING;
+            this.online = isOnline();
             const logger = useLogger();
             logger.log('info', 'Initializing beacon scanner model ...');
             semBeaconService.logger = (level: string, message: string) =>
@@ -180,6 +309,20 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 semBeaconService.on('beacon', (beacon: BLEBeaconObject) => {
                     this.beacons.set(beacon.uid, beacon);
                     logger.log('info', `Added ${describe(beacon)}`);
+                });
+            }
+            if (!networkListening) {
+                networkListening = true;
+                this.online = isOnline();
+                onNetworkChange((online) => {
+                    this.online = online;
+                    if (online) {
+                        // A new connectivity period: allow another error toast
+                        this.resolutionNoticeShown = false;
+                        this.retryUnresolved().catch((err) =>
+                            logger.log('warn', `Unable to retry beacon resolution: ${err}`),
+                        );
+                    }
                 });
             }
             try {
@@ -203,6 +346,12 @@ export const useBeaconStore = defineStore('beacon.scanning', {
                 throw error;
             }
             await this.load();
+            if (this.online && this.unresolvedBeacons.length > 0) {
+                // Persisted beacons whose resource could not be loaded while offline
+                this.retryUnresolved().catch((err) =>
+                    logger.log('warn', `Unable to retry beacon resolution: ${err}`),
+                );
+            }
         },
         async startScan(): Promise<void> {
             useLogger().log('info', 'Starting BLE scan ...');
@@ -214,6 +363,12 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             useLogger().log('info', 'Stopping BLE scan ...');
             await scanner.stop();
             this.scanning = false;
+        },
+        setFilter(filter: BeaconFilter): void {
+            this.filter = { flags: [...new Set(filter.flags)] };
+        },
+        clearFilter(): void {
+            this.filter = emptyBeaconFilter();
         },
         /** Forget all detected beacons and the environments resolved from them. */
         clear(): void {

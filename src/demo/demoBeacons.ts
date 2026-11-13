@@ -9,8 +9,11 @@ import {
 } from '@openhps/rf';
 import {
     BLESemBeaconBuilder,
+    SEMBEACON_FLAG_HAS_ACTUATOR,
+    SEMBEACON_FLAG_HAS_OBSERVABLE,
     SEMBEACON_FLAG_HAS_POSITION,
     SEMBEACON_FLAG_HAS_SYSTEM,
+    SEMBEACON_FLAG_MOVING,
 } from '@sembeacon/openhps';
 
 /** Namespace / proximity UUID of the SemBeacon demo building. */
@@ -45,6 +48,18 @@ export async function createDemoBeacons(): Promise<BLEBeaconObject[]> {
             .resourceUri('https://solid.maximvdw.be/profile/card#me')
             .instanceId(0x01)
             .calibratedRSSI(-56)
+            .flag(SEMBEACON_FLAG_MOVING)
+            .build(),
+        // SemBeacon 1.1 IoT device with an observable temperature and a controllable lamp
+        BLESemBeaconBuilder.create()
+            .namespaceId(namespace)
+            .instanceId('d3e40101')
+            .calibratedRSSI(-56)
+            .resourceUri('https://sembeacon.org/examples/demo/iot.ttl#smart_light')
+            .shortResourceUri('https://bit.ly/demo-iot')
+            .flag(SEMBEACON_FLAG_HAS_SYSTEM)
+            .flag(SEMBEACON_FLAG_HAS_OBSERVABLE)
+            .flag(SEMBEACON_FLAG_HAS_ACTUATOR)
             .build(),
         BLEiBeaconBuilder.create()
             .proximityUUID(namespace)

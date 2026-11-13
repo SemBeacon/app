@@ -81,6 +81,38 @@
                 </ion-col>
             </template>
         </generic-beacon-page>
+
+        <ion-card v-if="beacon.resolutionError" color="warning">
+            <ion-card-header>
+                <ion-card-title>
+                    {{
+                        beacon.resolutionError === 'offline'
+                            ? 'SemBeacon details unavailable'
+                            : 'Unable to load SemBeacon details'
+                    }}
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <p>
+                    {{
+                        beacon.resolutionError === 'offline'
+                            ? 'You are offline. The beacon was detected, but its online information could not be loaded.'
+                            : 'The online information of this beacon could not be loaded. Check the resource URI and try again.'
+                    }}
+                </p>
+                <ion-button fill="solid" :disabled="retrying" @click="retryResolution()">
+                    <ion-spinner v-if="retrying" name="circular"></ion-spinner>
+                    <span v-else>Retry</span>
+                </ion-button>
+            </ion-card-content>
+        </ion-card>
+
+        <sem-beacon-interaction-component
+            :beacon="beacon"
+            :loading="retrying"
+            @refresh="refreshSemantics"
+        ></sem-beacon-interaction-component>
+
         <ion-card v-if="beacon.flags !== undefined || edit">
             <ion-card-header>
                 <ion-card-title>Beacon flags</ion-card-title>
@@ -252,6 +284,7 @@ import {
     IonAvatar,
     IonButton,
     IonFooter,
+    IonSpinner,
 } from '@ionic/vue';
 import { maskito } from '@maskito/vue';
 import { BLESemBeacon } from '@sembeacon/openhps';
@@ -262,6 +295,7 @@ import { User } from '@openhps/rdf';
 import { addCircleOutline, closeCircleOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import UserCardComponent from '@/components/beacons/UserCardComponent.vue';
+import SemBeaconInteractionComponent from '@/components/beacons/SemBeaconInteractionComponent.vue';
 
 addIcons({
     addCircleOutline,
@@ -283,7 +317,9 @@ addIcons({
         IonFooter,
         IonAvatar,
         IonButton,
+        IonSpinner,
         GenericBeaconPage,
+        SemBeaconInteractionComponent,
     },
     directives: {
         maskito,
@@ -293,6 +329,71 @@ export default class SemBeaconPage extends BaseBeaconPage {
     readonly BLESemBeacon: typeof BLESemBeacon = BLESemBeacon;
     readonly User: typeof User = User;
     @Prop() beacon?: BLESemBeacon & Beacon = undefined;
+    retrying: boolean = false;
+
+    mounted(): void {
+        // resourceData is transient: re-load the semantic data when the detail page is
+        // opened for a persisted beacon that advertises SemBeacon 1.1 properties.
+        const semanticFlags =
+            BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM |
+            BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_OBSERVABLE |
+            BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_ACTUATOR;
+        if (
+            this.beacon &&
+            this.readonly &&
+            !this.beacon.resourceData &&
+            !this.beacon.resolutionError &&
+            (this.beacon.flags & semanticFlags) !== 0
+        ) {
+            this.retryResolution(true);
+        }
+    }
+
+    refreshSemantics(): void {
+        this.retryResolution();
+    }
+
+    /**
+     * Retry loading the SemBeacon resource after an offline/failed resolution.
+     * @param silent do not show a toast (used when opening the detail page)
+     */
+    async retryResolution(silent: boolean = false): Promise<void> {
+        if (this.retrying) {
+            return;
+        }
+        this.retrying = true;
+        try {
+            const resolved = await this.beaconStore.retryResolution(this.beacon.uid);
+            if (!resolved) {
+                const info = this.beaconStore.findBeaconInfo(this.beacon.uid);
+                if (info?.resolutionError) {
+                    this.beacon.resolutionError = info.resolutionError;
+                }
+                if (!silent) {
+                    toastController
+                        .create({
+                            message: 'Unable to load the SemBeacon details!',
+                            color: 'danger',
+                            duration: 2000,
+                        })
+                        .then((toast) => toast.present());
+                }
+                return;
+            }
+            this.$emit('update', resolved);
+            if (!silent) {
+                toastController
+                    .create({
+                        message: 'SemBeacon details loaded!',
+                        color: 'success',
+                        duration: 2000,
+                    })
+                    .then((toast) => toast.present());
+            }
+        } finally {
+            this.retrying = false;
+        }
+    }
 
     async resolveSemBeacon(): Promise<void> {
         const alert = await alertController.create({

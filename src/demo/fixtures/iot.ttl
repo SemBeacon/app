@@ -1,0 +1,54 @@
+@prefix : <https://sembeacon.org/examples/demo/iot.ttl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix sosa: <http://www.w3.org/ns/sosa/>.
+@prefix ssn: <http://www.w3.org/ns/ssn/>.
+@prefix sembeacon: <http://purl.org/sembeacon/>.
+@prefix hardware: <http://w3id.org/devops-infra/hardware#>.
+@prefix qudt: <http://qudt.org/schema/qudt/>.
+@prefix unit: <http://qudt.org/vocab/unit/>.
+
+# Demo SemBeacon 1.1 device: a lamp with a temperature sensor.
+:smart_light a sosa:FeatureOfInterest, ssn:System, sembeacon:SemBeacon;
+    rdfs:label "Smart light"@en;
+    sembeacon:namespace :pl9_3;
+    sembeacon:instanceId "d3e40101"^^xsd:hexBinary;
+    sembeacon:shortResourceURI "https://bit.ly/demo-iot"^^xsd:anyURI;
+    hardware:macAddress "d3:e4:01:01:00:01";
+    ssn:hasProperty :temperature, :lamp_state;
+    sosa:hosts :thermometer, :lamp_actuator.
+
+:temperature a sosa:ObservableProperty;
+    rdfs:label "Temperature"@en;
+    sosa:isObservedBy :thermometer.
+
+:thermometer a sosa:Sensor;
+    rdfs:label "Demo thermometer"@en;
+    sosa:observes :temperature.
+
+:temperature_observation a sosa:Observation;
+    rdfs:label "Temperature measurement"@en;
+    sosa:observedProperty :temperature;
+    sosa:madeBySensor :thermometer;
+    sosa:hasResult [
+        a qudt:QuantityValue;
+        qudt:numericValue "21.5"^^xsd:double;
+        qudt:unit unit:DEG_C
+    ];
+    sosa:resultTime "2025-02-01T10:00:00Z"^^xsd:dateTime.
+
+:lamp_state a sosa:ActuatableProperty;
+    rdfs:label "Lamp"@en;
+    sosa:isActedOnBy :lamp_actuation.
+
+:lamp_actuator a sosa:Actuator;
+    rdfs:label "Demo lamp actuator"@en;
+    sosa:actsOnProperty :lamp_state.
+
+:lamp_actuation a sosa:Actuation;
+    rdfs:label "Turn the lamp on"@en;
+    sosa:actsOnProperty :lamp_state;
+    sosa:madeByActuator :lamp_actuator;
+    sosa:hasSimpleResult false;
+    sosa:resultTime "2025-02-01T10:00:00Z"^^xsd:dateTime.

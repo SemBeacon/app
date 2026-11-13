@@ -1,5 +1,33 @@
 <template>
     <ion-content :fullscreen="true">
+        <ion-list v-if="showOfflineBanner" class="offline-banner-list">
+            <ion-item color="warning">
+                <ion-icon slot="start" :icon="cloudOfflineOutline"></ion-icon>
+                <ion-label class="ion-text-wrap">
+                    <h2>
+                        {{ beaconStore.online ? 'Beacon details unavailable' : 'You are offline' }}
+                    </h2>
+                    <p>
+                        {{
+                            beaconStore.online
+                                ? 'Some detected SemBeacons could not load their online information.'
+                                : 'Detected beacons are shown, but their online information cannot be loaded.'
+                        }}
+                    </p>
+                </ion-label>
+                <ion-button
+                    v-if="unresolved.length > 0"
+                    slot="end"
+                    fill="clear"
+                    :disabled="retrying || !beaconStore.online"
+                    @click="retryUnresolved"
+                >
+                    <ion-spinner v-if="retrying" name="circular"></ion-spinner>
+                    <span v-else>Retry</span>
+                </ion-button>
+            </ion-item>
+        </ion-list>
+
         <ion-list v-if="beacons.length > 0 || beaconStore.state !== ControllerState.READY">
             <permission-error-component v-if="beaconStore.state === ControllerState.NO_PERMISSION">
                 No Precise Location permission to scan!
@@ -20,10 +48,16 @@
         </ion-list>
 
         <section
-            v-else-if="!beaconStore.isScanning"
+            v-else-if="beaconStore.filterActive || !beaconStore.isScanning"
             class="help-text ion-padding-top ion-text-center"
         >
-            <div>
+            <div v-if="beaconStore.filterActive">
+                <h2 style="font-size: 1em">No beacons match the current filter.</h2>
+                <ion-button fill="clear" @click="beaconStore.clearFilter()"
+                    >Clear filter</ion-button
+                >
+            </div>
+            <div v-else>
                 <h2 style="font-size: 1em">Click the search button to scan for nearby beacons.</h2>
             </div>
         </section>
@@ -77,13 +111,16 @@ import { Toast } from '@capacitor/toast';
 import { ControllerState } from '@/stores/types';
 import PermissionErrorComponent from '@/components/PermissionErrorComponent.vue';
 import { BLEBeaconObject } from '@openhps/rf';
-import { stop, search } from 'ionicons/icons';
+import { BLESemBeacon } from '@sembeacon/openhps';
+import { stop, search, cloudOfflineOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { SortKey, sortBeacons } from '@/utils/sortBeacons';
+import { filterBeacons } from '@/utils/FilterBeacons';
 
 addIcons({
     stop,
     search,
+    cloudOfflineOutline,
 });
 
 @Component({
@@ -120,12 +157,33 @@ export default class BLEScannerComponent extends Vue {
     sortKey: SortKey = SortKey.CREATED;
     beaconStore = useBeaconStore();
     loading = false;
+    retrying = false;
 
     get beacons(): (BLEBeaconObject & Beacon)[] {
         const seen = this.beaconStore.beaconsWithInfo.filter(
             (beacon) => beacon.lastSeen !== undefined,
         );
-        return sortBeacons(seen, this.sortKey);
+        return sortBeacons(filterBeacons(seen, this.beaconStore.filter), this.sortKey);
+    }
+
+    get unresolved(): (BLEBeaconObject & Beacon)[] {
+        return this.beaconStore.unresolvedBeacons;
+    }
+
+    get showOfflineBanner(): boolean {
+        return !this.beaconStore.online || this.unresolved.length > 0;
+    }
+
+    async retryUnresolved(): Promise<void> {
+        if (this.retrying) {
+            return;
+        }
+        this.retrying = true;
+        try {
+            await this.beaconStore.retryUnresolved();
+        } finally {
+            this.retrying = false;
+        }
     }
 
     toggleScan(): void {
@@ -181,6 +239,53 @@ export default class BLEScannerComponent extends Vue {
                     role: 'confirm',
                     handler: (value: SortKey) => {
                         this.sortKey = value;
+                    },
+                },
+            ],
+        });
+
+        await alert.present();
+    }
+
+    async filter(): Promise<void> {
+        const selected = this.beaconStore.filter.flags;
+        const flags: [number, string][] = [
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING, 'Moving'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION, 'Has position'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM, 'Has system'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_OBSERVABLE, 'Observable data'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_ACTUATOR, 'Has actuator'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE, 'Private'],
+        ];
+        const alert = await alertController.create({
+            header: 'Filter SemBeacons',
+            subHeader:
+                'Only SemBeacons with all selected flags are shown. Other beacon types are hidden while a flag is selected.',
+            inputs: flags.map(([flag, label]) => ({
+                label,
+                type: 'checkbox',
+                value: flag.toString(),
+                checked: selected.includes(flag),
+            })),
+            buttons: [
+                {
+                    text: 'Reset',
+                    handler: () => {
+                        this.beaconStore.clearFilter();
+                    },
+                },
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                },
+                {
+                    text: 'Apply',
+                    role: 'confirm',
+                    handler: (values: string[] | undefined) => {
+                        const selectedFlags = (values ?? [])
+                            .map((value) => Number(value))
+                            .filter((value) => !Number.isNaN(value));
+                        this.beaconStore.setFilter({ flags: selectedFlags });
                     },
                 },
             ],

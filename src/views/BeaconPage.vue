@@ -241,8 +241,10 @@ export default class BeaconPage extends Vue {
     onUpdate(beacon: BLEBeaconObject & Partial<Beacon>): void {
         this.beacon = beacon;
         this.lastUpdate = Date.now();
-        // Save beacon
-        this.saveBeacon();
+        // Editing a simulated beacon is saved; a scanned beacon is already updated in the store
+        if (this.simulated) {
+            this.saveBeacon();
+        }
     }
 
     beforeMount(): void {
@@ -282,6 +284,7 @@ export default class BeaconPage extends Vue {
                         this.beacon.rssi = beaconInfo.rssi;
                         this.beacon.lastSeen = beaconInfo.lastSeen;
                         this.beacon.distance = beaconInfo.distance;
+                        this.beacon.resolutionError = beaconInfo.resolutionError;
                     }
                     this.loading = false;
                 })

@@ -34,6 +34,21 @@
                         <ion-label class="ion-text-nowrap">{{ beacon.object.id }}</ion-label>
                     </ion-col>
                 </ion-row>
+                <ion-row v-if="beacon instanceof BeaconType.BLESemBeacon">
+                    <ion-col size="12">
+                        <ion-label class="flags">
+                            <span v-if="beacon.resolutionError" class="resolution-error">
+                                <ion-icon :icon="cloudOfflineOutline"></ion-icon>
+                                {{
+                                    beacon.resolutionError === 'offline'
+                                        ? 'Offline'
+                                        : 'Details unavailable'
+                                }}
+                            </span>
+                            <span v-if="flagSummary">{{ flagSummary }}</span>
+                        </ion-label>
+                    </ion-col>
+                </ion-row>
             </ion-grid>
             <ion-grid v-else style="width: 100%" @click="onClick">
                 <ion-row v-if="beacon.displayName">
@@ -41,6 +56,21 @@
                         <ion-label color="primary-contrast" class="key">{{
                             beacon.displayName
                         }}</ion-label>
+                    </ion-col>
+                </ion-row>
+                <ion-row v-if="beacon instanceof BeaconType.BLESemBeacon">
+                    <ion-col size="12">
+                        <ion-label class="flags">
+                            <span v-if="beacon.resolutionError" class="resolution-error">
+                                <ion-icon :icon="cloudOfflineOutline"></ion-icon>
+                                {{
+                                    beacon.resolutionError === 'offline'
+                                        ? 'Offline'
+                                        : 'Details unavailable'
+                                }}
+                            </span>
+                            <span v-if="flagSummary">{{ flagSummary }}</span>
+                        </ion-label>
                     </ion-col>
                 </ion-row>
                 <ion-row>
@@ -191,11 +221,12 @@ import { Serializable, TimeService } from '@openhps/core';
 import { ref } from 'vue';
 import { SimulatedBeacon } from '@/stores/beacon.advertising';
 import { User } from '@openhps/rdf';
-import { trash } from 'ionicons/icons';
+import { cloudOfflineOutline, trash } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { useSettings } from '@/stores/settings';
 
 addIcons({
+    cloudOfflineOutline,
     trash,
 });
 
@@ -255,6 +286,25 @@ export default class BeaconItemComponent extends Vue {
         }
     }
 
+    /** Short human-readable summary of the SemBeacon flags, for filtering at a glance. */
+    get flagSummary(): string {
+        if (!(this.beacon instanceof BLESemBeacon) || this.beacon.flags === undefined) {
+            return '';
+        }
+        const flags: [number, string][] = [
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_POSITION, 'Position'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_PRIVATE, 'Private'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_MOVING, 'Moving'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_SYSTEM, 'System'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_OBSERVABLE, 'Observable'],
+            [BLESemBeacon.FLAGS.SEMBEACON_FLAG_HAS_ACTUATOR, 'Actuator'],
+        ];
+        return flags
+            .filter(([flag]) => this.beacon.hasFlag(flag))
+            .map(([, label]) => label)
+            .join(' · ');
+    }
+
     get beaconIcon(): string {
         const beaconType = this.beaconType;
         return `/assets/beacons/${beaconType.toLowerCase()}${
@@ -304,6 +354,21 @@ span.rssi {
 
 ion-label.key {
     font-weight: bold;
+}
+
+ion-label.flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35em;
+    font-size: 0.8rem;
+    color: var(--ion-color-medium-shade);
+}
+
+.resolution-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    color: var(--ion-color-danger);
 }
 
 ion-thumbnail {

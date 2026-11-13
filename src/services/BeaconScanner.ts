@@ -18,6 +18,8 @@ export interface ScanInfo {
     rssi: number;
     lastSeen: number;
     distance: number;
+    /** Set when the SemBeacon resource could not be resolved. */
+    resolutionError?: 'offline' | 'failed';
 }
 
 export type Logger = (level: string, message: string, error?: Error) => void;

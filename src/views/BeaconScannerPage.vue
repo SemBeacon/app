@@ -10,16 +10,31 @@
 
                 <ion-buttons v-if="!isLoading" slot="end">
                     <ion-button
-                        v-if="beaconStore.cacheSize !== 0"
                         icon-only
+                        class="filter-button"
+                        :class="{ 'filter-active': beaconStore.filterActive }"
+                        title="Filter beacons"
+                        aria-label="Filter beacons"
                         :style="{ color: '#ffffff' }"
-                        @click="scannerComponent.sort"
+                        @click="scannerComponent.filter"
                     >
                         <ion-icon name="funnel"></ion-icon>
                     </ion-button>
                     <ion-button
                         v-if="beaconStore.cacheSize !== 0"
                         icon-only
+                        title="Sort beacons"
+                        aria-label="Sort beacons"
+                        :style="{ color: '#ffffff' }"
+                        @click="scannerComponent.sort"
+                    >
+                        <ion-icon name="swap-vertical"></ion-icon>
+                    </ion-button>
+                    <ion-button
+                        v-if="beaconStore.cacheSize !== 0"
+                        icon-only
+                        title="Clear cached beacons"
+                        aria-label="Clear cached beacons"
                         :style="{ color: '#ffffff' }"
                         @click="scannerComponent.clearCache"
                     >
@@ -74,13 +89,14 @@ import BeaconItemComponent from '@/components/beacons/BeaconItemComponent.vue';
 import { useBeaconStore } from '@/stores/beacon.scanning';
 import { Capacitor } from '@capacitor/core';
 import { addIcons } from 'ionicons';
-import { trashBin, funnel, wifi, search } from 'ionicons/icons';
+import { trashBin, funnel, wifi, search, swapVertical } from 'ionicons/icons';
 
 addIcons({
     trashBin,
     funnel,
     wifi,
     search,
+    swapVertical,
 });
 
 @Component({
@@ -131,5 +147,20 @@ ion-header ion-toolbar:first-child {
     margin-top: 3em;
     padding-left: 1em;
     padding-right: 1em;
+}
+
+.filter-button {
+    position: relative;
+}
+
+.filter-button.filter-active::after {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ion-color-warning);
+    content: '';
 }
 </style>

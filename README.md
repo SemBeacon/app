@@ -19,6 +19,11 @@ Browsers cannot scan for or advertise Bluetooth beacons, so the scanner and simu
 console, or build with `VITE_DEMO_MODE=true`. Optional service overrides are listed in
 [`.env.example`](./.env.example).
 
+Demo mode includes a local SemBeacon 1.1 IoT device with an observable property and a local
+actuation demo (`src/demo/fixtures/iot.ttl`). The OpenHPS building example is loaded from the
+website as usual; without internet, the scanner keeps the detected SemBeacon visible and shows
+a clear offline error with a retry.
+
 For a device connected to the devcontainer, start `adb -a nodaemon server start` on the host.
 
 ### Code structure
