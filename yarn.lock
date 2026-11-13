@@ -7485,7 +7485,7 @@ copy-anything@^4:
   resolved "https://registry.yarnpkg.com/copy-anything/-/copy-anything-4.1.5.tgz#11866cab9f08ef1f98daac8c468e10d2830294e3"
   integrity sha512-vePst2VLTSqPglW7Q98VwFpGiGpOHTyXIo81MO5VyLecA5zMbZw/P/V1vmwD1jksa2iJpn/YkDrJ3XhTfzUyhQ==
 
-"cordova-plugin-bluetoothle@https://github.com/SemBeacon/cordova-plugin-bluetoothle":
+"cordova-plugin-bluetoothle@https://github.com/SemBeacon/cordova-plugin-bluetoothle#00a1a7891a6f74a929ed9dfc363771f280501394":
   version "6.7.4"
   resolved "https://github.com/SemBeacon/cordova-plugin-bluetoothle#00a1a7891a6f74a929ed9dfc363771f280501394"
 
