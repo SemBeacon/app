@@ -244,6 +244,11 @@
   resolved "https://registry.yarnpkg.com/@capawesome/capacitor-android-edge-to-edge-support/-/capacitor-android-edge-to-edge-support-8.0.8.tgz#c80bf4c0e78a474d64471f2f5087c9332d606d71"
   integrity sha512-+eKz15uhfOwft5IRZFL1QQZT/FHeeE5scNnlP9CIMrhW0Ctc9cJM13Ec2vOTd9oYGz3mCF3kf39C2spDDuSUVw==
 
+"@capawesome/capacitor-app-integrity@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@capawesome/capacitor-app-integrity/-/capacitor-app-integrity-0.1.2.tgz#80e67870162376af7caa1a522ac1397eeae134b2"
+  integrity sha512-2UxAPN2rDkOYdYDsMrxt6d2ZQENDEBF0Zlqs5GtgMV+MzZw1YPmwjrTpzyuPZJSLVk8v/MeEbIlyKwIqljLXiw==
+
 "@colors/colors@1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.6.0.tgz#ec6cd237440700bc23ca23087f513c75508958b0"

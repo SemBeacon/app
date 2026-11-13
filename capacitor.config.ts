@@ -28,6 +28,7 @@ const config: CapacitorConfig = {
             '@capacitor-community/bluetooth-le',
             'cordova-plugin-bluetoothle',
             '@capawesome/capacitor-android-edge-to-edge-support',
+            '@capawesome/capacitor-app-integrity',
         ],
     },
     ios: {
