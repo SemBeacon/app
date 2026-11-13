@@ -86,7 +86,7 @@
     "axios": "^1.21.0",
     "bootstrap-icons-vue": "^1.11.3",
     "capacitor-native-settings": "^8",
-    "cordova-plugin-bluetoothle": "https://github.com/SemBeacon/cordova-plugin-bluetoothle",
+    "cordova-plugin-bluetoothle": "https://github.com/SemBeacon/cordova-plugin-bluetoothle#00a1a7891a6f74a929ed9dfc363771f280501394",
     "cordova-plugin-device": "^3.0.0",
     "cordova-plugin-ibeacon": "^3.8.1",
     "cross-fetch": "^4.1.0",
