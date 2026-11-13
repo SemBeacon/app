@@ -62,8 +62,26 @@ jobs:
         # Target SDK 30+ requires signature scheme v2 or later; jarsigner (v1) APKs do not install
         run: apksigner verify --verbose android/app/build/outputs/apk/release/app-release-signed.apk
 
+      - name: Build Android application (AAB)
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: npx cap build android --androidreleasetype AAB --keystorepath "${{ steps.decode_keystore.outputs.filePath }}" --keystorepass "$SIGNING_STORE_PASSWORD" --keystorealias "$SIGNING_KEY_ALIAS" --keystorealiaspass "$SIGNING_KEY_PASSWORD"
+
+      - name: Verify AAB signature
+        # An App Bundle is a signed JAR, not an APK, so verify it with jarsigner.
+        # No -strict: the release certificate is self-signed and that would be a warning.
+        run: jarsigner -verify android/app/build/outputs/bundle/release/app-release-signed.aab
+
       - name: Archive APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: android/app/build/outputs/apk/release/app-release-signed.apk
+
+      - name: Archive AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: android/app/build/outputs/bundle/release/app-release-signed.aab
