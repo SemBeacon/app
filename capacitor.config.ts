@@ -65,6 +65,12 @@ const config: CapacitorConfig = {
         EdgeToEdge: {
             backgroundColor: '#363795',
         },
+        // Capacitor's built-in inset handling is enabled by default and adds the status bar
+        // height to env(safe-area-inset-top) while the EdgeToEdge plugin already insets the
+        // WebView, which pushes the header down twice. Let the plugin own the insets.
+        SystemBars: {
+            insetsHandling: 'disable',
+        },
         StatusBar: {
             overlaysWebView: false,
         },
