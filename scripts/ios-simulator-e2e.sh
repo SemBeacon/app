@@ -11,6 +11,10 @@ DEVICE_ID="${DEVICE_ID:-$(xcrun simctl list devices available -j |
     python3 -c 'import json,sys; d=json.load(sys.stdin)["devices"]; print(next(x["udid"] for r in d.values() for x in r if x["name"].startswith("iPhone")))')}"
 
 VITE_DEMO_MODE=true npm run build
+# The committed Podfile.lock predates the Capacitor 8 upgrade and pins stale
+# native pods (e.g. IONGeolocationLib 1.0.1 vs the 3.0.0 Capacitor 8 requires).
+# Drop it so `cap sync` re-resolves against the installed Capacitor 8 pods.
+rm -f ios/App/Podfile.lock
 npx cap sync ios
 
 xcodebuild \
