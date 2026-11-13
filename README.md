@@ -19,6 +19,11 @@ Browsers cannot scan for or advertise Bluetooth beacons, so the scanner and simu
 console, or build with `VITE_DEMO_MODE=true`. Optional service overrides are listed in
 [`.env.example`](./.env.example).
 
+Play Integrity is optional. Set `VITE_PLAY_INTEGRITY_CLOUD_PROJECT` to the Google Cloud
+project number linked to the Play Console app (CI: the `PLAY_INTEGRITY_CLOUD_PROJECT`
+secret). Without it — on the web, in emulators, in sideloaded builds and during a Google
+outage — shortener requests use the anonymous tier; the app never blocks on integrity.
+
 Demo mode includes a local SemBeacon 1.1 IoT device with an observable property and a local
 actuation demo (`src/demo/fixtures/iot.ttl`). The OpenHPS building example is loaded from the
 website as usual; without internet, the scanner keeps the detected SemBeacon visible and shows

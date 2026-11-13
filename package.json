@@ -64,6 +64,7 @@
     "@capacitor/toast": "^8.0.1",
     "@capawesome-team/capacitor-android-foreground-service": "^8",
     "@capawesome/capacitor-android-edge-to-edge-support": "^8",
+    "@capawesome/capacitor-app-integrity": "^0.1.2",
     "@ionic/core": "^9",
     "@ionic/vue": "^9",
     "@ionic/vue-router": "^9",

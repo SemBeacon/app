@@ -3,10 +3,20 @@ import { BLEBeaconObject } from '@openhps/rf';
 import { CapacitorPreferencesDriver } from '@openhps/capacitor-preferences';
 import { IriString } from '@openhps/rdf';
 import { config } from '@/config';
+import { getShortenIntegrityHeaders } from './appIntegrity';
 
 /** Shorten a SemBeacon resource URI so it fits in an advertisement. */
 export async function shortenUrl(url: string): Promise<string> {
-    const response = await fetch(`${config.shortenerUrl}&uri=${encodeURIComponent(url)}`);
+    let apiKey = '';
+    try {
+        apiKey = new URL(config.shortenerUrl).searchParams.get('api') ?? '';
+    } catch {
+        // A relative override cannot be attested; use the anonymous tier.
+    }
+    const headers = await getShortenIntegrityHeaders(apiKey, url);
+    const response = await fetch(`${config.shortenerUrl}&uri=${encodeURIComponent(url)}`, {
+        headers,
+    });
     return response.text();
 }
 

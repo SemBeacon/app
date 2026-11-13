@@ -14,4 +14,9 @@ export const config = {
     corsProxyUrl: env.VITE_CORS_PROXY_URL ?? 'https://proxy.sembeacon.org/?api=xWzD9b4eRBdWz&uri=',
     /** Mapbox access token (pk.*) for map tiles and geocoding. */
     mapboxToken: env.VITE_MAPBOX_TOKEN,
+    /**
+     * Google Cloud project number linked to Play Console for Play Integrity.
+     * 0 disables integrity checks (requests use the anonymous tier).
+     */
+    playIntegrityCloudProject: Number(env.VITE_PLAY_INTEGRITY_CLOUD_PROJECT ?? 0),
 } as const;

@@ -28,6 +28,7 @@ import './theme/variables.css';
 import './theme/ol-controls.css';
 
 import { SplashScreen } from '@capacitor/splash-screen';
+import { prepareIntegrity } from './services/appIntegrity';
 
 // Import OpenLayers components directly
 import {
@@ -71,3 +72,7 @@ router.isReady().then(() => {
 });
 
 registerDebugApi();
+
+// Warm up the Play Integrity token provider. No-op on the web, in demo mode and
+// when VITE_PLAY_INTEGRITY_CLOUD_PROJECT is not set.
+void prepareIntegrity();
