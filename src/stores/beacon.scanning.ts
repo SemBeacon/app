@@ -162,8 +162,13 @@ export const useBeaconStore = defineStore('beacon.scanning', {
             }
             resolving.add(beacon.uid);
             // Show the beacon even while (or when) its resource cannot be resolved: an
-            // offline demo must not make the SemBeacon silently disappear.
-            this.beacons.set(beacon.uid, beacon);
+            // offline demo must not make the SemBeacon silently disappear. Keep an already
+            // resolved beacon, though: replacing it with the raw advertisement drops its
+            // resource data (name, object) until the next resolution and makes the list
+            // items flicker on every scan frame.
+            if (!this.beacons.has(beacon.uid)) {
+                this.beacons.set(beacon.uid, beacon);
+            }
             try {
                 await this.addUUID(beacon.namespaceId.toString());
                 logger.log(
