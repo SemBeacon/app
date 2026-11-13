@@ -28,12 +28,20 @@ xcrun simctl bootstatus "$DEVICE_ID" -b
 xcrun simctl install "$DEVICE_ID" "$DERIVED_DATA/Build/Products/Debug-iphonesimulator/App.app"
 
 mkdir -p "$OUTPUT"
+
+# Record the simulator screen for the whole Maestro run (SIGINT finalizes the mp4)
+xcrun simctl io "$DEVICE_ID" recordVideo "$OUTPUT/ios-simulator.mp4" &
+RECORD_PID=$!
+sleep 1
+
 set +e
 maestro --device "$DEVICE_ID" test tests/native --test-output-dir "$OUTPUT/maestro" --format junit --output "$OUTPUT/report.xml"
 STATUS=$?
 set -e
+
+kill -INT "$RECORD_PID" 2>/dev/null || true
+wait "$RECORD_PID" 2>/dev/null || true
+
 # Collect the flows' screenshots (Maestro stores them per flow)
 find "$OUTPUT/maestro" -path "*takeScreenshot*" -name "*.png" -exec cp {} "$OUTPUT/" \;
-# Collect the flows' screen recordings (startRecording/stopRecording in the flows)
-find "$OUTPUT/maestro" -path "*startRecording*" -name "*.mp4" -exec cp {} "$OUTPUT/" \;
 exit "$STATUS"

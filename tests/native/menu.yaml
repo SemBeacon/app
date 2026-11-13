@@ -1,10 +1,8 @@
 appId: org.sembeacon
 name: menu
 ---
-- startRecording: menu
 - runFlow: subflows/launch.yaml
 - tapOn: 'menu'
 - assertVisible: 'Scanner'
 - assertVisible: 'Map'
 - takeScreenshot: 04-menu
-- stopRecording

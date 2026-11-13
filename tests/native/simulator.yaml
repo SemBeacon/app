@@ -6,7 +6,6 @@ name: simulator
     when:
       platform: Android
     commands:
-      - startRecording: simulator
       - runFlow: subflows/launch.yaml
       - tapOn:
           text: '(?i)simulator'
@@ -15,4 +14,3 @@ name: simulator
           visible: '.*https://sembeacon\.org.*'
           timeout: 30000
       - takeScreenshot: 03-simulator
-      - stopRecording
