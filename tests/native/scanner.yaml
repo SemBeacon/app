@@ -1,6 +1,7 @@
 appId: org.sembeacon
 name: scanner
 ---
+- startRecording: scanner
 - runFlow: subflows/launch.yaml
 # The Solid profile SemBeacon depends on an external Solid server: reported, not required
 - extendedWaitUntil:
@@ -14,3 +15,4 @@ name: scanner
     timeout: 15000
 - assertVisible: '.*c187d748.*'
 - takeScreenshot: 02-semBeacon
+- stopRecording

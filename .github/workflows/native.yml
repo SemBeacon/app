@@ -71,7 +71,7 @@ jobs:
 
   ios:
     name: iOS simulator (Maestro)
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.ios)
+    if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.ios)
     runs-on: macos-latest
     timeout-minutes: 90
     steps:
@@ -85,13 +85,34 @@ jobs:
         run: |
           curl -fsSL https://get.maestro.mobile.dev | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
-      - run: scripts/ios-simulator-e2e.sh
+      - name: Build app and run Maestro flows
+        run: scripts/ios-simulator-e2e.sh
         env:
           VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+      - name: Package iOS simulator app
+        run: |
+          mkdir -p resources/build/ios
+          ditto -c -k --keepParent \
+            ios/build/Build/Products/Debug-iphonesimulator/App.app \
+            resources/build/ios/App.app.zip
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: native-ios
-          path: |
-            resources/screenshots/native/ios/
+          name: ios-app
+          path: resources/build/ios/App.app.zip
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-ios-screenshots
+          path: resources/screenshots/native/ios/*.png
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-ios-videos
+          path: resources/screenshots/native/ios/*.mp4
+          if-no-files-found: warn
           retention-days: 14
