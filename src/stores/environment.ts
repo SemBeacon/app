@@ -16,6 +16,7 @@ import { Preferences } from '@capacitor/preferences';
 import { toRaw, type Raw } from 'vue';
 import { PiniaDataService } from './PiniaDataService';
 import { MapObject } from '@/models/MapObject';
+import { Place } from '@/models/Place';
 
 let spaceService: SymbolicSpaceService<any>;
 
@@ -102,6 +103,14 @@ export const useEnvironmentStore = defineStore('environments', {
                     MapObject,
                 );
                 if (mapObject instanceof MapObject) {
+                    // The generic schema:Place type is shared by several OpenHPS classes, so
+                    // the nested coverage can be resolved to the wrong type in the bundled
+                    // build. Deserialize it explicitly with the floor plan model.
+                    const mapNode = space.rdf.predicates[schema.hasMap][0] as Thing;
+                    const coverage = mapNode.predicates?.[schema.spatialCoverage]?.[0];
+                    if (!mapObject.coverage && coverage) {
+                        mapObject.coverage = RDFSerializer.deserialize(coverage as Thing, Place);
+                    }
                     this.floorPlans.set(space.uid, mapObject);
                 }
             }

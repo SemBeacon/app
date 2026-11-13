@@ -25,6 +25,10 @@ export default class ImageOverlayComponent extends Vue {
     layer: GeoImageLayer;
 
     updateLayer(mapObject: MapObject): void {
+        if (!mapObject.coverage?.geometry) {
+            console.warn('Floor plan has no spatial coverage; not rendering');
+            return;
+        }
         const image = new Image();
         image.onload = () => {
             console.log('Image loaded', mapObject);

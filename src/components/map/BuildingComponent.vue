@@ -13,7 +13,12 @@
         </floor-component>
 
         <!-- Building Controls -->
-        <floor-selector-component ref="floorSelector" :floors="floors" @change="onFloorChange">
+        <floor-selector-component
+            ref="floorSelector"
+            :floors="floors"
+            :selected="selectedFloor"
+            @change="onFloorChange"
+        >
         </floor-selector-component>
     </div>
 </template>
@@ -56,6 +61,7 @@ export default class BuildingComponent extends Vue {
                 if (this.floors.length > 0) {
                     // Select the first floor
                     this.selectedFloor = this.floors[0];
+                    this.floorSelector.setSelected(this.selectedFloor);
                 }
             })
             .catch((err) => {
@@ -64,7 +70,8 @@ export default class BuildingComponent extends Vue {
     }
 
     /**
-     * Triggers when a floor is selected or deselected
+     * Triggers when a floor is selected. There is always exactly one visible floor: selecting
+     * the already selected floor keeps it selected instead of hiding the selector state.
      * @param floor Floor that was selected
      * @param selected Whether the floor was selected or deselected
      */
@@ -72,6 +79,9 @@ export default class BuildingComponent extends Vue {
         if (selected && this.selectedFloor.uid !== floor.uid) {
             this.selectedFloor = floor;
         }
+        // The prop watcher updates the buttons, but keep the state in sync when the same
+        // floor was clicked (the watcher does not fire for an unchanged value)
+        this.floorSelector?.setSelected(this.selectedFloor);
     }
 
     /**

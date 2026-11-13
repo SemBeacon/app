@@ -1,0 +1,37 @@
+/* Map controls created by ol-ext (floor selector). These elements are added to the
+   OpenLayers control container, so they cannot be styled from a scoped component style. */
+
+.ol-control.ol-bar .floor-toggle > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.2em;
+    height: 2.2em;
+    padding: 0 0.45em;
+    border: 1px solid var(--ion-color-step-300, rgba(0, 0, 0, 0.2));
+    border-radius: 4px;
+    background: var(--ion-background-color, #ffffff);
+    color: var(--ion-text-color, #222428);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-family: inherit;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.ol-control.ol-bar .floor-toggle > button:hover,
+.ol-control.ol-bar .floor-toggle > button:focus-visible {
+    background: var(--ion-color-step-100, #f4f5f8);
+    color: var(--ion-text-color, #222428);
+}
+
+.ol-control.ol-bar .floor-toggle.ol-active > button,
+.ol-control.ol-bar .floor-toggle.ol-active > button:hover {
+    background: var(--ion-color-primary, #363795);
+    border-color: var(--ion-color-primary, #363795);
+    color: var(--ion-color-primary-contrast, #ffffff);
+}
+
+.ol-control.ol-bar .add-btn > button {
+    min-width: 2.2em;
+    height: 2.2em;
+}
