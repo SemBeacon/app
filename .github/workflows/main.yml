@@ -69,10 +69,33 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: npx cap build android --androidreleasetype AAB --keystorepath "${{ steps.decode_keystore.outputs.filePath }}" --keystorepass "$SIGNING_STORE_PASSWORD" --keystorealias "$SIGNING_KEY_ALIAS" --keystorealiaspass "$SIGNING_KEY_PASSWORD"
 
+      - name: Sign the AAB with SHA-256
+        # @capacitor/cli signs App Bundles with jarsigner using SHA-1 (-sigalg SHA1withRSA
+        # -digestalg SHA1), which current JDKs and Play Console treat as unsigned.
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          jarsigner \
+            -sigalg SHA256withRSA \
+            -digestalg SHA-256 \
+            -keystore "${{ steps.decode_keystore.outputs.filePath }}" \
+            -storepass "$SIGNING_STORE_PASSWORD" \
+            -keypass "$SIGNING_KEY_PASSWORD" \
+            -signedjar android/app/build/outputs/bundle/release/app-release-signed.aab \
+            android/app/build/outputs/bundle/release/app-release.aab \
+            "$SIGNING_KEY_ALIAS"
+
       - name: Verify AAB signature
         # An App Bundle is a signed JAR, not an APK, so verify it with jarsigner.
         # No -strict: the release certificate is self-signed and that would be a warning.
-        run: jarsigner -verify android/app/build/outputs/bundle/release/app-release-signed.aab
+        run: |
+          set -o pipefail
+          jarsigner -verify android/app/build/outputs/bundle/release/app-release-signed.aab | tee /tmp/aab-verify.txt
+          # Fail when the bundle is only SHA-1 signed: modern JDKs treat that as unsigned
+          ! grep -qi 'weak algorithm\|treated as unsigned' /tmp/aab-verify.txt
+          unzip -p android/app/build/outputs/bundle/release/app-release-signed.aab META-INF/MANIFEST.MF | grep -q '^SHA-256-Digest:'
 
       - name: Archive APK
         uses: actions/upload-artifact@v4
