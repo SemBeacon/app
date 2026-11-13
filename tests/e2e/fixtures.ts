@@ -119,7 +119,7 @@ export async function sortScannerBy(
     page: Page,
     label: 'First seen' | 'Last seen' | 'RSSI' | 'Distance',
 ) {
-    await page.locator('ion-button:has(ion-icon[name="funnel"])').click();
+    await page.locator('ion-button:has(ion-icon[name="swap-vertical"])').click();
     const alert = page.locator('ion-alert');
     await alert.getByText(label, { exact: true }).click();
     await alert.getByRole('button', { name: 'OK' }).click();
