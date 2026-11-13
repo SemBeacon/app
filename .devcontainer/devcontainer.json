@@ -3,7 +3,8 @@
     "dockerFile": "Dockerfile",
     "runArgs": [
         "--privileged",
-        "--device=/dev/bus/usb:/dev/bus/usb"
+        "--device=/dev/bus/usb:/dev/bus/usb",
+        "--add-host=host.docker.internal:host-gateway"
     ],
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
@@ -22,7 +23,8 @@
         "SIGNING_STORE_PASSWORD": "${localEnv:SIGNING_STORE_PASSWORD}",
         "SIGNING_KEY_PASSWORD": "${localEnv:SIGNING_KEY_PASSWORD}",
         "SIGNING_KEY_ALIAS": "${localEnv:SIGNING_KEY_ALIAS}",
-        "ANDROID_ADB_SERVER_ADDRESS": "host.docker.internal"
+        "ANDROID_ADB_SERVER_ADDRESS": "host.docker.internal",
+        "ADB_SERVER_SOCKET": "tcp:host.docker.internal:5037"
     },
     "forwardPorts": [
         8085

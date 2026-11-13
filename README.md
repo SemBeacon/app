@@ -24,7 +24,44 @@ actuation demo (`src/demo/fixtures/iot.ttl`). The OpenHPS building example is lo
 website as usual; without internet, the scanner keeps the detected SemBeacon visible and shows
 a clear offline error with a retry.
 
-For a device connected to the devcontainer, start `adb -a nodaemon server start` on the host.
+### Android device over Wi-Fi
+Enable **Developer options > Wireless debugging** on the phone and pair it once:
+
+```bash
+adb pair <phone-ip>:<pairing-port>     # enter the pairing code shown on the phone
+adb connect <phone-ip>:<connect-port>  # port shown on the Wireless debugging screen
+adb devices                            # the phone should be listed
+```
+
+Open `chrome://inspect/#devices` in Chrome to debug the WebView of a debug build: console,
+network, sources and breakpoints. `adb logcat -s Capacitor:V` shows the WebView console and the
+native logs (needed for Bluetooth and foreground-service problems). On Android 10 and older,
+connect the phone over USB once, run `adb tcpip 5555`, then `adb connect <phone-ip>:5555`.
+
+#### Install an APK
+```bash
+yarn build:android:debug               # android/app/build/outputs/apk/debug/app-debug.apk
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb install -r android/app/build/outputs/apk/release/app-release-signed.apk   # CI release APK
+```
+
+Without adb, move the APK to the phone and open it: `adb push app-debug.apk /sdcard/Download/`,
+or serve it from the host with `python3 -m http.server 9000` and open
+`http://<host-ip>:9000/app-debug.apk` on the phone. Allow installing unknown apps when asked.
+A release APK signed with the upload key does not replace a Play Store install (different
+signature): uninstall the Play version first.
+
+#### Devcontainer
+The devcontainer uses the adb server on the host. Start `adb -a nodaemon server start` on the
+host; the container reaches it through `host.docker.internal` (`ADB_SERVER_SOCKET`). For live
+reload, `yarn dev` already listens on `0.0.0.0:8085`, so run:
+
+```bash
+npx cap run android --live-reload --host localhost --port 8085 --https --forwardPorts 8085:8085
+```
+
+The dev server uses a self-signed certificate that the WebView may reject; when it does, install
+a debug build instead and reload it manually.
 
 ### Code structure
 Dependencies point one way: views and components use stores, stores use services, and
@@ -94,7 +131,7 @@ First verify that adb can find the device using `adb devices`. The command `npx 
 ## Production
 1. Set the `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS`, and `SIGNING_KEY_PASSWORD` environment variables.
 2. `npx cap build android --androidreleasetype APK --keystorepath keystore/sembeacon.jks --keystorepass $SIGNING_STORE_PASSWORD --keystorealias $SIGNING_KEY_ALIAS --keystorealiaspass $SIGNING_KEY_PASSWORD` (change with AAB for Google Play Store)
-3. `adb install -r android/app/build/outputs/apk/release/app`
+3. `adb install -r android/app/build/outputs/apk/release/app-release-signed.apk`
 
 ## Contributing
 We welcome contributions to improve the SemBeacon application. Please refer to the [Contributing Guide](./CONTRIBUTING.md) for more details.
