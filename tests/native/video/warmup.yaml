@@ -1,7 +1,19 @@
 # Starts the demo app and waits until it listed the beacons. Fails when the app does not load,
 # so a green run proves the iOS build starts. Recording starts after this flow.
+# Not launch.yaml: its wait cannot see the list while an iOS permission alert covers it.
 appId: org.sembeacon
 ---
-- runFlow: ../subflows/launch.yaml
+- launchApp:
+    permissions:
+      all: allow
+- tapOn:
+    text: 'Allow While Using App'
+    optional: true
+- tapOn:
+    text: '(OK|Allow)'
+    optional: true
+- extendedWaitUntil:
+    visible: '.*BEACON_08.*' # list items are one accessibility node
+    timeout: 90000
 - assertVisible: '.*BEACON_08.*'
 - takeScreenshot: video-warmup

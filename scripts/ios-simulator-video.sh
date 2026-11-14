@@ -41,7 +41,8 @@ record() { # <name> <udid>
     xcrun simctl status_bar "$id" override --time 9:41 --dataNetwork wifi --wifiMode active --wifiBars 3 \
         --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
     xcrun simctl install "$id" "$APP"
-    xcrun simctl launch "$id" org.sembeacon >/dev/null || true
+    # Location prompt would cover the beacon list (Bluetooth is dismissed by warmup.yaml)
+    xcrun simctl privacy "$id" grant location-always org.sembeacon || true
 
     # The app must load (BEACON_08 listed), otherwise the job fails here
     maestro --device "$id" test tests/native/video/warmup.yaml --test-output-dir "$LOGS/$name-warmup"
