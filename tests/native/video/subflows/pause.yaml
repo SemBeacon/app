@@ -1,0 +1,7 @@
+# Wait for ${PAUSE_MS} ms (Maestro has no sleep command)
+appId: org.sembeacon
+---
+- extendedWaitUntil:
+    visible: 'this text is never shown'
+    timeout: ${PAUSE_MS}
+    optional: true

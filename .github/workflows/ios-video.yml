@@ -1,0 +1,50 @@
+name: iOS announcement video
+
+# Records the real iOS Simulator (iPhone and iPad) and composes the announcement video.
+# macOS minutes are expensive: manual only.
+on:
+  workflow_dispatch:
+
+jobs:
+  video:
+    name: Record simulator and build video
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      # Artwork (logo, grid, real-device screenshots) comes from the website repository
+      - uses: actions/checkout@v4
+        with:
+          repository: SemBeacon/sembeacon.org
+          path: website
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: app/yarn.lock
+      - name: Install tools
+        working-directory: app
+        run: |
+          yarn install --frozen-lockfile
+          npx playwright install chromium
+          brew install ffmpeg
+          python3 -m pip install --break-system-packages numpy
+          curl -fsSL https://get.maestro.mobile.dev | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Record simulators and build video
+        working-directory: app
+        run: scripts/ios-simulator-video.sh
+        env:
+          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-announcement-video
+          path: |
+            app/resources/video/sembeacon-ios-announcement.mp4
+            app/resources/video/raw/*.mp4
+            app/resources/video/logs/**/*.png
+          if-no-files-found: warn
+          retention-days: 30

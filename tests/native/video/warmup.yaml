@@ -1,0 +1,7 @@
+# Starts the demo app and waits until it listed the beacons. Fails when the app does not load,
+# so a green run proves the iOS build starts. Recording starts after this flow.
+appId: org.sembeacon
+---
+- runFlow: ../subflows/launch.yaml
+- assertVisible: '.*BEACON_08.*'
+- takeScreenshot: video-warmup

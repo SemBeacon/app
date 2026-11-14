@@ -1,0 +1,29 @@
+# The walkthrough that is recorded for the announcement video (about 24 s, see
+# scripts/video/build.mjs for the caption timing). Runs after warmup.yaml.
+appId: org.sembeacon
+---
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '2500'}}
+- swipe: {direction: UP, duration: 1200}
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '1200'}}
+- swipe: {direction: DOWN, duration: 1200}
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '1500'}}
+- tapOn: '.*BEACON_08.*'
+- extendedWaitUntil:
+    visible: '.*Beacon details.*'
+    timeout: 15000
+- assertVisible: '.*c187d748.*'
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '2500'}}
+- swipe: {direction: UP, duration: 1500}
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '2000'}}
+- swipe: {direction: UP, duration: 1500}
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '2000'}}
+- swipe: {direction: DOWN, duration: 1500}
+- swipe: {direction: DOWN, duration: 1500}
+- tapOn: 'Back'
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '1500'}}
+# Phones show the menu behind a button; on iPad it is docked next to the list
+- tapOn:
+    text: 'menu'
+    optional: true
+- runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '3500'}}
+- takeScreenshot: video-showcase-end
