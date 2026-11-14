@@ -26,8 +26,7 @@
             :position="[coordinates(selectedBeacon)[0], coordinates(selectedBeacon)[1]]"
         >
             <div class="ol-popup">
-                <span class="key">{{ selectedBeacon.displayName }}</span
-                ><br />
+                <span class="key">{{ selectedBeacon.displayName }}</span><br />
                 <div v-if="selectedBeacon.lastSeen">
                     <span class="key">Last seen: </span
                     ><span class="value">{{ lastSeen(selectedBeacon) }}</span
