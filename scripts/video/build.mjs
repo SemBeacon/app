@@ -3,7 +3,7 @@
 // Usage: FFMPEG=/path/to/ffmpeg node scripts/video/build.mjs   (ffmpeg needs libx264)
 import { chromium } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,7 +19,6 @@ mkdirSync(WORK, { recursive: true });
 const BRAND = '#363795';
 const PAGE = '#3f499f';
 const ACCENT = '#4e5bbe';
-const svg = (f) => readFileSync(join(SITE, f), 'utf8');
 const img = (f) => `file://${join(SITE, f)}`;
 const grid = img('bg-grid.png');
 
@@ -59,19 +58,49 @@ const DEV = {
 };
 const frame = (d) =>
     `<div style="position:absolute;left:${d.x}px;top:${d.y}px;width:${d.w}px;height:${d.h}px;
-     border-radius:${d.radius}px;box-shadow:0 0 0 ${d.bezel}px #0c0d26,0 0 0 ${d.bezel + 3}px #5a62c4,0 40px 90px rgba(0,0,0,.45)"></div>`;
+     border-radius:${d.radius}px;box-shadow:0 0 0 ${d.bezel}px #0c0d26,0 0 0 ${d.bezel + 3}px ${ACCENT},0 40px 90px rgba(0,0,0,.45)"></div>`;
 pages['frame-iphone'] = frame(DEV.iphone);
 pages['frame-ipad'] = frame(DEV.ipad);
 
 const caps = {
     iphone: [
-        ['Scanner', 'Scan every beacon around you', 'iBeacon, AltBeacon, Eddystone and SemBeacon, ranked by signal strength.', 1, 8.5],
-        ['Linked data', 'Open a SemBeacon', 'Namespace, instance and resource URI at a glance. The linked data description is resolved for you.', 9, 18.5],
-        ['Navigation', 'Everything one tap away', 'Scanner, map and more in the side menu.', 19.5, 23],
+        [
+            'Scanner',
+            'Scan every beacon around you',
+            'iBeacon, AltBeacon, Eddystone and SemBeacon, ranked by signal strength.',
+            1,
+            8.5,
+        ],
+        [
+            'Linked data',
+            'Open a SemBeacon',
+            'Namespace, instance and resource URI at a glance. The linked data description is resolved for you.',
+            9,
+            18.5,
+        ],
+        [
+            'Navigation',
+            'Everything one tap away',
+            'Scanner, map and more in the side menu.',
+            19.5,
+            23,
+        ],
     ],
     ipad: [
-        ['iPad', 'Made for the big screen', 'A split-pane layout keeps the menu next to your beacons.', 1, 8.5],
-        ['Inspect', 'Every detail of every beacon', 'Open a beacon to see its identifiers and semantic description.', 9, 18.5],
+        [
+            'iPad',
+            'Made for the big screen',
+            'A split-pane layout keeps the menu next to your beacons.',
+            1,
+            8.5,
+        ],
+        [
+            'Inspect',
+            'Every detail of every beacon',
+            'Open a beacon to see its identifiers and semantic description.',
+            9,
+            18.5,
+        ],
         ['One app', 'iPhone and iPad', 'The same SemBeacon app, in light and dark mode.', 19.5, 23],
     ],
 };
@@ -85,7 +114,7 @@ caps.ipad.forEach((c, i) => (pages[`cap-ipad-${i}`] = capHtml('ipad', c)));
 
 // Real-device scene: screenshots taken on physical devices (website/images/ios-app)
 const shot = (f, w, h, r) =>
-    `<img src="${img('ios-app/' + f)}" style="width:${w}px;height:${h}px;border-radius:${r}px;box-shadow:0 0 0 12px #0c0d26,0 0 0 14px #5a62c4,0 30px 70px rgba(0,0,0,.45);object-fit:cover">`;
+    `<img src="${img('ios-app/' + f)}" style="width:${w}px;height:${h}px;border-radius:${r}px;box-shadow:0 0 0 12px #0c0d26,0 0 0 14px ${ACCENT},0 30px 70px rgba(0,0,0,.45);object-fit:cover">`;
 pages.real = `<div class="bg"></div>
     <div style="position:absolute;left:120px;top:230px;width:640px">
       <div class="cap" style="position:static"><div class="k">Tested on real devices</div>
@@ -103,16 +132,31 @@ for (const [name, html] of Object.entries(pages)) {
     writeFileSync(file, `<!doctype html><meta charset="utf-8"><style>${base}</style>${html}`);
     await page.goto(`file://${file}`, { waitUntil: 'networkidle' }).catch(() => {});
     await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: join(WORK, `${name}.png`), omitBackground: !/^(bg|intro|announce|outro|real)$/.test(name) });
+    await page.screenshot({
+        path: join(WORK, `${name}.png`),
+        omitBackground: !/^(bg|intro|announce|outro|real)$/.test(name),
+    });
 }
 await browser.close();
 
 const ff = (args) => execFileSync(FFMPEG, ['-v', 'error', '-y', ...args], { stdio: 'inherit' });
-const FADE = (d) => `fade=t=in:st=0:d=0.5:color=${BRAND},fade=t=out:st=${d - 0.5}:d=0.5:color=${BRAND}`;
+const FADE = (d) =>
+    `fade=t=in:st=0:d=0.5:color=${BRAND},fade=t=out:st=${d - 0.5}:d=0.5:color=${BRAND}`;
 const enc = ['-r', '30', '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p'];
 
 const still = (name, d) =>
-    ff(['-loop', '1', '-t', String(d), '-i', join(WORK, `${name}.png`), '-vf', FADE(d), ...enc, join(WORK, `s-${name}.mp4`)]);
+    ff([
+        '-loop',
+        '1',
+        '-t',
+        String(d),
+        '-i',
+        join(WORK, `${name}.png`),
+        '-vf',
+        FADE(d),
+        ...enc,
+        join(WORK, `s-${name}.mp4`),
+    ]);
 still('intro', 5);
 still('announce', 5);
 still('real', 9);
@@ -124,10 +168,29 @@ for (const dev of ['iphone', 'ipad']) {
     // Real iOS Simulator recording (scripts/ios-simulator-video.sh) wins over the WebKit fallback
     const sim = join(RAW, `${dev}.mp4`);
     const simulator = existsSync(sim);
-    const inputs = ['-loop', '1', '-t', String(SCENE), '-i', join(WORK, 'bg.png'),
-        '-ss', simulator ? '0.5' : '0.6', '-t', String(SCENE), '-i', simulator ? sim : join(RAW, `${dev}.webm`),
-        '-loop', '1', '-t', String(SCENE), '-i', join(WORK, `frame-${dev}.png`)];
-    caps[dev].forEach((_, i) => inputs.push('-loop', '1', '-t', String(SCENE), '-i', join(WORK, `cap-${dev}-${i}.png`)));
+    const inputs = [
+        '-loop',
+        '1',
+        '-t',
+        String(SCENE),
+        '-i',
+        join(WORK, 'bg.png'),
+        '-ss',
+        simulator ? '0.5' : '0.6',
+        '-t',
+        String(SCENE),
+        '-i',
+        simulator ? sim : join(RAW, `${dev}.webm`),
+        '-loop',
+        '1',
+        '-t',
+        String(SCENE),
+        '-i',
+        join(WORK, `frame-${dev}.png`),
+    ];
+    caps[dev].forEach((_, i) =>
+        inputs.push('-loop', '1', '-t', String(SCENE), '-i', join(WORK, `cap-${dev}-${i}.png`)),
+    );
     let f = `[1:v]${simulator ? '' : `crop=${d.src[0]}:${d.src[1]}:0:0,`}scale=${d.w}:${d.h}:flags=lanczos,setsar=1[v];[0:v][v]overlay=${d.x}:${d.y}[a];[a][2:v]overlay=0:0[b0];`;
     caps[dev].forEach(([, , , a, b], i) => {
         f += `[${3 + i}:v]format=rgba,fade=t=in:st=${a}:d=0.5:alpha=1,fade=t=out:st=${b - 0.5}:d=0.5:alpha=1[c${i}];[b${i}][c${i}]overlay=0:0:eof_action=pass[b${i + 1}];`;
@@ -139,7 +202,28 @@ for (const dev of ['iphone', 'ipad']) {
 const order = ['intro', 'announce', 'iphone', 'ipad', 'real', 'outro'];
 writeFileSync(join(WORK, 'list.txt'), order.map((n) => `file 's-${n}.mp4'`).join('\n'));
 // Soundtrack: python3 scripts/video/score.py resources/video/work/score.wav
-ff(['-f', 'concat', '-safe', '0', '-i', join(WORK, 'list.txt'), '-i', join(WORK, 'score.wav'),
-    '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest',
-    '-movflags', '+faststart', OUT]);
+ff([
+    '-f',
+    'concat',
+    '-safe',
+    '0',
+    '-i',
+    join(WORK, 'list.txt'),
+    '-i',
+    join(WORK, 'score.wav'),
+    '-map',
+    '0:v',
+    '-map',
+    '1:a',
+    '-c:v',
+    'copy',
+    '-c:a',
+    'aac',
+    '-b:a',
+    '192k',
+    '-shortest',
+    '-movflags',
+    '+faststart',
+    OUT,
+]);
 console.log('Wrote', OUT);

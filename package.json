@@ -81,7 +81,7 @@
     "@openhps/localstorage": "^1.0.1",
     "@openhps/rdf": "^1.2.0",
     "@openhps/rf": "^1.0.4",
-    "@openhps/solid": "^1.1.0",
+    "@openhps/solid": "1.0.3",
     "@sembeacon/openhps": "^1.7.1",
     "@vueuse/core": "^15",
     "axios": "^1.21.0",
