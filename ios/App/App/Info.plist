@@ -25,15 +25,15 @@
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Uses Bluetooth to connect and interact with peripheral BLE devices.</string>
+    <string>SemBeacon uses Bluetooth to detect nearby beacons and read their advertisements. For example, it can recognise the beacon in a museum room and show you that room's description and map.</string>
     <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>This app would like to scan for beacons.</string>
+    <string>SemBeacon uses Bluetooth to broadcast a beacon signal from your device, for example to test a SemBeacon setup using your phone as a beacon.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app would like to scan for beacons and determine your location both while in use and while in the background to provide location-based services.</string>
+    <string>SemBeacon uses your location to detect which beacons are near you, for example to show the beacon of the room you are in and its map. Background access lets it keep detecting beacons while the app is closed or the screen is off. Your location is not sent to our servers.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>This app would like to scan for beacons in the background to provide location-based services.</string>
+    <string>SemBeacon uses your location in the background to keep detecting nearby beacons while the app is not open, for example to tell you when you walk past a beacon in a building. Your location is not sent to our servers.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app would like to scan for beacons and determine your location while it is in use.</string>
+    <string>SemBeacon uses your location while the app is open to detect nearby beacons, for example to show the beacon of the room you are in and its map. Your location is not sent to our servers.</string>
     <key>UIBackgroundModes</key>
     <array>
       <string>bluetooth-central</string>
