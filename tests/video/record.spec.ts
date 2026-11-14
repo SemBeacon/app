@@ -75,9 +75,11 @@ async function installIosChrome(page: Page, kind: 'iphone' | 'ipad') {
             home.className = 'ios-chrome ios-home';
             document.body.appendChild(home);
         };
-        document.readyState === 'loading'
-            ? document.addEventListener('DOMContentLoaded', install)
-            : install();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', install);
+        } else {
+            install();
+        }
     }, kind);
 }
 
@@ -93,7 +95,11 @@ async function smoothScroll(page: Page, by: number) {
             const step = (t: number) => {
                 const p = Math.min((t - t0) / 1400, 1);
                 scroller.scrollTop = start + distance * (1 - Math.pow(1 - p, 3));
-                p < 1 ? requestAnimationFrame(step) : done();
+                if (p < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    done();
+                }
             };
             requestAnimationFrame(step);
         });
