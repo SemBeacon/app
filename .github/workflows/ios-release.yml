@@ -78,7 +78,7 @@ jobs:
         run: |
           xcodebuild archive \
             -workspace ios/App/App.xcworkspace \
-            -scheme App \
+            -scheme SemBeacon \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/SemBeacon.xcarchive" \
