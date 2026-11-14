@@ -79,7 +79,7 @@
     "@openhps/core": "^1.0.16",
     "@openhps/geospatial": "^0.1.33",
     "@openhps/localstorage": "^1.0.1",
-    "@openhps/rdf": "^1.2.0",
+    "@openhps/rdf": "1.1.7",
     "@openhps/rf": "^1.0.4",
     "@openhps/solid": "1.0.3",
     "@sembeacon/openhps": "^1.7.1",
