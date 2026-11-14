@@ -19,7 +19,7 @@ npx cap sync ios
 
 xcodebuild \
     -workspace ios/App/App.xcworkspace \
-    -scheme App \
+    -scheme SemBeacon \
     -configuration Debug \
     -sdk iphonesimulator \
     -destination "id=$DEVICE_ID" \
@@ -29,7 +29,7 @@ xcodebuild \
 
 xcrun simctl boot "$DEVICE_ID" || true
 xcrun simctl bootstatus "$DEVICE_ID" -b
-xcrun simctl install "$DEVICE_ID" "$DERIVED_DATA/Build/Products/Debug-iphonesimulator/App.app"
+xcrun simctl install "$DEVICE_ID" "$DERIVED_DATA/Build/Products/Debug-iphonesimulator/SemBeacon.app"
 
 mkdir -p "$OUTPUT"
 

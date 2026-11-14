@@ -93,7 +93,7 @@ jobs:
         run: |
           mkdir -p resources/build/ios
           ditto -c -k --keepParent \
-            ios/build/Build/Products/Debug-iphonesimulator/App.app \
+            ios/build/Build/Products/Debug-iphonesimulator/SemBeacon.app \
             resources/build/ios/App.app.zip
       - uses: actions/upload-artifact@v4
         if: always()

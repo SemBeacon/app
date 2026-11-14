@@ -27,10 +27,10 @@ IPAD_ID="${IPAD_ID:-$(pick '^iPad Pro 13-inch' '^iPad')}"
 VITE_DEMO_MODE=true npm run build
 rm -f ios/App/Podfile.lock # stale pins, see scripts/ios-simulator-e2e.sh
 npx cap sync ios
-xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Debug \
+xcodebuild -workspace ios/App/App.xcworkspace -scheme SemBeacon -configuration Debug \
     -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
     -derivedDataPath "$DERIVED_DATA" CODE_SIGNING_ALLOWED=NO build
-APP="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/App.app"
+APP="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/SemBeacon.app"
 
 record() { # <name> <udid>
     local name="$1" id="$2"
