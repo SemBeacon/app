@@ -22,8 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
-          cache-dependency-path: app/yarn.lock
+      # Self-hosted runner: no preinstalled yarn, and the local yarn cache persists anyway
+      - run: npm install -g yarn
       - name: Install tools
         working-directory: app
         run: |

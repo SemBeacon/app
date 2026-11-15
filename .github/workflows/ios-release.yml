@@ -25,7 +25,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+      # Self-hosted runner: no preinstalled yarn, and the local yarn cache persists anyway
+      - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
       - name: Build web app
         run: yarn build
