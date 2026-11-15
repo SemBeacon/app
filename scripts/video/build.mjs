@@ -22,17 +22,18 @@ const ACCENT = '#4e5bbe';
 const img = (f) => `file://${join(SITE, f)}`;
 const grid = img('bg-grid.png');
 
-const FONT = `'ITC Avant Garde Gothic Std', 'Avant Garde', 'URW Gothic', 'Century Gothic', Helvetica, Arial, sans-serif`;
+const FONT = `'ITC Avant Garde Gothic Std Book', 'URW Gothic', 'Century Gothic', Helvetica, Arial, sans-serif`;
+const FONT_BOLD = `'ITC Avant Garde Gothic Std Bold', 'URW Gothic', 'Century Gothic', Helvetica, Arial, sans-serif`;
 const base = `
 @import url('https://fonts.cdnfonts.com/css/itc-avant-garde-gothic-std-book');
 *{box-sizing:border-box;margin:0}
-html,body{width:1920px;height:1080px;overflow:hidden;font-family:${FONT};color:#fff}
+html,body{width:1920px;height:1080px;overflow:hidden;font-family:${FONT};font-style:normal;font-weight:300;color:#fff}
 .bg{position:absolute;inset:0;background:url(${grid}),radial-gradient(1200px 800px at 25% 20%,${PAGE},${BRAND} 70%)}
 .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-h1{font-size:92px;font-weight:700;letter-spacing:-1px;line-height:1.1}
-h2{font-size:64px;font-weight:700;line-height:1.15}
+h1{font-family:${FONT_BOLD};font-style:normal;font-size:92px;font-weight:700;letter-spacing:-1px;line-height:1.1}
+h2{font-family:${FONT_BOLD};font-style:normal;font-size:64px;font-weight:700;line-height:1.15}
 p{font-size:34px;line-height:1.4;opacity:.9}
-.pill{display:inline-block;margin-top:44px;padding:16px 40px;border-radius:999px;background:#fff;color:${BRAND};font-size:32px;font-weight:700}
+.pill{display:inline-block;margin-top:44px;padding:16px 40px;border-radius:999px;background:#fff;color:${BRAND};font-family:${FONT_BOLD};font-size:32px;font-weight:700}
 .cap{position:absolute;display:flex;flex-direction:column;justify-content:center}
 .cap .k{font-size:26px;letter-spacing:4px;text-transform:uppercase;color:#c9cffa;margin-bottom:18px}
 .cap h2{margin-bottom:22px}
@@ -47,7 +48,7 @@ const pages = {
     outro: `<div class="bg"></div><div class="center">
         <img src="${img('logo_square_alpha.svg')}" width="220">
         <h1 style="margin-top:36px">Download SemBeacon for iOS</h1>
-        <p style="margin-top:18px">Available on the App Store &nbsp;·&nbsp; also on Android</p>
+        <img src="file://${join(ROOT, 'scripts', 'video', 'assets', 'app-store-badge.svg')}" height="130" style="margin-top:48px">
         <span class="pill">sembeacon.org</span></div>`,
 };
 
