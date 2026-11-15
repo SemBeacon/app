@@ -4,6 +4,9 @@
 # CocoaPods, Maestro, ffmpeg (libx264), numpy and Playwright's chromium (`npx playwright install chromium`).
 set -euo pipefail
 
+# The shared macOS runner is slow: give the XCTest driver minutes, not seconds, to start
+export MAESTRO_DRIVER_STARTUP_TIMEOUT="${MAESTRO_DRIVER_STARTUP_TIMEOUT:-300000}"
+
 RAW="${RAW:-resources/video/raw}"
 DERIVED_DATA="${DERIVED_DATA:-ios/build}"
 LOGS="${LOGS:-resources/video/logs}"
