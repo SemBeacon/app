@@ -4,10 +4,14 @@ appId: org.sembeacon
 ---
 # The scanner list fits the screen: swiping it only triggers pull-to-refresh, so just show it
 - runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '4000'}}
-- tapOn: '.*BEACON_08.*'
-- extendedWaitUntil:
-    visible: '.*Beacon details.*'
-    timeout: 15000
+# A tap on the slow runner is occasionally lost (seen on iPad): retry tap + wait together
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn: '.*BEACON_08.*'
+      - extendedWaitUntil:
+          visible: '.*Beacon details.*'
+          timeout: 8000
 - assertVisible: '.*c187d748.*'
 - runFlow: {file: subflows/pause.yaml, env: {PAUSE_MS: '2500'}}
 - swipe: {direction: UP, duration: 1500}
