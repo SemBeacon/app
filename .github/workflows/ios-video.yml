@@ -8,7 +8,7 @@ on:
 jobs:
   video:
     name: Record simulator and build video
-    runs-on: macos-latest
+    runs-on: [self-hosted, macOS, ios]
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4

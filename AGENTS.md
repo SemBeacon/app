@@ -53,7 +53,9 @@ Heavy beacon classification runs in `src/workers`.
 `ci.yml` (PRs and main): lint, format, typecheck, coverage, then Playwright e2e and visual in the
 Playwright container. `native.yml` (main, nightly, manual): Maestro on Android emulator and iOS
 simulator. `main.yml` (main): signed Android release APK from repository secrets.
-`ios-release.yml` (`v*` tags, manual): signed App Store archive on a macOS runner, uploaded to App Store Connect.
+`ios-release.yml` (`v*` tags, manual): signed App Store archive, uploaded to App Store Connect.
+All macOS jobs (`native.yml` iOS, `ios-release.yml`, `ios-video.yml`) run on the self-hosted MacBook runner
+(`runs-on: [self-hosted, macOS, ios]`), never on GitHub-hosted `macos-*`, to save paid minutes.
 
 ## Conventions
 - Match the surrounding code; Prettier config is `.prettierrc.js`, do not hand-format.
