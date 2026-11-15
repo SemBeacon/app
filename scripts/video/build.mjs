@@ -199,10 +199,19 @@ function compact(src, name, target, d) {
     }
     const active = clusters.filter((c) => c.n >= 2);
     if (active.length === 0) return src;
+    // Open on the scanner list, close on the last screen, and spread the remaining time as
+    // held frames around each burst of activity so the scene fills `target` seconds.
+    const LEAD = 8.5; // the tap highlight is below the detector threshold: ~3 s of this is before the first cluster
+    const TAIL = 3;
+    const spans = active.reduce((sum, c) => sum + (c.end - c.start), 0);
+    const hold =
+        active.length > 1
+            ? Math.min(Math.max((target - spans - LEAD - TAIL) / (2 * (active.length - 1)), 0.8), 4)
+            : 1;
     const windows = [];
     active.forEach((c, i) => {
-        const from = i === 0 ? Math.max(0, c.start - 2.5) : c.start - 0.8;
-        const to = c.end + (i === active.length - 1 ? 2.5 : 1.0);
+        const from = i === 0 ? Math.max(0, c.start - LEAD) : c.start - hold;
+        const to = c.end + (i === active.length - 1 ? TAIL : hold);
         const prev = windows.at(-1);
         if (prev && from <= prev[1]) prev[1] = to;
         else windows.push([from, to]);
@@ -212,14 +221,28 @@ function compact(src, name, target, d) {
     console.log(
         `${name}: ${windows.length} windows, ${total.toFixed(1)} s -> ${(total / speed).toFixed(1)} s (x${speed.toFixed(2)})`,
     );
+    // The recording is variable frame rate (no frames while the screen is static): make it
+    // constant 30 fps first, otherwise the held frames around each burst of activity are empty.
+    const n = windows.length;
+    const labels = windows.map((_, i) => `[s${i}]`).join('');
+    const head = `[0:v]scale=${d.w}:${d.h}:flags=lanczos,fps=30,split=${n}${labels}`;
     const parts = windows.map(
-        ([a, b], i) => `[0:v]trim=start=${a}:end=${b},setpts=PTS-STARTPTS[v${i}]`,
+        ([a, b], i) => `[s${i}]trim=start=${a}:end=${b},setpts=PTS-STARTPTS[v${i}]`,
     );
     const concat =
         windows.map((_, i) => `[v${i}]`).join('') +
-        `concat=n=${windows.length}:v=1,setpts=PTS/${speed},fps=30,scale=${d.w}:${d.h}:flags=lanczos,tpad=stop_mode=clone:stop_duration=${SCENE},trim=end=${SCENE},setpts=PTS-STARTPTS[out]`;
+        `concat=n=${n}:v=1,setpts=PTS/${speed},fps=30,tpad=stop_mode=clone:stop_duration=${SCENE},trim=end=${SCENE},setpts=PTS-STARTPTS[out]`;
     const out = join(WORK, `c-${name}.mp4`);
-    ff(['-i', src, '-filter_complex', [...parts, concat].join(';'), '-map', '[out]', ...enc, out]);
+    ff([
+        '-i',
+        src,
+        '-filter_complex',
+        [head, ...parts, concat].join(';'),
+        '-map',
+        '[out]',
+        ...enc,
+        out,
+    ]);
     return out;
 }
 
