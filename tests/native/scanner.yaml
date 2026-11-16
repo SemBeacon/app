@@ -8,7 +8,7 @@ name: scanner
     timeout: 30000
     optional: true
 - takeScreenshot: 01-scanner
-- tapOn: '.*BEACON_08.*'
+- tapOn: '.*(BEACON_08|c187d748).*'
 - extendedWaitUntil:
     visible: '.*Beacon details.*'
     timeout: 15000

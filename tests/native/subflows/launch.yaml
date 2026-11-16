@@ -6,5 +6,7 @@ appId: org.sembeacon
     permissions:
       all: allow
 - extendedWaitUntil:
-    visible: '.*BEACON_08.*' # list items are one accessibility node
+    # List items are one accessibility node. The Android WebView can leave the online name
+    # (BEACON_08) out of that node, so the instance id counts as well.
+    visible: '.*(BEACON_08|c187d748).*'
     timeout: 90000
