@@ -35,7 +35,8 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           npx playwright install chromium
-          brew install ffmpeg
+          # No Homebrew on the Intel self-hosted runner: ffmpeg must be installed on the machine
+          command -v ffmpeg >/dev/null || { echo '::error::ffmpeg is not installed on the runner'; exit 1; }
           python3 -m pip install --break-system-packages numpy
           curl -fsSL https://get.maestro.mobile.dev | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
