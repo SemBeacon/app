@@ -24,6 +24,8 @@ jobs:
           node-version: 22
       # Self-hosted runner: no preinstalled yarn, and the local yarn cache persists anyway
       - run: npm install -g yarn
+      # CocoaPods lives in the rbenv Ruby of the self-hosted runner (macOS system Ruby is too old)
+      - run: echo "$HOME/.rbenv/versions/3.3.13/bin" >> "$GITHUB_PATH"
       - name: Install tools
         working-directory: app
         run: |
