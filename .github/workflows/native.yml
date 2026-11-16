@@ -81,8 +81,12 @@ jobs:
           node-version: 22
       # Self-hosted runner: no preinstalled yarn, and the local yarn cache persists anyway
       - run: npm install -g yarn
-      # CocoaPods lives in the rbenv Ruby of the self-hosted runner (macOS system Ruby is too old)
-      - run: echo "$HOME/.rbenv/versions/3.3.13/bin" >> "$GITHUB_PATH"
+      # CocoaPods lives in the rbenv Ruby of the self-hosted runner (macOS system Ruby is too old);
+      # it also needs a UTF-8 locale, which the runner service does not set
+      - run: |
+          echo "$HOME/.rbenv/versions/3.3.13/bin" >> "$GITHUB_PATH"
+          echo "LANG=en_US.UTF-8" >> "$GITHUB_ENV"
+          echo "LC_ALL=en_US.UTF-8" >> "$GITHUB_ENV"
       - run: yarn install --frozen-lockfile
       - name: Install Maestro
         run: |
